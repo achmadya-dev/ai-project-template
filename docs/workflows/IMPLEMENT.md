@@ -1,0 +1,3 @@
+# Implementation procedure
+
+Read the accepted task and AGENTS.md. Check status, preserve unrelated edits, and create/use the task branch. Implement the smallest coherent slice. Keep domain and infrastructure boundaries. Test acceptance criteria and meaningful failure cases. Run relevant checks, record actual outcomes, update docs and handoff. Create a draft PR with true issue link and completed evidence when access exists. For incomplete access, leave a local PR draft and name the blocked external step. Never report unrun checks or unpublished issues as complete. Do not merge/deploy without authorization.

@@ -1,0 +1,7 @@
+---
+description: Repository workflow and verification contract
+alwaysApply: true
+---
+Read and follow the root AGENTS.md before planning, implementing, or reviewing.
+Load the linked product/domain documents and the relevant docs/workflows procedure.
+AGENTS.md is canonical; do not duplicate its policies here.

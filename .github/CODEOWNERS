@@ -1,0 +1,4 @@
+* @achmadya-dev
+
+# Require Code Owner review in GitHub rulesets only when a distinct reviewer can approve.
+# A PR author cannot approve their own PR. See docs/GITHUB_SETUP.md for solo mode.

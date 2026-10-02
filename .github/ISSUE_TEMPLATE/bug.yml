@@ -1,0 +1,23 @@
+name: Bug
+description: Reproduce and investigate unexpected behavior
+title: "[Bug] "
+body:
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected and actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction steps and environment
+      description: Include sanitized evidence, never secrets or customer data.
+    validations:
+      required: true
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impact and regression test
+    validations:
+      required: true

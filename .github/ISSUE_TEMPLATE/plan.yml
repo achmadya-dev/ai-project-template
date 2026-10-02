@@ -1,0 +1,51 @@
+name: Plan a change
+description: Define an outcome before implementing it
+title: "[Plan] "
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal and users
+      description: What outcome matters, for whom, and why?
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope and boundaries
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria and examples
+      description: Observable behavior, negative cases, invariants; give each criterion an AC identifier.
+    validations:
+      required: true
+  - type: dropdown
+    id: risk
+    attributes:
+      label: Initial risk
+      options: [low, medium, high]
+      default: 1
+    validations:
+      required: true
+  - type: textarea
+    id: plan
+    attributes:
+      label: Implementation and verification plan
+      description: Files/modules, test mapping, dependencies, material unresolved questions.
+    validations:
+      required: true
+  - type: textarea
+    id: recovery
+    attributes:
+      label: Compatibility and recovery
+      description: Schema/API/data impact and recovery limits.
+    validations:
+      required: true
+  - type: textarea
+    id: authorization
+    attributes:
+      label: Plan revision and authorization
+      description: Record the accepted revision and link the user's authorization. An AI-written field is not proof of approval.
