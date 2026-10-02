@@ -4,6 +4,6 @@ import react from '@vitejs/plugin-react'
 import { nitro } from 'nitro/vite'
 
 export default defineConfig({
-  plugins: [tanstackStart(), nitro({ preset: 'node-server' }), react()],
+  plugins: [tanstackStart(), nitro({ preset: 'bun' }), react()],
   server: { host: '127.0.0.1', port: 3000, strictPort: true },
 })
