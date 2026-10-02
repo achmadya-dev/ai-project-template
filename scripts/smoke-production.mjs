@@ -1,6 +1,8 @@
 import { spawn } from 'node:child_process'
 import { setTimeout } from 'node:timers/promises'
 import assert from 'node:assert/strict'
+
+assert.ok(process.versions.bun, 'Production smoke harness must run on Bun')
 const port = '3120'
 const server = spawn(process.execPath, ['.output/server/index.mjs'], {
   env: { ...process.env, NODE_ENV: 'development', DEMO_ENABLED: 'true', DATABASE_URL: '', HOST: '127.0.0.1', PORT: port },
@@ -23,7 +25,7 @@ try {
   const html = await response.text()
   assert.ok(html.includes('Demo dinonaktifkan'), 'Production must disable the demo even when explicitly enabled')
   assert.ok(!html.includes('name="sku"'), 'Production must not expose demo form')
-  console.log('Production smoke passed: HTTP 200, demo disabled even with development environment flags, no DB credentials required.')
+  console.log(`Production smoke passed on Bun ${process.versions.bun}: HTTP 200, demo disabled even with development environment flags, no DB credentials required.`)
 } finally {
   server.kill('SIGTERM')
   await Promise.race([new Promise(resolve => server.once('exit', resolve)), setTimeout(3000)])
