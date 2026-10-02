@@ -16,7 +16,7 @@ Satu repo TanStack Start fullstack untuk planning lewat prompt, implementasi ole
 ## Jalankan lokal
 Bun mengelola dependency dan menjalankan script; aplikasi tetap memakai runtime Node 24. Instal Bun mengikuti [panduan resmi](https://bun.com/docs/installation), sesuai versi `.bun-version`. Gunakan `bun run test` untuk Vitest; `bun test` adalah runner berbeda.
 
-Prasyarat: Node 24, Bun 1.4.2, Docker Compose (atau PostgreSQL milik development).
+Prasyarat: Node 24, Bun sesuai `.bun-version`, Docker Compose (atau PostgreSQL milik development). Jika Bun belum terpasang, jalankan `node scripts/doctor.mjs` untuk memeriksa setup awal dan versi Bun yang dibutuhkan.
 
 ```sh
 bun install --frozen-lockfile
@@ -40,7 +40,7 @@ bun run verify
 
 | Perintah | Kegunaan |
 | --- | --- |
-| `bun run doctor` | Petunjuk setup dan konfigurasi yang masih diperlukan |
+| `node scripts/doctor.mjs` / `bun run doctor` | Petunjuk setup; bentuk `node` juga bekerja sebelum Bun terpasang |
 | `bun run check` | Lint, policy tests, unit, build, typecheck; tanpa DB |
 | `bun run verify` | Check + PostgreSQL integration + E2E + production smoke |
 | `bun run task:new nama-task` | Membuat dokumen task tanpa menimpa file lama |
