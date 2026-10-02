@@ -10,7 +10,7 @@ Accessed 2026-10-02. Installed package code and executed checks take precedence 
 - https://cursor.com/docs/context/rules
 - https://code.claude.com/docs/en/hooks
 - https://docs.github.com/en/actions/reference/security/secure-use
-- https://docs.github.com/en/repositories/configuring-branches-and-merges/in-your-repository/managing-rulesets/creating-rulesets-for-a-repository
+- https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/creating-rulesets-for-a-repository
 
 ## Bun package management and runtime
 - https://bun.sh/docs/pm/cli/install
