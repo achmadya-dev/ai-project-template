@@ -3,13 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "engines": {
-    "node": ">=24 <25"
-  },
   "scripts": {
-    "dev": "node --env-file-if-exists=.env node_modules/vite/bin/vite.js --host 127.0.0.1 --port 3000",
-    "build": "vite build",
-    "start": "node .output/server/index.mjs",
+    "dev": "bunx --bun vite --host 127.0.0.1",
+    "build": "bunx --bun vite build",
+    "start": "bun .output/server/index.mjs",
     "typecheck": "tsc --noEmit",
     "lint": "eslint . --max-warnings=0",
     "test": "vitest run --project unit",
@@ -18,10 +15,10 @@
     "test:policy": "node --test scripts/*.test.mjs",
     "check": "bun run lint && bun run test:policy && bun run test && bun run build && bun run typecheck",
     "verify": "bun run check && bun run test:integration && bun run test:e2e && bun run test:production",
-    "db:migrate": "node --env-file-if-exists=.env scripts/migrate.mjs",
-    "task:new": "node scripts/new-task.mjs",
-    "doctor": "node scripts/doctor.mjs",
-    "test:production": "node scripts/smoke-production.mjs"
+    "db:migrate": "bun scripts/migrate.mjs",
+    "task:new": "bun scripts/new-task.mjs",
+    "doctor": "bun scripts/doctor.mjs",
+    "test:production": "bun scripts/smoke-production.mjs"
   },
   "dependencies": {
     "@tanstack/react-router": "1.170.41",
