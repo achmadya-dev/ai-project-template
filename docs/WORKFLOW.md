@@ -16,7 +16,7 @@ Kode + docs repo menyimpan kondisi saat ini. Issue menyimpan kebutuhan dan disku
 ## Implementasi
 1. Satu task per branch. Simpan perubahan pengguna yang sudah ada.
 2. Kerjakan slice kecil yang dapat diuji. Tes harus membuktikan perilaku dan kegagalan penting.
-3. Jalankan `npm run check` dan pemeriksaan DB/E2E yang relevan. Untuk perubahan demo fullstack, `npm run verify`.
+3. Jalankan `bun run check` dan pemeriksaan DB/E2E yang relevan. Untuk perubahan demo fullstack, `bun run verify`.
 4. Perbarui domain/ADR/runbook bila perilakunya berubah.
 5. Catat command, hasil aktual, keterbatasan, dan revisi kode. Jika gagal, jelaskan; jangan melemahkan tes.
 6. Buat PR dengan `Closes #123`, risiko, scope, verifikasi, kompatibilitas, dokumentasi. Jangan mengirim PR kosong sebagai bukti selesai.

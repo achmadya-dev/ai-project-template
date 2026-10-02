@@ -1,7 +1,9 @@
 ---
-description: Repository workflow and verification contract
+description: Repository workflow, coding standards, and verification contract
 alwaysApply: true
 ---
 Read and follow the root AGENTS.md before planning, implementing, or reviewing.
+Before changing code, load docs/CODE_STANDARDS.md and inspect docs/PATTERNS.md plus the closest existing implementation.
 Load the linked product/domain documents and the relevant docs/workflows procedure.
-AGENTS.md is canonical; do not duplicate its policies here.
+Before declaring implementation complete, perform the CODE_STANDARDS self-review and run the relevant verification commands.
+AGENTS.md and its linked canonical documents are authoritative; do not invent or duplicate conflicting policies here.

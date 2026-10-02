@@ -1,7 +1,7 @@
 import { mkdir, writeFile } from 'node:fs/promises'
 const slug = process.argv[2]
 if (!slug || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) || slug.length > 80) {
-  console.error('Usage: npm run task:new -- short-task-name'); process.exit(1)
+  console.error('Usage: bun run task:new short-task-name'); process.exit(1)
 }
 const file = `docs/tasks/${slug}.md`
 await mkdir('docs/tasks', { recursive: true })

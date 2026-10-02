@@ -1,7 +1,7 @@
 # Mulai dari sini
 
 ## 1. Jadikan proyekmu
-Ekstrak template, buka foldernya, lalu jalankan setup di README. Ubah nama di `package.json` dan `.ai/project.json`; jalankan `npm install --package-lock-only` setelah perubahan package metadata.
+Ekstrak template, buka foldernya, lalu jalankan setup di README. Ubah nama di `package.json` dan `.ai/project.json`; jalankan `bun install --lockfile-only` setelah perubahan package metadata.
 
 File yang wajib diisi bersama agent sebelum fitur bisnis:
 - `docs/PRODUCT.md`: siapa pengguna dan hasil yang ingin dicapai.
