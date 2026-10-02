@@ -1,17 +1,22 @@
 # Bun migration validation
 
 Task: [issue #8](https://github.com/achmadya-dev/ai-project-template/issues/8), branch `chore/bun-package-manager`.
-Verified 2026-10-02 with Bun 1.4.2 and Node 24.19.0.
+Target: Bun 1.4.2 for dependency management and the application runtime. Node 24 is retained only for current Vitest/Playwright tooling compatibility.
 
-- `bun install --lockfile-only`: migrated the existing npm lockfile; direct dependency versions unchanged.
-- Clean `bun install --frozen-lockfile`: passed, 254 platform-applicable packages installed.
-- `bun run check`: passed lint, 8 policy tests, 11 unit tests, production build and typecheck.
-- `bun run test:production`: passed HTTP 200 and production demo isolation without DB credentials.
-- `bun run doctor`: detects Bun 1.4.2, Node 24, lockfile and Git; correctly reports absent local .env and optional GitHub CLI.
-- `bun run playwright --version`: resolves the installed Playwright 1.58.2 CLI.
-- PostgreSQL integration and browser verification: see PR checks for this branch. Not executed locally for this migration because disposable services from the bootstrap session are unavailable.
+## Current Bun migration evidence
+The package-manager-only revision was verified 2026-10-02 with Bun 1.4.2 and Node 24.19.0 tooling. Hosted GitHub Actions run `37075210368` passed quality, PostgreSQL integration, browser E2E, build and production smoke.
 
-Runtime remains Node 24. Bun manages packages and launches scripts; Vitest remains the unit/integration runner. Use `bun run test`, not Bun's native `bun test`. Existing upstream bundler module-directive warnings remain; lint has zero warnings.
+The final revision additionally changes the application runtime to Bun:
+- Nitro uses preset `bun`.
+- Development and production build invoke Vite with Bun (`bunx --bun vite`).
+- Production starts with `bun .output/server/index.mjs`.
+- `bun run test:production` executes the smoke harness on Bun, asserts that Bun is the harness runtime, and launches the built server with that same Bun executable.
+- Migration/task/doctor utility scripts run with Bun.
+- `.bun-version` and `packageManager` pin Bun 1.4.2; `bun.lock` remains the dependency source of truth.
+
+The current PR checks are the authoritative final verification for this full-runtime revision. Do not treat the earlier Node-runtime smoke as evidence for the final runtime target.
+
+Vitest remains the unit/integration runner and Playwright remains the browser runner. Their current upstream documentation still lists Node prerequisites, so CI keeps Node 24 for test tooling only. Use `bun run test`, not Bun's native `bun test`, when invoking the Vitest suite. Existing upstream bundler module-directive warnings remain; lint requires zero warnings.
 
 ## Historical bootstrap evidence (before Bun migration)
 The following records the original npm-based checks; these commands are historical, not current setup instructions. Current commands are in README.
@@ -42,11 +47,11 @@ Date: 2026-10-02 UTC. Verification concerns this delivered template, not a produ
 ## Environment and limitations
 Node 24.19.0. A temporary PostgreSQL 17.9 process was used because Docker was not available here. Docker Compose service startup was not exercised; its YAML was parsed. Tests used synthetic data and a separate `_test` database.
 
-The Playwright browser CDN returned invalid archives in this environment. Browser checks were completed with a temporary Chromium 153 executable via `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`. That optional override is supported by playwright.config.ts; the default setup still uses `npx playwright install chromium`. The alternate browser package is not a project dependency and is not included in the archive.
+The Playwright browser CDN returned invalid archives in this environment. Browser checks were completed with a temporary Chromium 153 executable via `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`. That optional override is supported by playwright.config.ts; the default setup still used `npx playwright install chromium`. The alternate browser package is not a project dependency and is not included in the archive.
 
 Nitro 3 is pinned to a beta release. The build emitted upstream bundler warnings about React module directives; build, browser scenario, and production smoke passed. Recheck on dependency upgrades. Runtime dependency audit does not cover all development dependencies or prove absence of application vulnerabilities.
 
-GitHub repository and bootstrap issue were created after local validation. Hosted Actions execution is pending at upload time. CODEOWNERS now names the repository owner; rulesets enforcement and production deployment have not been configured. Review/setup instructions are in GITHUB_SETUP.md. The PR checker verifies metadata structure and risk hints; it does not validate business correctness, prove human approval, or confirm an issue exists.
+GitHub repository and bootstrap issue were created after local validation. CODEOWNERS now names the repository owner; rulesets enforcement and production deployment have not been configured. Review/setup instructions are in GITHUB_SETUP.md. The PR checker verifies metadata structure and risk hints; it does not validate business correctness, prove human approval, or confirm an issue exists.
 
-## Reproduce
-Follow README to prepare a disposable PostgreSQL database, install Chromium, then run `npm run verify`. Do not reuse production credentials. Exact dependencies are recorded in package-lock.json.
+## Historical reproduction
+The original bootstrap can be reproduced from the pre-migration revision with npm and `package-lock.json`. For the current repository, follow README and use Bun commands plus the current PR checks. Never reuse production credentials.
