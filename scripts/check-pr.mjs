@@ -8,7 +8,7 @@ export function validatePr(body, files) {
   if (!/^Closes #\d+\s*$/m.test(body)) errors.push('Link a real same-repository issue on a line: Closes #123')
   const risk = body.match(/^Risk: (low|medium|high)\s*$/m)?.[1]
   if (!risk) errors.push('Set Risk: low, medium, or high')
-  const critical = files.some(file => /^(?:\.github\/|\.ai\/|\.cursor\/|\.githooks\/|scripts\/|db\/migrations\/|AGENTS\.md$|CLAUDE\.md$|package(?:-lock)?\.json$|bun\.lockb?$|bunfig\.toml$|\.bun-version$|\.nvmrc$|\.npmrc$|.*(?:auth|payment|ledger|tenant)[^/]*\/)/i.test(file))
+  const critical = files.some(file => /^(?:\.github\/|\.ai\/|\.cursor\/|\.githooks\/|scripts\/|db\/migrations\/|AGENTS\.md$|CLAUDE\.md$|docs\/(?:ARCHITECTURE|CODE_STANDARDS|PATTERNS)\.md$|docs\/workflows\/|package(?:-lock)?\.json$|bun\.lockb?$|bunfig\.toml$|\.bun-version$|\.nvmrc$|\.npmrc$|.*(?:auth|payment|ledger|tenant)[^/]*\/)/i.test(file))
   if (critical && risk !== 'high') errors.push('Sensitive paths changed; declare Risk: high and obtain the required review')
   for (const heading of ['Goal', 'Changes', 'Verification', 'Compatibility and recovery', 'Documentation']) {
     const marker = `## ${heading}`
