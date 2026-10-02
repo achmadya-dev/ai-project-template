@@ -5,7 +5,7 @@ Satu repo TanStack Start fullstack untuk planning lewat prompt, implementasi ole
 **Mulai di [START_HERE.md](START_HERE.md).** Contoh prompt siap dipakai ada di [docs/PROMPTS.md](docs/PROMPTS.md).
 
 ## Yang tersedia
-- TanStack Start + React + TypeScript, Node runtime (Nitro), PostgreSQL.
+- TanStack Start + React + TypeScript, Bun runtime (Nitro), PostgreSQL.
 - Demo katalog development: validasi server, normalisasi SKU, constraint unik PostgreSQL, penanganan duplikat.
 - Migrasi SQL berversi dengan transaksi, lock, dan checksum; tidak otomatis dijalankan saat startup.
 - Unit test, integrasi PostgreSQL (termasuk race condition), E2E Chromium, smoke test production.
@@ -14,9 +14,9 @@ Satu repo TanStack Start fullstack untuk planning lewat prompt, implementasi ole
 - Task lokal dan handoff untuk sesi baru tanpa mengandalkan memori chat.
 
 ## Jalankan lokal
-Bun mengelola dependency dan menjalankan script; aplikasi tetap memakai runtime Node 24. Instal Bun mengikuti [panduan resmi](https://bun.com/docs/installation), sesuai versi `.bun-version`. Gunakan `bun run test` untuk Vitest; `bun test` adalah runner berbeda.
+Bun mengelola dependency, menjalankan development/build, dan menjadi runtime aplikasi production. Versi Bun dikunci di `.bun-version` dan `packageManager`; instal Bun mengikuti [panduan resmi](https://bun.com/docs/installation). Nitro dibangun dengan preset `bun`.
 
-Prasyarat: Node 24, Bun sesuai `.bun-version`, Docker Compose (atau PostgreSQL milik development). Jika Bun belum terpasang, jalankan `node scripts/doctor.mjs` untuk memeriksa setup awal dan versi Bun yang dibutuhkan.
+Prasyarat aplikasi: Bun sesuai `.bun-version`, Docker Compose (atau PostgreSQL milik development). Node 24 masih dipakai **hanya sebagai tooling test** karena Vitest 5 dan Playwright saat ini mendokumentasikan Node sebagai prerequisite; Node bukan runtime aplikasi.
 
 ```sh
 bun install --frozen-lockfile
@@ -40,12 +40,12 @@ bun run verify
 
 | Perintah | Kegunaan |
 | --- | --- |
-| `node scripts/doctor.mjs` / `bun run doctor` | Petunjuk setup; bentuk `node` juga bekerja sebelum Bun terpasang |
+| `bun run doctor` | Petunjuk setup, versi Bun runtime, dan tooling yang masih diperlukan |
 | `bun run check` | Lint, policy tests, unit, build, typecheck; tanpa DB |
-| `bun run verify` | Check + PostgreSQL integration + E2E + production smoke |
+| `bun run verify` | Check + PostgreSQL integration + E2E + Bun production smoke |
 | `bun run task:new nama-task` | Membuat dokumen task tanpa menimpa file lama |
 | `bun run db:migrate` | Migrasi target DATABASE_URL; pastikan target dahulu |
-| `bun run build && bun run start` | Build dan jalankan server production; demo nonaktif |
+| `bun run build && bun run start` | Build dengan Bun + Nitro preset Bun dan jalankan production dengan Bun |
 
 ## Cara bekerja
 1. Buka repo pada tool coding pilihanmu dan minta agent membaca `AGENTS.md`.
