@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs'
 import { execFileSync } from 'node:child_process'
 const major = Number(process.versions.node.split('.')[0])
-console.log(`${major >= 24 ? 'OK' : 'CHECK'} Node ${process.versions.node}; CI uses Node 24`)
+console.log(`${major === 24 ? 'OK' : 'CHECK'} Node ${process.versions.node}; expected Node 24`)
 const expectedBun = readFileSync('.bun-version', 'utf8').trim()
 try {
   const actualBun = execFileSync('bun', ['--version'], { encoding: 'utf8' }).trim()
