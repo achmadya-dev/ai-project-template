@@ -16,14 +16,14 @@ Read this file first. It applies to this whole repository. This is guidance, not
 - Use `docs/workflows/PLAN.md`, `IMPLEMENT.md`, or `REVIEW.md` for the procedure. These are portable runbooks, not auto-discovered vendor skills.
 
 ## Commands
-- Node 24; `npm ci`; copy `.env.example` to `.env` without overwriting an existing file.
-- `npm run doctor`: readiness hints (does not prove GitHub protection).
-- `npm run dev`: loopback-only development server.
-- `npm run check`: lint, policy tests, unit tests, build, typecheck.
-- `npm run db:migrate`: explicitly migrate DATABASE_URL; never auto-run against an unknown target.
-- `npm run test:integration`: requires disposable TEST_DATABASE_URL ending in `_test`.
-- `npm run test:e2e`: requires migrated test DB and Playwright Chromium.
-- `npm run verify`: all checks. Do not claim a command passed if not run.
+- Node 24 + Bun version in `.bun-version`; `bun install --frozen-lockfile`; copy `.env.example` to `.env` without overwriting an existing file.
+- `bun run doctor`: readiness hints (does not prove GitHub protection).
+- `bun run dev`: loopback-only development server.
+- `bun run check`: lint, policy tests, unit tests, build, typecheck.
+- `bun run db:migrate`: explicitly migrate DATABASE_URL; never auto-run against an unknown target.
+- `bun run test:integration`: requires disposable TEST_DATABASE_URL ending in `_test`.
+- `bun run test:e2e`: requires migrated test DB and Playwright Chromium.
+- `bun run verify`: all checks. Do not claim a command passed if not run.
 
 ## Execution rules
 1. Inspect git status before editing; preserve unrelated user changes. One task per branch; do not work directly on main.

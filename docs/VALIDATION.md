@@ -1,4 +1,22 @@
-# Validation record
+# Bun migration validation
+
+Task: [issue #8](https://github.com/achmadya-dev/ai-project-template/issues/8), branch `chore/bun-package-manager`.
+Verified 2026-10-02 with Bun 1.4.2 and Node 24.19.0.
+
+- `bun install --lockfile-only`: migrated the existing npm lockfile; direct dependency versions unchanged.
+- Clean `bun install --frozen-lockfile`: passed, 254 platform-applicable packages installed.
+- `bun run check`: passed lint, 8 policy tests, 11 unit tests, production build and typecheck.
+- `bun run test:production`: passed HTTP 200 and production demo isolation without DB credentials.
+- `bun run doctor`: detects Bun 1.4.2, Node 24, lockfile and Git; correctly reports absent local .env and optional GitHub CLI.
+- `bun run playwright --version`: resolves the installed Playwright 1.58.2 CLI.
+- PostgreSQL integration and browser verification: see PR checks for this branch. Not executed locally for this migration because disposable services from the bootstrap session are unavailable.
+
+Runtime remains Node 24. Bun manages packages and launches scripts; Vitest remains the unit/integration runner. Use `bun run test`, not Bun's native `bun test`. Existing upstream bundler module-directive warnings remain; lint has zero warnings.
+
+## Historical bootstrap evidence (before Bun migration)
+The following records the original npm-based checks; these commands are historical, not current setup instructions. Current commands are in README.
+
+# Original validation record
 
 Date: 2026-10-02 UTC. Verification concerns this delivered template, not a production deployment.
 

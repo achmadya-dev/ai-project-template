@@ -9,7 +9,7 @@ export default defineConfig({
   use: { baseURL: 'http://127.0.0.1:3100', trace: 'retain-on-failure', launchOptions: { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH } },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
   webServer: {
-    command: 'npm run dev -- --port 3100', url: 'http://127.0.0.1:3100', reuseExistingServer: false,
+    command: 'bun run dev --port 3100', url: 'http://127.0.0.1:3100', reuseExistingServer: false,
     env: { DATABASE_URL: database, DEMO_ENABLED: 'true', NODE_ENV: 'development' },
     timeout: 120000,
   },

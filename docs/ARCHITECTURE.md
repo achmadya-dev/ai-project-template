@@ -1,7 +1,7 @@
 # Architecture
 
 ## Baseline
-Modular monolith: satu aplikasi TanStack Start, satu repo, PostgreSQL, Node 24 + Nitro. Transport server functions → repository → PostgreSQL. Domain input memakai Zod dan tidak mengimpor UI/DB.
+Modular monolith: satu aplikasi TanStack Start, satu repo, PostgreSQL, Node 24 + Nitro. Bun (dipin di `.bun-version` dan `packageManager`) mengelola dependency dan script; runtime aplikasi tetap Node. Commit `bun.lock` dan gunakan frozen install di CI. Transport server functions → repository → PostgreSQL. Domain input memakai Zod dan tidak mengimpor UI/DB.
 
 Server functions merupakan endpoint yang harus divalidasi dan diotorisasi. Jangan mempercayai input, ID tenant, atau role dari client. Versi Start yang dikunci memiliki default CSRF middleware untuk server functions; jangan menonaktifkannya. Auth belum tersedia; demo hanya development dan harus opt-in. Server functions juga memeriksa flag build `import.meta.env.DEV`, sehingga mengganti NODE_ENV saat menjalankan output production tidak mengaktifkan demo.
 

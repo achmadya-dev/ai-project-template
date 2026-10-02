@@ -45,7 +45,7 @@ Dokumen task harus sudah lengkap; contoh di atas memerlukan path nyata. Isi temp
 git config --local core.hooksPath .githooks
 ```
 
-Hook pre-push menjalankan `npm run check`. Hook bisa dilewati dan tidak dipasang global. Required CI di GitHub tetap diperlukan.
+Hook pre-push menjalankan `bun run check`. Hook bisa dilewati dan tidak dipasang global. Required CI di GitHub tetap diperlukan.
 
 ## Agent tools
 - Codex / OpenCode: minta membaca AGENTS.md; dukungan auto-load bergantung versi/tool.

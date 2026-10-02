@@ -14,15 +14,17 @@ Satu repo TanStack Start fullstack untuk planning lewat prompt, implementasi ole
 - Task lokal dan handoff untuk sesi baru tanpa mengandalkan memori chat.
 
 ## Jalankan lokal
-Prasyarat: Node 24, npm, Docker Compose (atau PostgreSQL milik development).
+Bun mengelola dependency dan menjalankan script; aplikasi tetap memakai runtime Node 24. Instal Bun mengikuti [panduan resmi](https://bun.com/docs/installation), sesuai versi `.bun-version`. Gunakan `bun run test` untuk Vitest; `bun test` adalah runner berbeda.
+
+Prasyarat: Node 24, Bun 1.4.2, Docker Compose (atau PostgreSQL milik development).
 
 ```sh
-npm ci
+bun install --frozen-lockfile
 cp .env.example .env
 # Jangan timpa .env bila sudah ada.
 docker compose up -d --wait db
-npm run db:migrate
-npm run dev
+bun run db:migrate
+bun run dev
 ```
 
 Buka http://127.0.0.1:3000. Demo tidak memiliki login; gunakan data sintetis saja. Binding dev server adalah loopback, jangan expose tanpa menambahkan autentikasi. Pada production build, demo ditolak walaupun `DEMO_ENABLED=true` dan runtime salah diberi `NODE_ENV=development`.
@@ -30,20 +32,20 @@ Buka http://127.0.0.1:3000. Demo tidak memiliki login; gunakan data sintetis saj
 ## Verifikasi
 ```sh
 docker compose --profile test up -d --wait db-test
-npx playwright install chromium
-npm run verify
+bun run playwright install chromium
+bun run verify
 ```
 
 `TEST_DATABASE_URL` pada `.env.example` menunjuk database terpisah di port 5433. Integrasi menerapkan migrasi pada DB test; E2E dijalankan setelahnya. Jika menjalankan E2E saja, migrasikan DB test dahulu secara eksplisit. Tes menolak nama database yang tidak berakhir `_test`, tetapi nama bukan bukti isolasi: berikan hanya kredensial database disposable.
 
 | Perintah | Kegunaan |
 | --- | --- |
-| `npm run doctor` | Petunjuk setup dan konfigurasi yang masih diperlukan |
-| `npm run check` | Lint, policy tests, unit, build, typecheck; tanpa DB |
-| `npm run verify` | Check + PostgreSQL integration + E2E + production smoke |
-| `npm run task:new -- nama-task` | Membuat dokumen task tanpa menimpa file lama |
-| `npm run db:migrate` | Migrasi target DATABASE_URL; pastikan target dahulu |
-| `npm run build && npm start` | Build dan jalankan server production; demo nonaktif |
+| `bun run doctor` | Petunjuk setup dan konfigurasi yang masih diperlukan |
+| `bun run check` | Lint, policy tests, unit, build, typecheck; tanpa DB |
+| `bun run verify` | Check + PostgreSQL integration + E2E + production smoke |
+| `bun run task:new nama-task` | Membuat dokumen task tanpa menimpa file lama |
+| `bun run db:migrate` | Migrasi target DATABASE_URL; pastikan target dahulu |
+| `bun run build && bun run start` | Build dan jalankan server production; demo nonaktif |
 
 ## Cara bekerja
 1. Buka repo pada tool coding pilihanmu dan minta agent membaca `AGENTS.md`.
@@ -69,4 +71,4 @@ Template ini **belum merupakan SaaS atau sistem payment siap produksi**. Auth, t
 
 File rules/CI tidak membuat agent kebal salah. Proteksi merge perlu diaktifkan di GitHub; lihat [docs/GITHUB_SETUP.md](docs/GITHUB_SETUP.md). Konfigurasi permission worker tetap milik tool yang kamu gunakan. Tidak ada MCP, token, global hook, atau deployment tersembunyi.
 
-Dependency dikunci di `package-lock.json`. Nitro yang dipakai masih versi beta; review update dependency melalui PR dan ulangi build + smoke. Detail versi dan bukti pengujian ada di [docs/VALIDATION.md](docs/VALIDATION.md).
+Dependency dikunci di `bun.lock`. Nitro yang dipakai masih versi beta; review update dependency melalui PR dan ulangi build + smoke. Detail versi dan bukti pengujian ada di [docs/VALIDATION.md](docs/VALIDATION.md).

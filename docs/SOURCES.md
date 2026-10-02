@@ -11,3 +11,10 @@ Accessed 2026-10-02. Installed package code and executed checks take precedence 
 - https://code.claude.com/docs/en/hooks
 - https://docs.github.com/en/actions/reference/security/secure-use
 - https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/creating-rulesets-for-a-repository
+
+## Bun package management
+- https://bun.sh/docs/pm/cli/install
+- https://bun.sh/docs/pm/lockfile
+- https://bun.sh/docs/runtime/bunfig
+- https://github.com/oven-sh/setup-bun
+- https://docs.github.com/en/code-security/reference/supply-chain-security/supported-ecosystems-and-repositories

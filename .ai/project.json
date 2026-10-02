@@ -6,8 +6,8 @@
   "workflow": "docs/WORKFLOW.md",
   "agentInstructions": "AGENTS.md",
   "commands": {
-    "verify": "npm run verify",
-    "fastCheck": "npm run check"
+    "verify": "bun run verify",
+    "fastCheck": "bun run check"
   },
   "automation": {
     "autoMerge": false,
