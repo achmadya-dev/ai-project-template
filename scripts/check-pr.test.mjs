@@ -20,7 +20,15 @@ test('rejects missing issue', () => assert.ok(validatePr(body.replace('Closes #1
 test('escalates governance edits', () => assert.ok(validatePr(body, ['.github/workflows/ci.yml']).some(e => e.includes('Sensitive'))))
 test('allows high-risk classification but does not approve it', () => assert.deepEqual(validatePr(body.replace('Risk: low', 'Risk: high'), ['scripts/check-pr.mjs']), []))
 
-for (const file of ['bun.lock', 'bunfig.toml', '.bun-version']) {
+for (const file of [
+  'bun.lock',
+  'bunfig.toml',
+  '.bun-version',
+  'docs/ARCHITECTURE.md',
+  'docs/CODE_STANDARDS.md',
+  'docs/PATTERNS.md',
+  'docs/workflows/IMPLEMENT.md',
+]) {
   test(`requires high risk for ${file}`, () => {
     assert.ok(validatePr(body, [file]).some(e => e.includes('Sensitive')))
     assert.deepEqual(validatePr(body.replace('Risk: low', 'Risk: high'), [file]), [])
