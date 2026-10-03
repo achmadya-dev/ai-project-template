@@ -15,9 +15,9 @@ The replacement must keep SQL visible and parameterized, preserve TanStack Start
 Adopt a small backend core in `src/server/`:
 
 - `env.server.ts` parses raw environment strings once into cached typed application config.
-- `errors.server.ts` defines general application error kinds plus stable specific codes.
+- `errors.ts` defines the client-safe application error contract: general kinds plus stable specific codes.
 - `logger.server.ts` emits structured safe JSON logs.
-- `request.server.ts` provides TanStack server-function middleware for request ID, timing, validation/error logging, and a shared result conversion for expected exposed failures.
+- `request.ts` provides import-safe TanStack server-function middleware for request ID, timing, validation/error logging, and a shared result conversion for expected exposed failures. Its `.server()` implementation may use the server-only logger while the middleware contract remains safe to import from `*.functions.ts`.
 - `database.server.ts` is the only application module that imports `pg`. It owns query-result plumbing, runtime row validation, generic PostgreSQL error normalization, and transaction lifecycle.
 - `db.server.ts` lazily composes the runtime database from typed config.
 
@@ -50,6 +50,8 @@ Rejected because optional development-only infrastructure such as `DATABASE_URL`
 Feature code becomes shorter and no longer knows about `Pool`, `QueryResult`, `rows[0]`, raw PostgreSQL diagnostics, or `process.env`. Database rows gain runtime validation rather than relying only on TypeScript generics. Expected failures have consistent kinds/codes, and broad logging/error `try/catch` blocks are centralized.
 
 The backend core is now a shared architectural dependency and must stay small. It is not an ORM or application framework. Changes to error serialization, database adapter semantics, environment parsing, or request middleware can affect many modules and therefore require normal high-risk review and cross-layer tests.
+
+Because `*.functions.ts` participates in the client graph, middleware factories used at module scope must come from import-safe modules rather than `*.server.ts` files. Server-only work remains inside TanStack `.server()`/`.handler()` execution boundaries or dedicated server-only modules referenced only from those boundaries.
 
 Structured console logging is only the baseline sink. A production observability vendor can replace `logger.server.ts` without changing feature repositories.
 
