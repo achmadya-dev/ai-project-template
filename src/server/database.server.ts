@@ -22,13 +22,17 @@ export interface Database extends DatabaseClient {
 
 type Queryable = pg.Pool | pg.PoolClient
 
+function readStringProperty(error: object, property: 'code' | 'constraint'): string | undefined {
+  const value = Reflect.get(error, property)
+  return typeof value === 'string' ? value : undefined
+}
+
 function readPgError(error: unknown): { code?: string; constraint?: string } {
   if (typeof error !== 'object' || error === null) return {}
-  const candidate = error as Record<string, unknown>
 
   return {
-    code: typeof candidate.code === 'string' ? candidate.code : undefined,
-    constraint: typeof candidate.constraint === 'string' ? candidate.constraint : undefined,
+    code: readStringProperty(error, 'code'),
+    constraint: readStringProperty(error, 'constraint'),
   }
 }
 
@@ -78,22 +82,23 @@ function translatePostgresError(error: unknown, query: SqlQuery): unknown {
   return error
 }
 
-async function queryRows(queryable: Queryable, query: SqlQuery): Promise<pg.QueryResultRow[]> {
+async function runQuery<T extends pg.QueryResultRow = pg.QueryResultRow>(
+  queryable: Queryable,
+  query: SqlQuery,
+): Promise<pg.QueryResult<T>> {
   try {
-    const result = await queryable.query<pg.QueryResultRow>(query.text, query.values ?? [])
-    return result.rows
+    return await queryable.query<T>(query.text, query.values ?? [])
   } catch (error) {
     throw translatePostgresError(error, query)
   }
 }
 
+async function queryRows(queryable: Queryable, query: SqlQuery): Promise<pg.QueryResultRow[]> {
+  return (await runQuery(queryable, query)).rows
+}
+
 async function executeQuery(queryable: Queryable, query: SqlQuery): Promise<number> {
-  try {
-    const result = await queryable.query(query.text, query.values ?? [])
-    return result.rowCount ?? 0
-  } catch (error) {
-    throw translatePostgresError(error, query)
-  }
+  return (await runQuery(queryable, query)).rowCount ?? 0
 }
 
 function parseRow<T>(schema: z.ZodType<T>, row: pg.QueryResultRow): T {
@@ -161,7 +166,14 @@ export function createPostgresDatabase(config: pg.PoolConfig): Database {
         await connection.query('COMMIT')
         return result
       } catch (error) {
-        await connection.query('ROLLBACK').catch(() => undefined)
+        try {
+          await connection.query('ROLLBACK')
+        } catch (rollbackError) {
+          throw new AppError('internal', 'DATABASE_ROLLBACK_FAILED', 'Database rollback failed', {
+            cause: new AggregateError([error, rollbackError]),
+            expose: false,
+          })
+        }
         throw error
       } finally {
         connection.release()
