@@ -1,6 +1,6 @@
 # Use canonical Tailwind max-width utilities
 
-Status: in-review
+Status: done
 Risk: high
 Issue: https://github.com/achmadya-dev/ai-project-template/issues/26
 PR: https://github.com/achmadya-dev/ai-project-template/pull/27
@@ -45,4 +45,5 @@ The rule is guidance, not a CI gate; adding automated enforcement would require 
 - `git diff --check`: passed.
 - The screenshot's classes now use Tailwind's exact suggestions. Their widths remain 1120px (`max-w-280`), 750px (`max-w-187.5`), and 570px (`max-w-142.5`).
 - Governance-path changes are classified high risk. The rule is AI guidance, not a CI gate; automated enforcement would need a separate lint/policy design.
-- Pull request: https://github.com/achmadya-dev/ai-project-template/pull/27; independent review remains required before merge.
+- Pull request: https://github.com/achmadya-dev/ai-project-template/pull/27; all CI checks passed.
+- Repository owner explicitly authorized merge in chat on 2026-10-03 after the high-risk paths and lack of an independent GitHub reviewer were disclosed. The owner is the only collaborator and PR author; no branch protection or rulesets are configured. This authorization is recorded as an explicit exception to the separate-review step.
