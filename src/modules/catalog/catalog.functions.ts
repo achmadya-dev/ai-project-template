@@ -4,11 +4,10 @@ import { getCatalogRepository } from './repository.server'
 import { isDemoEnabled, requireDemo } from '../../server/demo-policy'
 import { getEnv } from '../../server/env.server'
 import { AppError } from '../../server/errors'
-import { handleRequest, requestMiddleware, validateRequest } from '../../server/request'
+import { handleRequest, requestMiddleware } from '../../server/request'
 
 const listCatalogRequest = requestMiddleware('catalog.list')
 const createItemRequest = requestMiddleware('catalog.create')
-const createItemValidation = validateRequest(itemInput)
 
 export const getCatalog = createServerFn({ method: 'GET' })
   .middleware([listCatalogRequest])
@@ -19,7 +18,8 @@ export const getCatalog = createServerFn({ method: 'GET' })
   })
 
 export const createItem = createServerFn({ method: 'POST' })
-  .middleware([createItemRequest, createItemValidation])
+  .middleware([createItemRequest])
+  .validator(itemInput)
   .handler(async ({ data }) =>
     handleRequest(async () => {
       if (!import.meta.env.DEV) {
