@@ -1,6 +1,6 @@
 import pg from 'pg'
 import { z } from 'zod'
-import { AppError, appError, type AppErrorSpec } from './errors.server'
+import { AppError, appError, type AppErrorSpec } from './errors'
 
 export type SqlQuery = {
   text: string
