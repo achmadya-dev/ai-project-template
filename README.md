@@ -7,9 +7,9 @@ Satu repo TanStack Start fullstack untuk planning lewat prompt, implementasi ole
 ## Yang tersedia
 - TanStack Start + React + TypeScript, Bun runtime (Nitro), PostgreSQL.
 - Tailwind CSS untuk styling, ESLint untuk linting, Prettier untuk formatting + sorting utility Tailwind, dan Husky/lint-staged untuk pemeriksaan staged files.
-- Demo katalog development: validasi server, normalisasi SKU, constraint unik PostgreSQL, penanganan duplikat.
+- Halaman awal template tanpa fitur bisnis bawaan.
 - Migrasi SQL berversi dengan transaksi, lock, dan checksum; tidak otomatis dijalankan saat startup.
-- Unit test, integrasi PostgreSQL (termasuk race condition), E2E Chromium, smoke test production.
+- Unit test, integrasi PostgreSQL untuk adapter/migrasi, E2E Chromium untuk halaman awal, smoke test production.
 - `AGENTS.md`, adapter Cursor/Claude/Copilot; prosedur portable untuk plan, implement, review.
 - Template issue/PR, pemeriksaan metadata PR, CI, dan panduan rulesets GitHub.
 - Task lokal dan handoff untuk sesi baru tanpa mengandalkan memori chat.
@@ -17,18 +17,16 @@ Satu repo TanStack Start fullstack untuk planning lewat prompt, implementasi ole
 ## Jalankan lokal
 Bun mengelola dependency, menjalankan development/build, dan menjadi runtime aplikasi production. Versi Bun dikunci di `.bun-version` dan `packageManager`; instal Bun mengikuti [panduan resmi](https://bun.com/docs/installation). Nitro dibangun dengan preset `bun`.
 
-Prasyarat aplikasi: Bun sesuai `.bun-version`, Docker Compose (atau PostgreSQL milik development). Node 24 masih dipakai **hanya sebagai tooling test** karena Vitest 5 dan Playwright saat ini mendokumentasikan Node sebagai prerequisite; Node bukan runtime aplikasi.
+Prasyarat aplikasi: Bun sesuai `.bun-version`. Docker Compose atau PostgreSQL diperlukan hanya untuk integrasi. Node 24 masih dipakai **hanya sebagai tooling test** karena Vitest 5 dan Playwright saat ini mendokumentasikan Node sebagai prerequisite; Node bukan runtime aplikasi.
 
 ```sh
 bun install --frozen-lockfile
 cp .env.example .env
 # Jangan timpa .env bila sudah ada.
-docker compose up -d --wait db
-bun run db:migrate
 bun run dev
 ```
 
-Buka http://127.0.0.1:3000. Demo tidak memiliki login; gunakan data sintetis saja. Binding dev server adalah loopback, jangan expose tanpa menambahkan autentikasi. Pada production build, demo ditolak walaupun `DEMO_ENABLED=true` dan runtime salah diberi `NODE_ENV=development`.
+Buka http://127.0.0.1:3000. Halaman awal tidak memerlukan database. PostgreSQL dan migrasi hanya diperlukan setelah menambahkan slice yang menggunakannya; `bun run db:migrate` akan tetap menerapkan migrasi katalog historis yang tidak lagi dipakai aplikasi. Binding dev server adalah loopback; jangan expose ke jaringan tanpa autentikasi.
 
 ## Verifikasi
 ```sh
@@ -37,7 +35,7 @@ bun run playwright install chromium
 bun run verify
 ```
 
-`TEST_DATABASE_URL` pada `.env.example` menunjuk database terpisah di port 5433. Integrasi menerapkan migrasi pada DB test; E2E dijalankan setelahnya. Jika menjalankan E2E saja, migrasikan DB test dahulu secara eksplisit. Tes menolak nama database yang tidak berakhir `_test`, tetapi nama bukan bukti isolasi: berikan hanya kredensial database disposable.
+`TEST_DATABASE_URL` pada `.env.example` menunjuk database terpisah di port 5433. Integrasi menerapkan migrasi historis pada DB test dan menjalankan tes adapter; E2E halaman awal tidak memerlukan database. Tes menolak nama database yang tidak berakhir `_test`, tetapi nama bukan bukti isolasi: berikan hanya kredensial database disposable.
 
 | Perintah | Kegunaan |
 | --- | --- |
@@ -47,7 +45,7 @@ bun run verify
 | `bun run check` | Format check, lint, policy tests, unit, build, typecheck; tanpa DB |
 | `bun run verify` | Check + PostgreSQL integration + E2E + Bun production smoke |
 | `bun run task:new nama-task` | Membuat dokumen task tanpa menimpa file lama |
-| `bun run db:migrate` | Migrasi target DATABASE_URL; pastikan target dahulu |
+| `bun run db:migrate` | Migrasi target DATABASE_URL; pastikan target dahulu. Termasuk migrasi katalog historis |
 | `bun run build && bun run start` | Build dengan Bun + Nitro preset Bun dan jalankan production dengan Bun |
 
 ## Cara bekerja
@@ -61,8 +59,8 @@ Jika GitHub belum terhubung, gunakan `docs/tasks/`. GitHub issue/PR baru diangga
 
 ## Struktur
 - `src/routes`: halaman dan transport TanStack.
-- `src/modules/catalog`: contoh domain + repository + server functions.
-- `src/server`: infrastruktur server dan batas demo.
+- `src/modules/<domain>`: lokasi untuk vertical slice domain yang disetujui.
+- `src/server`: infrastruktur server bersama.
 - `db/migrations`: migrasi forward-only.
 - `tests`: unit, integrasi, E2E.
 - `docs`: konteks produk/domain, prosedur, keputusan, task, recovery.
@@ -70,7 +68,7 @@ Jika GitHub belum terhubung, gunakan `docs/tasks/`. GitHub issue/PR baru diangga
 - `.github`: workflow, template, CODEOWNERS.
 
 ## Batas versi ini
-Template ini **belum merupakan SaaS atau sistem payment siap produksi**. Auth, tenant isolation, role/permission, audit bisnis, backup hosting, observability, dan integrasi pembayaran harus dirancang per proyek. Jangan menganggap demo katalog sebagai desain ERP.
+Template ini **belum merupakan SaaS atau sistem payment siap produksi** dan tidak menyediakan domain bisnis bawaan. Auth, tenant isolation, role/permission, audit bisnis, backup hosting, observability, dan integrasi pembayaran harus dirancang per proyek. Migrasi katalog lama dipertahankan sebagai sejarah; bukan kontrak domain produk.
 
 File rules/CI tidak membuat agent kebal salah. Proteksi merge perlu diaktifkan di GitHub; lihat [docs/GITHUB_SETUP.md](docs/GITHUB_SETUP.md). Konfigurasi permission worker tetap milik tool yang kamu gunakan. Tidak ada MCP, token, global hook, atau deployment tersembunyi.
 

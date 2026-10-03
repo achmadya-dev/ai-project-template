@@ -1,5 +1,7 @@
 # Bun migration validation
 
+> Historical validation record: the revision tested below still contained the catalog demo. That feature and its `DEMO_ENABLED` switch were later removed; these results describe the historical revision, not verification of the current tree. The immutable initial catalog migration remains in the migration history.
+
 Task: [issue #8](https://github.com/achmadya-dev/ai-project-template/issues/8), branch `chore/bun-package-manager`.
 Target: Bun 1.4.2 for dependency management and the application runtime. Node 24 is retained only for current Vitest/Playwright tooling compatibility.
 

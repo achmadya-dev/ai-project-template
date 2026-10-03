@@ -16,5 +16,5 @@ Memulai satu proyek fullstack dan menjaga keterlacakan prompt → rencana → im
 - Integrasi eksternal dan efek yang tidak dapat di-rollback:
 - Target hosting, ketersediaan, dan pemulihan:
 
-## Demo bawaan
-Katalog barang adalah contoh teknis, bukan fitur MVP yang otomatis disetujui. Penghapusan/penggantian demo harus mempertahankan pemeriksaan alur fullstack yang relevan.
+## Fitur bawaan
+Tidak ada fitur bisnis atau domain produk bawaan. Halaman awal hanya menjelaskan alur kerja template. Migrasi katalog dari versi terdahulu masih dipertahankan untuk menjaga riwayat database, tetapi tidak lagi digunakan oleh aplikasi.
