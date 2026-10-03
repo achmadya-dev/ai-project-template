@@ -23,9 +23,9 @@ Server functions merupakan endpoint yang harus divalidasi dan diotorisasi. Janga
 `src/server/` berisi infrastructure boundary lintas domain yang kecil dan bernama jelas:
 
 - `env.server.ts`: satu-satunya application boundary yang membaca `process.env`; raw string diparse menjadi config typed/camelCase dan dicache.
-- `errors.server.ts`: error taxonomy umum (`invalid_argument`, `not_found`, `conflict`, `unauthorized`, `forbidden`, `rate_limited`, `internal`) plus stable domain/application codes.
+- `errors.ts`: client-safe error contract berisi taxonomy umum (`invalid_argument`, `not_found`, `conflict`, `unauthorized`, `forbidden`, `rate_limited`, `internal`) plus stable domain/application codes.
 - `logger.server.ts`: structured JSON logging tanpa payload/secret mentah.
-- `request.server.ts`: reusable TanStack server-function middleware untuk request id, timing, validation, dan centralized error logging; expected application errors dapat dikonversi menjadi serializable request result tanpa `try/catch` di feature code.
+- `request.ts`: import-safe TanStack server-function middleware untuk request id, timing, validation, dan centralized error logging; implementasi `.server()` boleh memakai server-only logger sementara kontrak middleware/result tetap aman diimpor oleh `*.functions.ts`.
 - `database.server.ts`: satu-satunya application wrapper untuk `pg`; menangani query result shape, row validation, transaction plumbing, dan mapping error PostgreSQL yang diketahui.
 - `db.server.ts`: lazy composition untuk database runtime berdasarkan typed config.
 
