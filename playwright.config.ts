@@ -1,9 +1,4 @@
 import { defineConfig, devices } from '@playwright/test'
-import { loadEnv } from 'vite'
-Object.assign(process.env, loadEnv('test', process.cwd(), ''))
-const database = process.env.TEST_DATABASE_URL
-if (!database || !new URL(database).pathname.endsWith('_test'))
-  throw new Error('TEST_DATABASE_URL must end in _test')
 export default defineConfig({
   testDir: './tests/e2e',
   fullyParallel: false,
@@ -20,7 +15,7 @@ export default defineConfig({
     command: 'bun run dev --port 3100',
     url: 'http://127.0.0.1:3100',
     reuseExistingServer: false,
-    env: { DATABASE_URL: database, DEMO_ENABLED: 'true', NODE_ENV: 'development' },
+    env: { DATABASE_URL: '' },
     timeout: 120000,
   },
 })

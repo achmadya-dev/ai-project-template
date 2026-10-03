@@ -109,14 +109,10 @@ Use `one` only when exactly one row is an invariant. For lookup-by-id where abse
 
 ## Environment
 
-Application runtime code reads config through `getEnv()`:
+Application runtime code reads optional typed config through `getEnv()`:
 
 ```ts
-const env = getEnv()
-
-if (env.demoEnabled) {
-  // ...
-}
+const { databaseUrl } = getEnv()
 ```
 
 Do not repeatedly access `process.env` inside repositories/server functions. Raw environment reads remain appropriate in test harnesses, scripts, build config, and process launchers.

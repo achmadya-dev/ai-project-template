@@ -16,7 +16,7 @@ Kode + docs repo menyimpan kondisi saat ini. Issue menyimpan kebutuhan dan disku
 ## Implementasi
 1. Satu task per branch. Simpan perubahan pengguna yang sudah ada.
 2. Kerjakan slice kecil yang dapat diuji. Tes harus membuktikan perilaku dan kegagalan penting.
-3. Jalankan `bun run check` dan pemeriksaan DB/E2E yang relevan. Untuk perubahan demo fullstack, `bun run verify`.
+3. Jalankan `bun run check` dan pemeriksaan DB/E2E yang relevan. Untuk perubahan alur fullstack berbasis database, `bun run verify`.
 4. Perbarui domain/ADR/runbook bila perilakunya berubah.
 5. Catat command, hasil aktual, keterbatasan, dan revisi kode. Jika gagal, jelaskan; jangan melemahkan tes.
 6. Buat commit logis dengan format di `docs/COMMITS.md`; jangan campur perubahan yang tidak terkait dalam satu commit.

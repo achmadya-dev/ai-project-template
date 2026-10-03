@@ -2,8 +2,8 @@
 
 ## Yang benar-benar diperiksa
 - TypeScript/lint/test melalui CI.
-- Uniqueness dan format SKU oleh PostgreSQL.
-- Penolakan demo pada production build.
+- PostgreSQL adapter: validasi row, cardinality, transaksi, dan pemetaan constraint.
+- Smoke test production: halaman awal tersedia tanpa kredensial database.
 - Checksum migrasi yang sudah diterapkan oleh runner migrasi.
 - Metadata PR dan indikasi path sensitif oleh verifier dari base commit.
 

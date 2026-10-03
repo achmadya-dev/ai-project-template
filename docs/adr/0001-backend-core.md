@@ -4,6 +4,8 @@ Status: accepted
 Date: 2026-10-03
 Task/issue: #21
 
+Supersession note (2026-10-03): the catalog demo and its feature-specific checks were removed in `docs/tasks/remove-demo-feature.md`. The original verification criteria below describe this ADR's implementation at the time; current database adapter and template-shell coverage replace them.
+
 ## Context
 
 The template originally let feature repositories receive `pg.Pool`, read `QueryResult.rows`, inspect PostgreSQL error codes/constraint names in repeated `try/catch` blocks, and validate the same input again after the transport boundary. Server functions also read `process.env` directly. That shape is small for one demo feature, but it spreads infrastructure details across every future vertical slice and makes request logging/error semantics inconsistent.

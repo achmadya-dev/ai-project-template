@@ -48,7 +48,7 @@ Dependencies should point inward: UI/transport -> domain/repository contracts; i
 
 - Application server code reads typed configuration through `getEnv()` from `src/server/env.server.ts`; do not scatter `process.env.*` reads through repositories or server functions.
 - Parse raw environment strings once into intentional types. Do not treat arbitrary truthy strings as booleans.
-- Optional infrastructure config may remain optional until the feature that needs it is invoked. For example, a production build with the development demo disabled must not fail merely because `DATABASE_URL` is intentionally absent.
+- Optional infrastructure config may remain optional until the feature that needs it is invoked. For example, the template home page/build must not fail merely because `DATABASE_URL` is intentionally absent.
 - Test harnesses, build/tooling config, scripts, and process launchers may read or set environment variables directly because they are outside the application runtime boundary.
 - Never expose server config through `VITE_*` unless the value is intentionally public.
 

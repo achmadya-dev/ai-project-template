@@ -16,7 +16,7 @@ client/loader
   -> PostgreSQL
 ```
 
-Server functions merupakan endpoint yang harus divalidasi dan diotorisasi. Jangan mempercayai input, ID tenant, atau role dari client. Versi Start yang dikunci memiliki default CSRF middleware untuk server functions; jangan menonaktifkannya. Auth belum tersedia; demo hanya development dan harus opt-in. Server functions juga memeriksa flag build `import.meta.env.DEV`, sehingga mengganti NODE_ENV saat menjalankan output production tidak mengaktifkan demo.
+Server functions merupakan endpoint yang harus divalidasi dan diotorisasi. Jangan mempercayai input, ID tenant, atau role dari client. Versi Start yang dikunci memiliki default CSRF middleware untuk server functions; jangan menonaktifkannya. Auth belum tersedia, dan template tidak menyediakan server function fitur bisnis bawaan.
 
 ## Backend core
 
@@ -54,7 +54,7 @@ Application server code menggunakan `getEnv()` dan tidak membaca `process.env` b
 
 ## Production decisions required
 
-Pilih auth provider/session model, tenant boundary, RBAC, runtime DB roles, logging/audit sink, rate limit, backup/restore, dan deployment. DB role demo memiliki kemampuan DDL; production wajib memisahkan role aplikasi dan migrasi. Demo tidak mengimplementasikan row-level security.
+Pilih auth provider/session model, tenant boundary, RBAC, runtime DB roles, logging/audit sink, rate limit, backup/restore, dan deployment. Production wajib memisahkan role aplikasi dan migrasi. Template belum mengimplementasikan auth atau row-level security.
 
 Structured console logging pada template adalah baseline, bukan observability stack production. Production dapat mengganti sink/logger di boundary yang sama tanpa mengubah feature repositories.
 

@@ -10,30 +10,24 @@ describe('server environment', () => {
   it('parses raw process values once into typed application config', () => {
     expect(
       parseEnv({
-        NODE_ENV: 'development',
         DATABASE_URL: 'postgresql://app:secret@127.0.0.1:5432/app_dev',
-        DEMO_ENABLED: 'true',
         LOG_LEVEL: 'debug',
       }),
     ).toEqual({
-      nodeEnv: 'development',
       databaseUrl: 'postgresql://app:secret@127.0.0.1:5432/app_dev',
-      demoEnabled: true,
       logLevel: 'debug',
     })
   })
 
   it('treats an empty database URL as unconfigured and applies safe defaults', () => {
     expect(parseEnv({ DATABASE_URL: '' })).toEqual({
-      nodeEnv: 'development',
       databaseUrl: undefined,
-      demoEnabled: false,
       logLevel: 'info',
     })
   })
 
-  it('rejects unsupported boolean-like values instead of guessing', () => {
-    expect(() => parseEnv({ DEMO_ENABLED: 'yes' })).toThrow()
+  it('rejects unsupported log levels instead of guessing', () => {
+    expect(() => parseEnv({ LOG_LEVEL: 'verbose' })).toThrow()
   })
 })
 

@@ -7,8 +7,6 @@ const port = '3120'
 const server = spawn(process.execPath, ['.output/server/index.mjs'], {
   env: {
     ...process.env,
-    NODE_ENV: 'development',
-    DEMO_ENABLED: 'true',
     DATABASE_URL: '',
     HOST: '127.0.0.1',
     PORT: port,
@@ -41,13 +39,11 @@ try {
   assert.ok(response, `Production server did not start: ${output}`)
   assert.equal(response.status, 200, output)
   const html = await response.text()
-  assert.ok(
-    html.includes('Demo dinonaktifkan'),
-    'Production must disable the demo even when explicitly enabled',
-  )
-  assert.ok(!html.includes('name="sku"'), 'Production must not expose demo form')
+  assert.ok(html.includes('YOUR NEXT PROJECT STARTS HERE'), 'Home page should render the template')
+  assert.ok(!html.includes('Katalog barang'), 'Home page must not expose the catalog demo')
+  assert.ok(!html.includes('name="sku"'), 'Home page must not expose the catalog form')
   console.log(
-    `Production smoke passed on Bun ${process.versions.bun}: HTTP 200, demo disabled even with development environment flags, no DB credentials required.`,
+    `Production smoke passed on Bun ${process.versions.bun}: HTTP 200, template home rendered without DB credentials.`,
   )
 } finally {
   server.kill('SIGTERM')
