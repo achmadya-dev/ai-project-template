@@ -9,6 +9,7 @@ Read this file first. It applies to this whole repository. This is guidance, not
 - `docs/CODE_STANDARDS.md`: normative implementation quality and architecture contract.
 - `docs/PATTERNS.md`: preferred shapes for vertical slices, boundaries, and tests.
 - `docs/WORKFLOW.md`: planning, implementation, evidence, handoff.
+- `docs/COMMITS.md`: commit message format, allowed types, scopes, and AI-agent commit rules.
 - For risky changes, `docs/SAFETY.md` and `docs/runbooks/RECOVERY.md`.
 
 Before implementing or reviewing code, read `docs/CODE_STANDARDS.md`. Inspect the closest existing implementation and `docs/PATTERNS.md` before inventing a new pattern.
@@ -43,7 +44,8 @@ Before implementing or reviewing code, read `docs/CODE_STANDARDS.md`. Inspect th
 11. Preserve applied migrations. Add forward migrations; document compatibility and recovery. Git revert does not undo external side effects.
 12. Before reporting implementation complete, review the diff against the required self-review checklist in `docs/CODE_STANDARDS.md`. Record any intentional exception rather than silently violating the standard.
 13. Record every task's acceptance criteria, changed behavior, actual commands/results, limitations, and issue/PR links. Use local files if the GitHub connection is absent; never fabricate links or say an issue exists when it does not.
-14. Do not merge, enable auto-merge, publish packages, or deploy merely because tests pass. Report the PR/evidence; honor explicit user authorization when it exists.
+14. Commit messages must follow `docs/COMMITS.md`. Keep commits logically scoped and do not rewrite user-owned history unless explicitly requested.
+15. Do not merge, enable auto-merge, publish packages, or deploy merely because tests pass. Report the PR/evidence; honor explicit user authorization when it exists.
 
 ## Done
 The agreed behavior works, the code satisfies `docs/CODE_STANDARDS.md` or documented exceptions are explicit, relevant checks pass (or blockers are explicit), docs are updated, and evidence is recorded. A clean build alone is not completion. See `docs/WORKFLOW.md`.
