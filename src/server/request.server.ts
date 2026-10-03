@@ -54,7 +54,7 @@ export function validateRequest<TSchema extends z.ZodType>(schema: TSchema) {
     .server(({ next }) => next())
 }
 
-export async function asRequestResult<T>(work: () => Promise<T>): Promise<RequestResult<T>> {
+export async function handleRequest<T>(work: () => Promise<T>): Promise<RequestResult<T>> {
   try {
     return { ok: true, data: await work() }
   } catch (error) {
