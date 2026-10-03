@@ -1,12 +1,13 @@
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { useState, useSyncExternalStore, type FormEvent } from 'react'
+import { cn } from '../lib/cn'
 import { createItem, getCatalog } from '../modules/catalog/catalog.functions'
 
 export const Route = createFileRoute('/')({ loader: () => getCatalog(), component: Home })
 const subscribeHydration = () => () => undefined
 const focusRing =
   'focus-visible:outline-[3px] focus-visible:outline-[#6ca085] focus-visible:outline-offset-3'
-const inputClass = `mb-2.5 w-full rounded-md border border-[#bccbbe] bg-white p-3 ${focusRing}`
+const inputClass = cn('mb-2.5 w-full rounded-md border border-[#bccbbe] bg-white p-3', focusRing)
 
 function Home() {
   const hydrated = useSyncExternalStore(
@@ -126,7 +127,10 @@ function Home() {
                   required
                 />
                 <button
-                  className={`cursor-pointer rounded-md border-0 bg-[#235743] p-3 text-white disabled:cursor-not-allowed disabled:opacity-60 ${focusRing}`}
+                  className={cn(
+                    'cursor-pointer rounded-md border-0 bg-[#235743] p-3 text-white disabled:cursor-not-allowed disabled:opacity-60',
+                    focusRing,
+                  )}
                   disabled={busy}
                 >
                   {busy ? 'Menyimpan…' : 'Tambah barang'}
