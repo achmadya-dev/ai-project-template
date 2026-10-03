@@ -19,7 +19,26 @@ Kode + docs repo menyimpan kondisi saat ini. Issue menyimpan kebutuhan dan disku
 3. Jalankan `bun run check` dan pemeriksaan DB/E2E yang relevan. Untuk perubahan demo fullstack, `bun run verify`.
 4. Perbarui domain/ADR/runbook bila perilakunya berubah.
 5. Catat command, hasil aktual, keterbatasan, dan revisi kode. Jika gagal, jelaskan; jangan melemahkan tes.
-6. Buat PR dengan `Closes #123`, risiko, scope, verifikasi, kompatibilitas, dokumentasi. Jangan mengirim PR kosong sebagai bukti selesai.
+6. Buat commit logis dengan format di `docs/COMMITS.md`; jangan campur perubahan yang tidak terkait dalam satu commit.
+7. Buat PR dengan `Closes #123`, risiko, scope, verifikasi, kompatibilitas, dokumentasi. Jangan mengirim PR kosong sebagai bukti selesai.
+
+## Commit
+Gunakan Conventional Commits sesuai `docs/COMMITS.md`:
+
+```text
+<type>(<scope>): <description>
+```
+
+Contoh:
+
+```text
+feat(auth): add password reset flow
+fix(api): reject malformed pagination cursor
+refactor(domain): extract order pricing policy
+docs: clarify local setup
+```
+
+Breaking change wajib ditandai dengan `!` atau footer `BREAKING CHANGE:`. AI agent mengikuti aturan yang sama dan tidak boleh memasukkan prompt, secret, atau data pengguna ke commit message.
 
 ## Review dan merge
 Verifier metadata hanya memeriksa struktur dan beberapa path sensitif. Reviewer memeriksa substansi, AC, tes, dan dampak domain. CI bukan bukti keamanan mutlak. Tidak ada approval otomatis, auto-merge, atau deployment dalam template.
