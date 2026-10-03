@@ -1,9 +1,24 @@
 import { createMiddleware } from '@tanstack/react-start'
-import { z } from 'zod'
+import { ZodError } from 'zod'
 import { AppError, normalizeError, toPublicError, type PublicAppError } from './errors'
 import { logger } from './logger.server'
 
 export type RequestResult<T> = { ok: true; data: T } | { ok: false; error: PublicAppError }
+
+function normalizeRequestError(error: unknown): AppError {
+  if (error instanceof ZodError) {
+    return new AppError('invalid_argument', 'INVALID_ARGUMENT', 'Invalid request parameters', {
+      cause: error,
+      details: error.issues.map((issue) => ({
+        path: issue.path,
+        code: issue.code,
+        message: issue.message,
+      })),
+    })
+  }
+
+  return normalizeError(error)
+}
 
 export function requestMiddleware(operation: string) {
   return createMiddleware({ type: 'function' }).server(async ({ next }) => {
@@ -19,7 +34,7 @@ export function requestMiddleware(operation: string) {
       })
       return result
     } catch (error) {
-      const normalized = normalizeError(error)
+      const normalized = normalizeRequestError(error)
       const fields = {
         requestId,
         operation,
@@ -36,28 +51,11 @@ export function requestMiddleware(operation: string) {
   })
 }
 
-export function validateRequest<TSchema extends z.ZodType>(schema: TSchema) {
-  return createMiddleware({ type: 'function' })
-    .validator((input: z.input<TSchema>) => {
-      const parsed = schema.safeParse(input)
-      if (parsed.success) return parsed.data
-
-      throw new AppError('invalid_argument', 'INVALID_ARGUMENT', 'Invalid request parameters', {
-        details: parsed.error.issues.map((issue) => ({
-          path: issue.path,
-          code: issue.code,
-          message: issue.message,
-        })),
-      })
-    })
-    .server(({ next }) => next())
-}
-
 export async function handleRequest<T>(work: () => Promise<T>): Promise<RequestResult<T>> {
   try {
     return { ok: true, data: await work() }
   } catch (error) {
-    const normalized = normalizeError(error)
+    const normalized = normalizeRequestError(error)
     if (!normalized.expose) throw normalized
     return { ok: false, error: toPublicError(normalized) }
   }
