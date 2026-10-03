@@ -1,5 +1,5 @@
 import type { Env } from './env.server'
-import { AppError } from './errors.server'
+import { AppError } from './errors'
 
 type DemoEnv = Pick<Env, 'nodeEnv' | 'demoEnabled'>
 
