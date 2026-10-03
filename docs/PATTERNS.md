@@ -129,7 +129,7 @@ import { createServerFn } from '@tanstack/react-start'
 import { widgetInput } from './domain/widget'
 import { getWidgetRepository } from './repository.server'
 import {
-  asRequestResult,
+  handleRequest,
   requestMiddleware,
   validateRequest,
 } from '../../server/request.server'
@@ -139,10 +139,10 @@ const createValidation = validateRequest(widgetInput)
 
 export const createWidget = createServerFn({ method: 'POST' })
   .middleware([createRequest, createValidation])
-  .handler(({ data }) => asRequestResult(() => getWidgetRepository().create(data)))
+  .handler(({ data }) => handleRequest(() => getWidgetRepository().create(data)))
 ```
 
-Use `asRequestResult` when the UI should branch on expected exposed application failures such as conflict/forbidden without adding local `try/catch`. Unexpected internal failures continue to throw after centralized logging and expose only a generic error.
+Use `handleRequest` when the UI should branch on expected exposed application failures such as conflict/forbidden without adding local `try/catch`. Invalid parameters are rejected by the validation middleware with the general `invalid_argument` kind. Unexpected internal failures continue to throw after centralized logging and expose only a generic error.
 
 ## Application errors
 
