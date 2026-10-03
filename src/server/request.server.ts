@@ -1,17 +1,10 @@
 import { randomUUID } from 'node:crypto'
 import { createMiddleware } from '@tanstack/react-start'
 import { z } from 'zod'
-import {
-  AppError,
-  normalizeError,
-  toPublicError,
-  type PublicAppError,
-} from './errors.server'
+import { AppError, normalizeError, toPublicError, type PublicAppError } from './errors.server'
 import { logger } from './logger.server'
 
-export type RequestResult<T> =
-  | { ok: true; data: T }
-  | { ok: false; error: PublicAppError }
+export type RequestResult<T> = { ok: true; data: T } | { ok: false; error: PublicAppError }
 
 export function requestMiddleware(operation: string) {
   return createMiddleware({ type: 'function' }).server(async ({ next }) => {
@@ -50,18 +43,13 @@ export function validateRequest<TSchema extends z.ZodType>(schema: TSchema) {
       const parsed = schema.safeParse(input)
       if (parsed.success) return parsed.data
 
-      throw new AppError(
-        'invalid_argument',
-        'INVALID_ARGUMENT',
-        'Invalid request parameters',
-        {
-          details: parsed.error.issues.map((issue) => ({
-            path: issue.path,
-            code: issue.code,
-            message: issue.message,
-          })),
-        },
-      )
+      throw new AppError('invalid_argument', 'INVALID_ARGUMENT', 'Invalid request parameters', {
+        details: parsed.error.issues.map((issue) => ({
+          path: issue.path,
+          code: issue.code,
+          message: issue.message,
+        })),
+      })
     })
     .server(({ next }) => next())
 }
