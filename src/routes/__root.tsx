@@ -16,7 +16,7 @@ export const Route = createRootRoute({
   }),
   component: Root,
   notFoundComponent: () => (
-    <main className="mx-auto max-w-[1120px] px-7 py-12">
+    <main className="mx-auto max-w-280 px-7 py-12">
       <h1 className="text-[clamp(38px,6vw,64px)] leading-[1.08] font-bold tracking-[-0.045em]">
         Halaman tidak ditemukan
       </h1>
@@ -26,11 +26,11 @@ export const Route = createRootRoute({
     </main>
   ),
   errorComponent: () => (
-    <main className="mx-auto max-w-[1120px] px-7 py-12">
+    <main className="mx-auto max-w-280 px-7 py-12">
       <h1 className="text-[clamp(38px,6vw,64px)] leading-[1.08] font-bold tracking-[-0.045em]">
         Aplikasi belum dapat memproses permintaan
       </h1>
-      <p className="mt-5 max-w-[570px] text-lg leading-[1.7] text-[#5c6e66]">
+      <p className="mt-5 max-w-142.5 text-lg leading-[1.7] text-[#5c6e66]">
         Periksa konfigurasi development dan koneksi database.
       </p>
       <a href="/" className={cn('mt-6 inline-block underline underline-offset-4', focusRing)}>
@@ -47,7 +47,7 @@ function Root() {
         <HeadContent />
       </head>
       <body className="min-h-screen bg-[#f6f7f3] font-sans text-[#18332d] [font-synthesis:none]">
-        <header className="mx-auto flex max-w-[1120px] flex-wrap items-center justify-between gap-5 border-b border-[#d9e2db] px-7 py-7 min-[651px]:flex-nowrap">
+        <header className="mx-auto flex max-w-280 flex-wrap items-center justify-between gap-5 border-b border-[#d9e2db] px-7 py-7 min-[651px]:flex-nowrap">
           <Link
             to="/"
             className={cn(
@@ -62,7 +62,7 @@ function Root() {
           </span>
         </header>
         <Outlet />
-        <footer className="mx-auto max-w-[1120px] border-t border-[#d9e2db] px-7 pt-7 pb-10 text-xs text-[#5c6e66]">
+        <footer className="mx-auto max-w-280 border-t border-[#d9e2db] px-7 pt-7 pb-10 text-xs text-[#5c6e66]">
           Satu repo. Rencana jelas. Perubahan teruji.
         </footer>
         <Scripts />

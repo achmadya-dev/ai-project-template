@@ -4,8 +4,8 @@ export const Route = createFileRoute('/')({ component: Home })
 
 function Home() {
   return (
-    <main className="mx-auto max-w-[1120px] px-7 py-7">
-      <section className="max-w-[750px] pt-7 pb-8 min-[651px]:pt-12">
+    <main className="mx-auto max-w-280 px-7 py-7">
+      <section className="max-w-187.5 pt-7 pb-8 min-[651px]:pt-12">
         <p className="text-[11px] font-bold tracking-[0.15em] text-[#38735e]">
           YOUR NEXT PROJECT STARTS HERE
         </p>
@@ -14,7 +14,7 @@ function Home() {
           <br />
           ke perubahan nyata.
         </h1>
-        <p className="max-w-[570px] text-lg leading-[1.7] text-[#5c6e66]">
+        <p className="max-w-142.5 text-lg leading-[1.7] text-[#5c6e66]">
           Fondasi fullstack untuk bekerja bersama AI. Mulai dari kebutuhan, uji perilakunya, lalu
           tinjau hasilnya.
         </p>

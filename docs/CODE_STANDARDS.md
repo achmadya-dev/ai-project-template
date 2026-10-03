@@ -93,6 +93,7 @@ Dependencies should point inward: UI/transport -> domain/repository contracts; i
 - Map stable request error codes/kinds to user-facing copy at the UI boundary; do not expose raw PostgreSQL/framework errors.
 - Preserve accessibility: semantic elements first, associated labels, keyboard behavior, useful status/error announcements, and no interaction that requires a pointer only.
 - Do not duplicate domain validation rules in UI as the source of truth. UI constraints may mirror server rules for UX, but server/domain validation remains authoritative.
+- For Tailwind styles, prefer canonical utilities when they exactly match the intended value (for example, `max-w-280` instead of `max-w-[1120px]`). Use arbitrary values only when no canonical utility fits, and resolve `suggestCanonicalClasses` diagnostics rather than suppressing them.
 
 ## Tests
 
