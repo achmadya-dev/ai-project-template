@@ -1,6 +1,6 @@
 # Remove the default catalog demo
 
-Status: in-review
+Status: done
 Risk: high
 Issue: https://github.com/achmadya-dev/ai-project-template/issues/24
 PR: https://github.com/achmadya-dev/ai-project-template/pull/25
