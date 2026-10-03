@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { parseEnv } from '../../src/server/env.server'
-import { AppError, normalizeError, toPublicError } from '../../src/server/errors.server'
+import { AppError, normalizeError, toPublicError } from '../../src/server/errors'
 
 describe('server environment', () => {
   it('parses raw process values once into typed application config', () => {
