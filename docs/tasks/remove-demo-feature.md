@@ -1,8 +1,8 @@
 # Remove the default catalog demo
 
-Status: done
+Status: in-review
 Risk: high
-Issue: not-created (local task; no issue link supplied)
+Issue: https://github.com/achmadya-dev/ai-project-template/issues/24
 PR: not-created
 Plan revision: 1
 Authorization: user requested removal of the demo feature in this repository.
@@ -47,6 +47,7 @@ The repository's PR verifier classifies changes to `docs/ARCHITECTURE.md`, `docs
 ## Evidence
 - `bun run format`: passed.
 - `bun run verify`: passed on Bun 1.4.2 — policy 12/12, unit 12/12, PostgreSQL integration 5/5, E2E 1/1, production smoke HTTP 200 without DB credentials; format, lint, build, and typecheck also passed.
+- GitHub issue: https://github.com/achmadya-dev/ai-project-template/issues/24.
 - Verification used the repo's `db-test` Compose service (`tmpfs`, localhost port 5433); the service was stopped after the run. E2E used the already-cached Chromium executable via `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`; the documented browser install command timed out twice in this environment. No browser/dependency changes were committed.
 - `git diff --check`: passed.
 - Build emitted existing upstream Nitro/Rolldown module-directive warnings; checks still passed.
