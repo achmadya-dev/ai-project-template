@@ -31,7 +31,13 @@ function Home() {
         data: { sku: String(values.get('sku')), name: String(values.get('name')) },
       })
       if (!result.ok) {
-        setMessage('SKU sudah digunakan. Pilih SKU lain.')
+        if (result.error.code === 'DUPLICATE_SKU') {
+          setMessage('SKU sudah digunakan. Pilih SKU lain.')
+        } else if (result.error.kind === 'invalid_argument') {
+          setMessage('Input tidak valid. Periksa data lalu coba lagi.')
+        } else {
+          setMessage(result.error.message)
+        }
         return
       }
       form.reset()

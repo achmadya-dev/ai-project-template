@@ -1,7 +1,13 @@
-// Pure policy; the server reads environment variables, never the browser.
-export function isDemoEnabled(env: { NODE_ENV?: string; DEMO_ENABLED?: string }): boolean {
-  return env.NODE_ENV === 'development' && env.DEMO_ENABLED === 'true'
+import type { Env } from './env.server'
+import { AppError } from './errors'
+
+type DemoEnv = Pick<Env, 'nodeEnv' | 'demoEnabled'>
+
+export function isDemoEnabled(env: DemoEnv): boolean {
+  return env.nodeEnv === 'development' && env.demoEnabled
 }
-export function requireDemo(env: { NODE_ENV?: string; DEMO_ENABLED?: string }): void {
-  if (!isDemoEnabled(env)) throw new Error('Development demo is disabled')
+
+export function requireDemo(env: DemoEnv): void {
+  if (isDemoEnabled(env)) return
+  throw new AppError('forbidden', 'DEMO_DISABLED', 'Development demo is disabled')
 }

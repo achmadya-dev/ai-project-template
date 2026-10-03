@@ -29,7 +29,10 @@ export default tseslint.config(
   {
     files: ['src/modules/*/repository.server.ts'],
     rules: {
-      'no-restricted-imports': ['error', { patterns: ['react', '@tanstack/*', '**/routes/**'] }],
+      'no-restricted-imports': [
+        'error',
+        { patterns: ['pg', 'react', '@tanstack/*', '**/routes/**'] },
+      ],
     },
   },
   {
@@ -44,6 +47,27 @@ export default tseslint.config(
       'no-restricted-imports': [
         'error',
         { patterns: ['pg', 'node:*', '**/db.server', '**/repository.server'] },
+      ],
+    },
+  },
+  {
+    files: ['src/server/**/*.ts'],
+    ignores: ['src/server/database.server.ts'],
+    rules: {
+      'no-restricted-imports': ['error', { patterns: ['pg'] }],
+    },
+  },
+  {
+    files: ['src/**/*.{ts,tsx}'],
+    ignores: ['src/server/env.server.ts'],
+    rules: {
+      'no-restricted-properties': [
+        'error',
+        {
+          object: 'process',
+          property: 'env',
+          message: 'Use getEnv() from src/server/env.server.ts in application code.',
+        },
       ],
     },
   },
