@@ -13,9 +13,9 @@ src/modules/<domain>/
 
 src/server/
   env.server.ts
-  errors.server.ts
+  errors.ts
   logger.server.ts
-  request.server.ts
+  request.ts
   database.server.ts
   db.server.ts
 ```
@@ -122,17 +122,13 @@ Do not repeatedly access `process.env` inside repositories/server functions. Raw
 
 ## Request middleware and validation
 
-Server functions use the shared middleware for request ID/timing/logging plus schema validation. Policy checks and delegation remain explicit in the function.
+Server functions use the shared middleware for request ID/timing/logging plus schema validation. Policy checks and delegation remain explicit in the function. Because middleware factories are created at module scope in `*.functions.ts`, import them from the client-safe `request.ts`; server-only work remains inside the middleware `.server()` implementation.
 
 ```ts
 import { createServerFn } from '@tanstack/react-start'
 import { widgetInput } from './domain/widget'
 import { getWidgetRepository } from './repository.server'
-import {
-  handleRequest,
-  requestMiddleware,
-  validateRequest,
-} from '../../server/request.server'
+import { handleRequest, requestMiddleware, validateRequest } from '../../server/request'
 
 const createRequest = requestMiddleware('widget.create')
 const createValidation = validateRequest(widgetInput)
