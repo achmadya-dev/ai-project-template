@@ -45,15 +45,25 @@ function translatePostgresError(error: unknown, query: SqlQuery): unknown {
   }
 
   if (code === '23503') {
-    return new AppError('conflict', 'DATABASE_REFERENCE_CONFLICT', 'Referenced resource is in use', {
-      cause: error,
-    })
+    return new AppError(
+      'conflict',
+      'DATABASE_REFERENCE_CONFLICT',
+      'Referenced resource is in use',
+      {
+        cause: error,
+      },
+    )
   }
 
   if (code === '23502') {
-    return new AppError('invalid_argument', 'DATABASE_REQUIRED_VALUE', 'Required value is missing', {
-      cause: error,
-    })
+    return new AppError(
+      'invalid_argument',
+      'DATABASE_REQUIRED_VALUE',
+      'Required value is missing',
+      {
+        cause: error,
+      },
+    )
   }
 
   if (code === '23514') {
@@ -68,10 +78,7 @@ function translatePostgresError(error: unknown, query: SqlQuery): unknown {
   return error
 }
 
-async function queryRows(
-  queryable: Queryable,
-  query: SqlQuery,
-): Promise<pg.QueryResultRow[]> {
+async function queryRows(queryable: Queryable, query: SqlQuery): Promise<pg.QueryResultRow[]> {
   try {
     const result = await queryable.query<pg.QueryResultRow>(query.text, query.values ?? [])
     return result.rows
