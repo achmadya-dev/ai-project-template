@@ -1,4 +1,5 @@
 import { createRootRoute, HeadContent, Outlet, Scripts, Link } from '@tanstack/react-router'
+import { cn } from '../lib/cn'
 import styleUrl from '../styles.css?url'
 
 const focusRing =
@@ -19,7 +20,7 @@ export const Route = createRootRoute({
       <h1 className="text-[clamp(38px,6vw,64px)] leading-[1.08] font-bold tracking-[-0.045em]">
         Halaman tidak ditemukan
       </h1>
-      <Link to="/" className={`mt-6 inline-block underline underline-offset-4 ${focusRing}`}>
+      <Link to="/" className={cn('mt-6 inline-block underline underline-offset-4', focusRing)}>
         Kembali
       </Link>
     </main>
@@ -32,7 +33,7 @@ export const Route = createRootRoute({
       <p className="mt-5 max-w-[570px] text-lg leading-[1.7] text-[#5c6e66]">
         Periksa konfigurasi development dan koneksi database.
       </p>
-      <a href="/" className={`mt-6 inline-block underline underline-offset-4 ${focusRing}`}>
+      <a href="/" className={cn('mt-6 inline-block underline underline-offset-4', focusRing)}>
         Muat ulang
       </a>
     </main>
@@ -49,7 +50,10 @@ function Root() {
         <header className="mx-auto flex max-w-[1120px] flex-wrap items-center justify-between gap-5 border-b border-[#d9e2db] px-7 py-7 min-[651px]:flex-nowrap">
           <Link
             to="/"
-            className={`text-sm font-bold tracking-[0.15em] text-inherit no-underline ${focusRing}`}
+            className={cn(
+              'text-sm font-bold tracking-[0.15em] text-inherit no-underline',
+              focusRing,
+            )}
           >
             PROJECT / BASE
           </Link>
