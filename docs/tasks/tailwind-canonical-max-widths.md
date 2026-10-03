@@ -3,7 +3,7 @@
 Status: in-review
 Risk: high
 Issue: https://github.com/achmadya-dev/ai-project-template/issues/26
-PR: pending
+PR: https://github.com/achmadya-dev/ai-project-template/pull/27
 Plan revision: 1
 Authorization: user requested removal of the displayed Tailwind warnings and explicitly requested opening a PR and merging it.
 
@@ -45,3 +45,4 @@ The rule is guidance, not a CI gate; adding automated enforcement would require 
 - `git diff --check`: passed.
 - The screenshot's classes now use Tailwind's exact suggestions. Their widths remain 1120px (`max-w-280`), 750px (`max-w-187.5`), and 570px (`max-w-142.5`).
 - Governance-path changes are classified high risk. The rule is AI guidance, not a CI gate; automated enforcement would need a separate lint/policy design.
+- Pull request: https://github.com/achmadya-dev/ai-project-template/pull/27; independent review remains required before merge.
