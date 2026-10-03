@@ -39,7 +39,9 @@ function translatePostgresError(error: unknown, query: SqlQuery): unknown {
   if (mapped) return appError(mapped, { cause: error })
 
   if (code === '23505') {
-    return new AppError('conflict', 'DATABASE_CONFLICT', 'Resource already exists', { cause: error })
+    return new AppError('conflict', 'DATABASE_CONFLICT', 'Resource already exists', {
+      cause: error,
+    })
   }
 
   if (code === '23503') {
@@ -66,7 +68,10 @@ function translatePostgresError(error: unknown, query: SqlQuery): unknown {
   return error
 }
 
-async function queryRows(queryable: Queryable, query: SqlQuery): Promise<pg.QueryResultRow[]> {
+async function queryRows(
+  queryable: Queryable,
+  query: SqlQuery,
+): Promise<pg.QueryResultRow[]> {
   try {
     const result = await queryable.query<pg.QueryResultRow>(query.text, query.values ?? [])
     return result.rows
