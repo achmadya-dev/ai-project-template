@@ -40,8 +40,20 @@ gh pr create --draft --title "feat: fitur pertama" --body-file PATH_KE_BODY_PR.m
 
 Dokumen task harus sudah lengkap; contoh di atas memerlukan path nyata. Isi template PR dengan issue ID sebenarnya. Check `pr-contract` memeriksa format referensi, bukan keberadaan/kebenaran issue; reviewer wajib memeriksa tautannya. Edit body PR memicu ulang check.
 
-## Local hooks
-`bun install` menjalankan script `prepare` dan memasang Husky untuk repository lokal. Hook `.husky/pre-push` menjalankan `bun run check` sebelum push.
+## Local hooks dan formatting
+`bun install` menjalankan script `prepare` dan memasang Husky untuk repository lokal.
+
+- `.husky/pre-commit` menjalankan `bun run lint:staged`. File JS/TS yang staged diperbaiki dengan ESLint lalu diformat dengan Prettier; CSS/JSON yang staged diformat dengan Prettier.
+- `.husky/pre-push` menjalankan `bun run check`, termasuk `format:check`, sehingga push lokal mendapat verifikasi penuh tanpa menggantikan CI.
+- `prettier-plugin-tailwindcss` menggunakan `src/styles.css` sebagai stylesheet Tailwind v4 untuk mengurutkan utility classes.
+- `bun.lock` dan `src/routeTree.gen.ts` dikecualikan dari formatter karena merupakan dependency/generated output.
+
+Untuk memformat atau hanya memeriksa baseline kode secara manual:
+
+```sh
+bun run format
+bun run format:check
+```
 
 Jika hooks perlu dipasang ulang setelah clone atau perubahan konfigurasi Git, jalankan:
 
