@@ -11,109 +11,194 @@ src/modules/<domain>/
   <domain>.functions.ts
   repository.server.ts
 
-tests/
-  unit/
-  integration/
-  e2e/
+src/server/
+  env.server.ts
+  errors.server.ts
+  logger.server.ts
+  request.server.ts
+  database.server.ts
+  db.server.ts
 ```
 
-Add files only when the responsibility exists. A small feature does not need every possible layer.
+Add files only when the responsibility exists. A small feature does not need every possible layer; the shared backend core already exists for cross-cutting infrastructure.
 
-## Domain schema and result type
+## Domain input and row schemas
 
-Prefer one authoritative schema that normalizes and validates server input, plus explicit result unions for expected business outcomes.
+Use one authoritative input schema for normalization/validation and a separate row schema for runtime validation of database output when their semantics differ.
 
 ```ts
 import { z } from 'zod'
 
-export const widgetInput = z.object({
-  code: z.string().trim().toUpperCase().min(1).max(32),
-  name: z.string().trim().min(1).max(120),
-}).strict()
+const codePattern = /^[A-Z0-9][A-Z0-9_-]*$/
+
+export const widgetInput = z
+  .object({
+    code: z.string().trim().toUpperCase().min(1).max(32).regex(codePattern),
+    name: z.string().trim().min(1).max(120),
+  })
+  .strict()
+
+export const widgetRow = z
+  .object({
+    id: z.string().uuid(),
+    code: z.string().min(1).max(32).regex(codePattern),
+    name: z.string().min(1).max(120),
+  })
+  .strict()
 
 export type WidgetInput = z.infer<typeof widgetInput>
-export type Widget = { id: string; code: string; name: string }
-export type CreateWidgetResult =
-  | { ok: true; widget: Widget }
-  | { ok: false; code: 'DUPLICATE_CODE' }
+export type Widget = z.infer<typeof widgetRow>
 ```
 
 Do not add framework, database, environment, or filesystem imports to domain modules.
 
 ## Repository
 
-Repository functions own SQL and translate known persistence failures into domain outcomes. Pass database dependencies explicitly.
+Repository code owns domain-specific SQL, but not raw `pg` plumbing. Accept `DatabaseClient`, receive already-validated domain input, and let the adapter validate returned rows and translate configured constraints.
 
 ```ts
-import type { Pool } from 'pg'
-import { widgetInput, type CreateWidgetResult, type Widget } from './domain/widget'
+import type { DatabaseClient } from '../../server/database.server'
+import { widgetRow, type Widget, type WidgetInput } from './domain/widget'
 
-export async function insertWidget(db: Pool, input: unknown): Promise<CreateWidgetResult> {
-  const data = widgetInput.parse(input)
+export interface WidgetRepository {
+  list(): Promise<Widget[]>
+  create(input: WidgetInput): Promise<Widget>
+}
 
-  try {
-    const result = await db.query<Widget>(
-      'INSERT INTO widgets (code, name) VALUES ($1, $2) RETURNING id, code, name',
-      [data.code, data.name],
-    )
+export function createWidgetRepository(db: DatabaseClient): WidgetRepository {
+  return {
+    list() {
+      return db.many(widgetRow, {
+        text: 'SELECT id, code, name FROM widgets ORDER BY id DESC LIMIT 100',
+      })
+    },
 
-    const widget = result.rows[0]
-    if (!widget) throw new Error('Insert did not return a widget')
-    return { ok: true, widget }
-  } catch (error) {
-    if (isKnownDuplicateConstraint(error)) return { ok: false, code: 'DUPLICATE_CODE' }
-    throw error
+    create(input) {
+      return db.one(widgetRow, {
+        text: 'INSERT INTO widgets (code, name) VALUES ($1, $2) RETURNING id, code, name',
+        values: [input.code, input.name],
+        constraints: {
+          widgets_code_key: {
+            kind: 'conflict',
+            code: 'DUPLICATE_CODE',
+            message: 'Code already exists',
+          },
+        },
+      })
+    },
   }
 }
 ```
 
-Keep constraint matching narrow. Never convert every database failure into a business duplicate/not-found response.
+No repository-level `try/catch` is needed just to inspect PostgreSQL code/constraint fields. Unknown database failures still propagate; the shared request boundary logs/normalizes them.
 
-## Server function
+## Database access
 
-Server functions are thin boundaries: validate, authorize/policy-check, obtain server dependencies, delegate.
+Feature code does not import `pg`. The shared adapter exposes:
+
+```text
+many(schema, query)      -> validated array
+one(schema, query)       -> exactly one validated row
+maybeOne(schema, query)  -> validated row or null
+execute(query)           -> affected row count
+transaction(callback)    -> explicit transaction with DatabaseClient
+```
+
+Use `one` only when exactly one row is an invariant. For lookup-by-id where absence is normal, use `maybeOne` and translate `null` into a stable application/domain `not_found` error where that meaning is known.
+
+## Environment
+
+Application runtime code reads config through `getEnv()`:
+
+```ts
+const env = getEnv()
+
+if (env.demoEnabled) {
+  // ...
+}
+```
+
+Do not repeatedly access `process.env` inside repositories/server functions. Raw environment reads remain appropriate in test harnesses, scripts, build config, and process launchers.
+
+## Request middleware and validation
+
+Server functions use the shared middleware for request ID/timing/logging plus schema validation. Policy checks and delegation remain explicit in the function.
 
 ```ts
 import { createServerFn } from '@tanstack/react-start'
 import { widgetInput } from './domain/widget'
-import { getDb } from '../../server/db.server'
-import { insertWidget } from './repository.server'
+import { getWidgetRepository } from './repository.server'
+import {
+  asRequestResult,
+  requestMiddleware,
+  validateRequest,
+} from '../../server/request.server'
+
+const createRequest = requestMiddleware('widget.create')
+const createValidation = validateRequest(widgetInput)
 
 export const createWidget = createServerFn({ method: 'POST' })
-  .validator(widgetInput)
-  .handler(async ({ data }) => {
-    // authorization/policy checks happen here before mutation
-    return insertWidget(getDb(), data)
-  })
+  .middleware([createRequest, createValidation])
+  .handler(({ data }) => asRequestResult(() => getWidgetRepository().create(data)))
 ```
 
-Do not put SQL or a second copy of domain validation/business rules in this layer.
+Use `asRequestResult` when the UI should branch on expected exposed application failures such as conflict/forbidden without adding local `try/catch`. Unexpected internal failures continue to throw after centralized logging and expose only a generic error.
+
+## Application errors
+
+Use a general kind plus a stable specific code:
+
+```ts
+throw new AppError('not_found', 'WIDGET_NOT_FOUND', 'Widget was not found')
+```
+
+Generic kinds are:
+
+```text
+invalid_argument
+not_found
+conflict
+unauthorized
+forbidden
+rate_limited
+internal
+```
+
+The kind supports transport/observability behavior; the code allows domain/UI-specific handling. Do not create a class per error condition unless it adds behavior beyond kind/code/message.
 
 ## Route/UI
 
-Route modules consume server functions and map stable result codes to user-facing messages.
+Routes consume server functions and map stable result codes to user-facing messages.
 
 ```tsx
 const result = await createWidget({ data: values })
+
 if (!result.ok) {
-  if (result.code === 'DUPLICATE_CODE') {
+  if (result.error.code === 'DUPLICATE_CODE') {
     setMessage('Kode sudah digunakan.')
     return
   }
+
+  setMessage('Permintaan tidak dapat diproses.')
+  return
 }
 ```
 
 UI may mirror constraints such as `maxLength` for usability, but server/domain validation is authoritative.
+
+## Logging
+
+Feature code should not repeat request timing/logging blocks. Request middleware emits structured JSON with stable safe fields such as operation, request id, duration, error kind, and error code. Do not log request bodies, tokens, connection strings, or raw PostgreSQL diagnostics.
 
 ## Testing pyramid
 
 For one behavior, prefer the lowest-cost test that can actually prove the contract:
 
 ```text
-pure normalization/invariant       -> unit
-SQL constraint/query/migration     -> integration with real PostgreSQL
-browser/server-function user flow  -> E2E
-built runtime can boot safely      -> production smoke
+pure normalization/config/error contract -> unit
+SQL/adapter/constraint/migration race     -> integration with real PostgreSQL
+browser/server-function user flow         -> E2E
+built runtime can boot safely             -> production smoke
 ```
 
 A database uniqueness race cannot be proven by a mocked unit test. A pure string normalization rule does not need Playwright.
@@ -141,6 +226,8 @@ src/common/*         # vague shared dumping ground
 BaseRepository       # generic CRUD inheritance
 ApiResponse<T>       # wrapper without an actual protocol need
 Manager/Processor    # names that hide domain responsibility
+pg.Pool in features  # raw driver plumbing outside the database adapter
+process.env in app   # repeated raw config reads outside env.server.ts
 ```
 
 A shared abstraction is acceptable when it has a precise name and satisfies the abstraction policy in `docs/CODE_STANDARDS.md`.

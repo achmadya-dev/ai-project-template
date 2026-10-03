@@ -1,10 +1,17 @@
-import { test, expect } from '@playwright/test'
 import { randomUUID } from 'node:crypto'
-import pg from 'pg'
+import { expect, test } from '@playwright/test'
+import { createPostgresDatabase } from '../../src/server/database.server'
+
+const testDatabaseUrl = process.env.TEST_DATABASE_URL
+if (!testDatabaseUrl || !new URL(testDatabaseUrl).pathname.endsWith('_test')) {
+  throw new Error('TEST_DATABASE_URL must target a disposable database ending in _test')
+}
+
 test('create, reload, reject duplicate SKU', async ({ page }) => {
   const errors: string[] = []
   page.on('pageerror', (error) => errors.push(error.message))
   const sku = `E2E-${randomUUID().slice(0, 8).toUpperCase()}`
+
   try {
     await page.goto('/')
     await expect(page.getByRole('heading', { name: 'Katalog barang' })).toBeVisible()
@@ -29,11 +36,11 @@ test('create, reload, reject duplicate SKU', async ({ page }) => {
     ).toBe(true)
     await page.screenshot({ path: 'test-results/catalog-mobile.png', fullPage: true })
   } finally {
-    const db = new pg.Pool({ connectionString: process.env.TEST_DATABASE_URL })
+    const db = createPostgresDatabase({ connectionString: testDatabaseUrl })
     try {
-      await db.query('DELETE FROM catalog_items WHERE sku = $1', [sku])
+      await db.execute({ text: 'DELETE FROM catalog_items WHERE sku = $1', values: [sku] })
     } finally {
-      await db.end()
+      await db.close()
     }
   }
 })

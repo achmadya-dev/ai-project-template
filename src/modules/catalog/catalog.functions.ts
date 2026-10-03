@@ -1,17 +1,31 @@
 import { createServerFn } from '@tanstack/react-start'
 import { itemInput } from './domain/item'
-import { getDb } from '../../server/db.server'
+import { getCatalogRepository } from './repository.server'
 import { isDemoEnabled, requireDemo } from '../../server/demo-policy'
-import { insertItem, listItems } from './repository.server'
+import { getEnv } from '../../server/env.server'
+import { AppError } from '../../server/errors.server'
+import { asRequestResult, requestMiddleware, validateRequest } from '../../server/request.server'
 
-export const getCatalog = createServerFn({ method: 'GET' }).handler(async () => {
-  if (!import.meta.env.DEV || !isDemoEnabled(process.env)) return { enabled: false, items: [] }
-  return { enabled: true, items: await listItems(getDb()) }
-})
-export const createItem = createServerFn({ method: 'POST' })
-  .validator(itemInput)
-  .handler(async ({ data }) => {
-    if (!import.meta.env.DEV) throw new Error('Development demo is disabled')
-    requireDemo(process.env)
-    return insertItem(getDb(), data)
+const listCatalogRequest = requestMiddleware('catalog.list')
+const createItemRequest = requestMiddleware('catalog.create')
+const createItemValidation = validateRequest(itemInput)
+
+export const getCatalog = createServerFn({ method: 'GET' })
+  .middleware([listCatalogRequest])
+  .handler(async () => {
+    const env = getEnv()
+    if (!import.meta.env.DEV || !isDemoEnabled(env)) return { enabled: false, items: [] }
+    return { enabled: true, items: await getCatalogRepository().list() }
   })
+
+export const createItem = createServerFn({ method: 'POST' })
+  .middleware([createItemRequest, createItemValidation])
+  .handler(async ({ data }) =>
+    asRequestResult(async () => {
+      if (!import.meta.env.DEV) {
+        throw new AppError('forbidden', 'DEMO_DISABLED', 'Development demo is disabled')
+      }
+      requireDemo(getEnv())
+      return getCatalogRepository().create(data)
+    }),
+  )

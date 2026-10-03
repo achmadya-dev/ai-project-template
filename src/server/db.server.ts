@@ -1,12 +1,25 @@
-import pg from 'pg'
-let pool: pg.Pool | undefined
-export function getDb(): pg.Pool {
-  const connectionString = process.env.DATABASE_URL
-  if (!connectionString) throw new Error('DATABASE_URL is required')
-  return (pool ??= new pg.Pool({
-    connectionString,
+import { createPostgresDatabase, type Database } from './database.server'
+import { getEnv } from './env.server'
+import { AppError } from './errors.server'
+
+let database: Database | undefined
+
+export function getDb(): Database {
+  if (database) return database
+
+  const { databaseUrl } = getEnv()
+  if (!databaseUrl) {
+    throw new AppError('internal', 'DATABASE_NOT_CONFIGURED', 'Database is not configured', {
+      expose: false,
+    })
+  }
+
+  database = createPostgresDatabase({
+    connectionString: databaseUrl,
     max: 5,
     connectionTimeoutMillis: 5000,
     statement_timeout: 10000,
-  }))
+  })
+
+  return database
 }
