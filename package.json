@@ -8,12 +8,15 @@
     "build": "bunx --bun vite build",
     "start": "bun .output/server/index.mjs",
     "typecheck": "tsc --noEmit",
+    "format": "prettier --write \"src/**/*.{ts,tsx,css}\" \"tests/**/*.{ts,tsx}\" \"scripts/**/*.{js,mjs}\" \"*.{js,mjs,ts,json}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\" \"tests/**/*.{ts,tsx}\" \"scripts/**/*.{js,mjs}\" \"*.{js,mjs,ts,json}\"",
     "lint": "eslint . --max-warnings=0",
+    "lint:staged": "lint-staged",
     "test": "vitest run --project unit",
     "test:integration": "vitest run --project integration",
     "test:e2e": "playwright test",
     "test:policy": "node --test scripts/*.test.mjs",
-    "check": "bun run lint && bun run test:policy && bun run test && bun run build && bun run typecheck",
+    "check": "bun run format:check && bun run lint && bun run test:policy && bun run test && bun run build && bun run typecheck",
     "verify": "bun run check && bun run test:integration && bun run test:e2e && bun run test:production",
     "prepare": "husky",
     "db:migrate": "bun scripts/migrate.mjs",
@@ -41,12 +44,22 @@
     "eslint": "10.11.0",
     "globals": "17.13.0",
     "husky": "9.1.7",
+    "lint-staged": "17.6.0",
     "nitro": "3.0.260903-beta",
+    "prettier": "3.9.9",
+    "prettier-plugin-tailwindcss": "0.8.1",
     "tailwindcss": "4.3.3",
     "typescript": "5.9.3",
     "typescript-eslint": "8.71.0",
     "vite": "8.3.2",
     "vitest": "5.0.3"
+  },
+  "lint-staged": {
+    "*.{js,mjs,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{css,json}": "prettier --write"
   },
   "packageManager": "bun@1.4.2"
 }
