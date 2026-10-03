@@ -14,6 +14,8 @@ Read this file first. It applies to this whole repository. This is guidance, not
 
 Before implementing or reviewing code, read `docs/CODE_STANDARDS.md`. Inspect the closest existing implementation and `docs/PATTERNS.md` before inventing a new pattern.
 
+Before creating or editing a pull request, read `.github/PULL_REQUEST_TEMPLATE.md` and the trusted-base verifier `scripts/check-pr.mjs`. Treat the verifier as the executable PR metadata contract: use a real same-repository issue, preserve every required section, classify risk from the actual changed paths, and never replace the repository template with an improvised PR body.
+
 ## Work modes
 - **Plan**: inspect code and relevant history, capture assumptions, create/update an issue or `docs/tasks/` task. Do not implement when the user only requests planning.
 - **Implement**: work from accepted acceptance criteria. Existing user authorization is sufficient for the specified reversible work; do not repeatedly request approval. Ask only when a material unresolved choice affects data, money, access, scope, or external side effects.
@@ -45,7 +47,8 @@ Before implementing or reviewing code, read `docs/CODE_STANDARDS.md`. Inspect th
 12. Before reporting implementation complete, review the diff against the required self-review checklist in `docs/CODE_STANDARDS.md`. Record any intentional exception rather than silently violating the standard.
 13. Record every task's acceptance criteria, changed behavior, actual commands/results, limitations, and issue/PR links. Use local files if the GitHub connection is absent; never fabricate links or say an issue exists when it does not.
 14. Commit messages must follow `docs/COMMITS.md`. Keep commits logically scoped and do not rewrite user-owned history unless explicitly requested.
-15. Do not merge, enable auto-merge, publish packages, or deploy merely because tests pass. Report the PR/evidence; honor explicit user authorization when it exists.
+15. Before opening a PR, inspect the final changed-file list, then complete `.github/PULL_REQUEST_TEMPLATE.md` against `scripts/check-pr.mjs`. A change touching a verifier-classified sensitive path must be declared `Risk: high` and follow the repository's review policy; never downgrade risk to make CI pass.
+16. Do not merge, enable auto-merge, publish packages, or deploy merely because tests pass. Report the PR/evidence; honor explicit user authorization when it exists.
 
 ## Done
 The agreed behavior works, the code satisfies `docs/CODE_STANDARDS.md` or documented exceptions are explicit, relevant checks pass (or blockers are explicit), docs are updated, and evidence is recorded. A clean build alone is not completion. See `docs/WORKFLOW.md`.

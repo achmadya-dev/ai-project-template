@@ -20,7 +20,9 @@ Kode + docs repo menyimpan kondisi saat ini. Issue menyimpan kebutuhan dan disku
 4. Perbarui domain/ADR/runbook bila perilakunya berubah.
 5. Catat command, hasil aktual, keterbatasan, dan revisi kode. Jika gagal, jelaskan; jangan melemahkan tes.
 6. Buat commit logis dengan format di `docs/COMMITS.md`; jangan campur perubahan yang tidak terkait dalam satu commit.
-7. Buat PR dengan `Closes #123`, risiko, scope, verifikasi, kompatibilitas, dokumentasi. Jangan mengirim PR kosong sebagai bukti selesai.
+7. Sebelum membuat PR, baca `.github/PULL_REQUEST_TEMPLATE.md` dan `scripts/check-pr.mjs`, lalu periksa daftar file final terhadap klasifikasi path sensitif verifier.
+8. Buat PR dari template repo, bukan body improvisasi. Gunakan issue nyata pada baris `Closes #123`, isi `Risk: low|medium|high` sesuai diff, dan lengkapi semua section yang diverifikasi: Goal, Changes, Verification, Compatibility and recovery, serta Documentation.
+9. Jika verifier mengklasifikasikan perubahan sebagai sensitif, gunakan `Risk: high` dan ikuti kebijakan review repo. Jangan menurunkan risk, mengubah verifier, atau melemahkan CI untuk memperoleh status hijau.
 
 ## Commit
 Gunakan Conventional Commits sesuai `docs/COMMITS.md`:
@@ -42,6 +44,8 @@ Breaking change wajib ditandai dengan `!` atau footer `BREAKING CHANGE:`. AI age
 
 ## Review dan merge
 Verifier metadata hanya memeriksa struktur dan beberapa path sensitif. Reviewer memeriksa substansi, AC, tes, dan dampak domain. CI bukan bukti keamanan mutlak. Tidak ada approval otomatis, auto-merge, atau deployment dalam template.
+
+`pr-contract` adalah executable contract untuk metadata PR. Template PR adalah starting point, tetapi sebelum submit tetap cocokkan body dan changed-file list terhadap `scripts/check-pr.mjs` dari trusted base revision. Jika kontrak gagal, perbaiki metadata atau scope yang salah; jangan bypass verifier.
 
 GitHub rulesets harus diaktifkan oleh owner. Jika kamu satu-satunya manusia, lihat mode solo di GITHUB_SETUP.md; jangan menambahkan reviewer palsu untuk memenuhi aturan.
 
