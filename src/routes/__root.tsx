@@ -1,17 +1,21 @@
 import { createRootRoute, HeadContent, Outlet, Scripts, Link } from '@tanstack/react-router'
 import styleUrl from '../styles.css?url'
+
+const focusRing = 'focus-visible:outline-[3px] focus-visible:outline-[#6ca085] focus-visible:outline-offset-3'
+
 export const Route = createRootRoute({
   head: () => ({ meta: [
     { charSet: 'utf-8' }, { name: 'viewport', content: 'width=device-width, initial-scale=1' },
     { title: 'Project Base · TanStack' },
   ], links: [{ rel: 'stylesheet', href: styleUrl }] }),
   component: Root,
-  notFoundComponent: () => <main><h1>Halaman tidak ditemukan</h1><Link to="/">Kembali</Link></main>,
-  errorComponent: () => <main><h1>Aplikasi belum dapat memproses permintaan</h1><p>Periksa konfigurasi development dan koneksi database.</p><a href="/">Muat ulang</a></main>,
+  notFoundComponent: () => <main className="mx-auto max-w-[1120px] px-7 py-12"><h1 className="text-[clamp(38px,6vw,64px)] font-bold leading-[1.08] tracking-[-0.045em]">Halaman tidak ditemukan</h1><Link to="/" className={`mt-6 inline-block underline underline-offset-4 ${focusRing}`}>Kembali</Link></main>,
+  errorComponent: () => <main className="mx-auto max-w-[1120px] px-7 py-12"><h1 className="text-[clamp(38px,6vw,64px)] font-bold leading-[1.08] tracking-[-0.045em]">Aplikasi belum dapat memproses permintaan</h1><p className="mt-5 max-w-[570px] text-lg leading-[1.7] text-[#5c6e66]">Periksa konfigurasi development dan koneksi database.</p><a href="/" className={`mt-6 inline-block underline underline-offset-4 ${focusRing}`}>Muat ulang</a></main>,
 })
+
 function Root() {
-  return <html lang="id"><head><HeadContent /></head><body>
-    <header><Link to="/" className="brand">PROJECT / BASE</Link><span className="pill">v0.1 · Development starter</span></header>
-    <Outlet /><footer>Satu repo. Rencana jelas. Perubahan teruji.</footer><Scripts />
+  return <html lang="id"><head><HeadContent /></head><body className="min-h-screen bg-[#f6f7f3] font-sans text-[#18332d] [font-synthesis:none]">
+    <header className="mx-auto flex max-w-[1120px] flex-wrap items-center justify-between gap-5 border-b border-[#d9e2db] px-7 py-7 min-[651px]:flex-nowrap"><Link to="/" className={`text-sm font-bold tracking-[0.15em] text-inherit no-underline ${focusRing}`}>PROJECT / BASE</Link><span className="rounded-[30px] border border-[#cad8d0] px-3 py-2 text-xs">v0.1 · Development starter</span></header>
+    <Outlet /><footer className="mx-auto max-w-[1120px] border-t border-[#d9e2db] px-7 pt-7 pb-10 text-xs text-[#5c6e66]">Satu repo. Rencana jelas. Perubahan teruji.</footer><Scripts />
   </body></html>
 }

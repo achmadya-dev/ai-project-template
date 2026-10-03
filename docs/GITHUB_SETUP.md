@@ -40,12 +40,16 @@ gh pr create --draft --title "feat: fitur pertama" --body-file PATH_KE_BODY_PR.m
 
 Dokumen task harus sudah lengkap; contoh di atas memerlukan path nyata. Isi template PR dengan issue ID sebenarnya. Check `pr-contract` memeriksa format referensi, bukan keberadaan/kebenaran issue; reviewer wajib memeriksa tautannya. Edit body PR memicu ulang check.
 
-## Local hooks opsional
+## Local hooks
+`bun install` menjalankan script `prepare` dan memasang Husky untuk repository lokal. Hook `.husky/pre-push` menjalankan `bun run check` sebelum push.
+
+Jika hooks perlu dipasang ulang setelah clone atau perubahan konfigurasi Git, jalankan:
+
 ```sh
-git config --local core.hooksPath .githooks
+bun run prepare
 ```
 
-Hook pre-push menjalankan `bun run check`. Hook bisa dilewati dan tidak dipasang global. Required CI di GitHub tetap diperlukan.
+Git hook tetap bisa dilewati secara lokal, jadi required CI di GitHub tetap diperlukan sebagai gate yang dapat diverifikasi.
 
 ## Agent tools
 - Codex / OpenCode: minta membaca AGENTS.md; dukungan auto-load bergantung versi/tool.
