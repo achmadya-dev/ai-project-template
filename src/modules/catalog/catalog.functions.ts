@@ -3,8 +3,8 @@ import { itemInput } from './domain/item'
 import { getCatalogRepository } from './repository.server'
 import { isDemoEnabled, requireDemo } from '../../server/demo-policy'
 import { getEnv } from '../../server/env.server'
-import { AppError } from '../../server/errors.server'
-import { handleRequest, requestMiddleware, validateRequest } from '../../server/request.server'
+import { AppError } from '../../server/errors'
+import { handleRequest, requestMiddleware, validateRequest } from '../../server/request'
 
 const listCatalogRequest = requestMiddleware('catalog.list')
 const createItemRequest = requestMiddleware('catalog.create')
