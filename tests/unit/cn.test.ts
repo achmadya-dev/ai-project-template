@@ -1,11 +1,14 @@
 import { describe, expect, it } from 'vitest'
 import { cn } from '../../src/lib/cn'
 
+function stateClass(active: boolean) {
+  return cn('block', active && 'font-bold', !active && 'hidden')
+}
+
 describe('cn', () => {
   it('combines conditional classes', () => {
-    expect(cn('block', false && 'hidden', { 'font-bold': true, italic: false })).toBe(
-      'block font-bold',
-    )
+    expect(stateClass(true)).toBe('block font-bold')
+    expect(stateClass(false)).toBe('block hidden')
   })
 
   it('resolves conflicting Tailwind utilities in favor of the later class', () => {
