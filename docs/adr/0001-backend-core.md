@@ -17,13 +17,13 @@ Adopt a small backend core in `src/server/`:
 - `env.server.ts` parses raw environment strings once into cached typed application config.
 - `errors.ts` defines the client-safe application error contract: general kinds plus stable specific codes.
 - `logger.server.ts` emits structured safe JSON logs.
-- `request.ts` provides import-safe TanStack server-function middleware for request ID, timing, validation/error logging, and a shared result conversion for expected exposed failures. Its `.server()` implementation may use the server-only logger while the middleware contract remains safe to import from `*.functions.ts`.
+- `request.ts` provides import-safe TanStack server-function middleware and shared result conversion for expected exposed failures. Its `.server()` callback dynamically loads `request.server.ts`, which owns request ID, timing, and error logging/normalization without pulling the server logger into the client graph. A callback to `.validator((input) => schema.parse(input))` preserves Zod errors for consistent normalization; direct Standard Schema validation is wrapped in a generic error by the pinned TanStack version.
 - `database.server.ts` is the only application module that imports `pg`. It owns query-result plumbing, runtime row validation, generic PostgreSQL error normalization, and transaction lifecycle.
 - `db.server.ts` lazily composes the runtime database from typed config.
 
 Feature repositories keep domain-specific SQL explicit but depend only on `DatabaseClient`. They receive validated domain input, call `many`/`one`/`maybeOne`/`execute`, and configure known constraint-to-application-error mappings next to the query whose domain meaning is known.
 
-Server functions remain thin TanStack boundaries: attach request/validation middleware, enforce policy/authorization, obtain the composed repository, and delegate. Existing automatic TanStack Start CSRF middleware remains in place by not introducing a custom `src/start.ts`.
+Server functions remain thin TanStack boundaries: attach request middleware, validate with `.validator((input) => schema.parse(input))`, enforce policy/authorization, obtain the composed repository, and delegate. Existing automatic TanStack Start CSRF middleware remains in place by not introducing a custom `src/start.ts`.
 
 ESLint enforces two important boundaries: feature/application modules cannot import `pg` outside the database adapter, and application code cannot access `process.env` outside `env.server.ts`.
 

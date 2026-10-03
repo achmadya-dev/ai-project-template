@@ -15,6 +15,13 @@ test('create, reload, reject duplicate SKU', async ({ page }) => {
   try {
     await page.goto('/')
     await expect(page.getByRole('heading', { name: 'Katalog barang' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Tambah barang' })).toBeEnabled()
+    await page.locator('form').evaluate((form) => form.setAttribute('novalidate', ''))
+    await page.getByLabel('SKU', { exact: true }).fill('INVALID SKU')
+    await page.getByLabel('Nama barang').fill('Komponen uji')
+    await page.getByRole('button', { name: 'Tambah barang' }).click()
+    await expect(page.getByRole('status')).toContainText('Gagal menyimpan')
+
     await page.getByLabel('SKU', { exact: true }).fill(sku)
     await page.getByLabel('Nama barang').fill('Komponen uji')
     await page.getByRole('button', { name: 'Tambah barang' }).click()

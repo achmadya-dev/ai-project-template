@@ -9,7 +9,7 @@ Alur backend utama:
 ```text
 client/loader
   -> TanStack server function
-  -> request/validation middleware
+  -> request middleware + TanStack schema validator
   -> domain repository
   -> DatabaseClient abstraction
   -> pg adapter
@@ -25,7 +25,8 @@ Server functions merupakan endpoint yang harus divalidasi dan diotorisasi. Janga
 - `env.server.ts`: satu-satunya application boundary yang membaca `process.env`; raw string diparse menjadi config typed/camelCase dan dicache.
 - `errors.ts`: client-safe error contract berisi taxonomy umum (`invalid_argument`, `not_found`, `conflict`, `unauthorized`, `forbidden`, `rate_limited`, `internal`) plus stable domain/application codes.
 - `logger.server.ts`: structured JSON logging tanpa payload/secret mentah.
-- `request.ts`: import-safe TanStack server-function middleware untuk request id, timing, validation, dan centralized error logging; implementasi `.server()` boleh memakai server-only logger sementara kontrak middleware/result tetap aman diimpor oleh `*.functions.ts`.
+- `request.ts`: import-safe TanStack middleware dan konversi `RequestResult`; callback `.server()` memuat executor server secara dinamis agar logger server-only tidak bocor ke client graph.
+- `request.server.ts`: executor request untuk request id, timing, dan structured error logging/normalization. Validasi memakai `.validator((input) => schema.parse(input))` agar Zod menghasilkan `ZodError` yang dapat dinormalisasi.
 - `database.server.ts`: satu-satunya application wrapper untuk `pg`; menangani query result shape, row validation, transaction plumbing, dan mapping error PostgreSQL yang diketahui.
 - `db.server.ts`: lazy composition untuk database runtime berdasarkan typed config.
 
@@ -35,7 +36,7 @@ Core ini bukan generic service framework. Jangan menambah BaseRepository, Manage
 
 - Domain: `src/modules/<domain>/domain` berisi aturan murni, input schema, row/result schema, dan domain type. Tidak mengimpor React, TanStack, database, process/environment, filesystem, atau network.
 - Repository `.server.ts`: SQL parameterized dan query domain-specific. Repository menerima/menyusun `DatabaseClient`, bukan `pg.Pool`, dan tidak mengekspos `QueryResult`/kode error PostgreSQL.
-- `*.functions.ts`: transport boundary. Pasang request/validation middleware, enforce policy/authorization, lalu delegate ke repository/domain. Tidak membaca `process.env` atau detail `pg` langsung.
+- `*.functions.ts`: transport boundary. Pasang request middleware dan `.validator((input: unknown) => schema.parse(input))`, enforce policy/authorization, lalu delegate ke repository/domain. Tidak membaca `process.env` atau detail `pg` langsung.
 - Routes: presentasi dan interaksi; tidak berisi SQL atau server-only infrastructure.
 - Migrasi: eksplisit, berversi, immutable setelah diterapkan.
 

@@ -16,6 +16,7 @@ src/server/
   errors.ts
   logger.server.ts
   request.ts
+  request.server.ts
   database.server.ts
   db.server.ts
 ```
@@ -122,23 +123,23 @@ Do not repeatedly access `process.env` inside repositories/server functions. Raw
 
 ## Request middleware and validation
 
-Server functions use the shared middleware for request ID/timing/logging plus schema validation. Policy checks and delegation remain explicit in the function. Because middleware factories are created at module scope in `*.functions.ts`, import them from the client-safe `request.ts`; server-only work remains inside the middleware `.server()` implementation.
+Server functions use the shared middleware for request ID/timing/logging and TanStack's `.validator((input: unknown) => schema.parse(input))` for input validation. The function adapter keeps Zod failures typed as `ZodError` so the request boundary can normalize them; passing a Zod schema directly uses TanStack's Standard Schema path, which wraps validation issues in a generic `Error`. Policy checks and delegation remain explicit in the function. Because middleware factories are created at module scope in `*.functions.ts`, import them from `request.ts`; that module dynamically loads `request.server.ts` inside `.server()` so server-only logging stays out of the client graph.
 
 ```ts
 import { createServerFn } from '@tanstack/react-start'
 import { widgetInput } from './domain/widget'
 import { getWidgetRepository } from './repository.server'
-import { handleRequest, requestMiddleware, validateRequest } from '../../server/request'
+import { handleRequest, requestMiddleware } from '../../server/request'
 
 const createRequest = requestMiddleware('widget.create')
-const createValidation = validateRequest(widgetInput)
 
 export const createWidget = createServerFn({ method: 'POST' })
-  .middleware([createRequest, createValidation])
+  .middleware([createRequest])
+  .validator((input: unknown) => widgetInput.parse(input))
   .handler(({ data }) => handleRequest(() => getWidgetRepository().create(data)))
 ```
 
-Use `handleRequest` when the UI should branch on expected exposed application failures such as conflict/forbidden without adding local `try/catch`. Invalid parameters are rejected by the validation middleware with the general `invalid_argument` kind. Unexpected internal failures continue to throw after centralized logging and expose only a generic error.
+Use `handleRequest` when the UI should branch on expected exposed application failures such as conflict/forbidden without adding local `try/catch`. The validator rejects invalid parameters; request middleware normalizes Zod validation errors to the general `invalid_argument` kind. Unexpected internal failures continue to throw after centralized logging and expose only a generic error.
 
 ## Application errors
 

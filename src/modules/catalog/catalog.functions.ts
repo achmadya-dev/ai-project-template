@@ -19,7 +19,7 @@ export const getCatalog = createServerFn({ method: 'GET' })
 
 export const createItem = createServerFn({ method: 'POST' })
   .middleware([createItemRequest])
-  .validator(itemInput)
+  .validator((input: unknown) => itemInput.parse(input))
   .handler(async ({ data }) =>
     handleRequest(async () => {
       if (!import.meta.env.DEV) {

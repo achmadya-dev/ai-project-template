@@ -19,7 +19,7 @@ Use a vertical slice under `src/modules/<domain>/`.
 
 - `domain/`: pure business rules, schemas, domain types, and deterministic transformations. No React, TanStack, database, process/environment, filesystem, network, or other infrastructure dependencies.
 - `*.server.ts`: server-only domain infrastructure such as repositories. SQL stays here, but raw driver plumbing belongs to the shared database adapter.
-- `*.functions.ts`: transport boundary. Attach request/validation middleware, enforce authorization/policy, obtain composed dependencies, and delegate to domain/repository code. Do not put SQL or substantial business logic here.
+- `*.functions.ts`: transport boundary. Attach request middleware, validate with the domain schema using TanStack's `.validator((input: unknown) => schema.parse(input))`, enforce authorization/policy, obtain composed dependencies, and delegate to domain/repository code. Do not put SQL or substantial business logic here.
 - `src/routes/`: presentation and user interaction. Routes may call server functions but must not access database/repository internals directly.
 - `src/server/`: small shared server infrastructure and cross-cutting policy: typed environment, application errors, logging/request middleware, database adapter, and runtime composition. It must not become a dumping ground for domain logic.
 
@@ -38,7 +38,7 @@ Dependencies should point inward: UI/transport -> domain/repository contracts; i
 ## Validation and trust boundaries
 
 - Treat browser input, URL/search params, form data, request payloads, environment variables, database rows from untrusted/legacy sources, and external API responses as untrusted until validated or safely narrowed.
-- Validate server-function input at the server boundary with the domain schema. Prefer the shared validation middleware so invalid input has consistent error semantics.
+- Validate server-function input at the server boundary with the domain schema using TanStack's `.validator((input: unknown) => schema.parse(input))`. The shared request middleware normalizes Zod validation failures to consistent error semantics.
 - Validate database rows at runtime before returning them from the database/repository boundary; a TypeScript generic on `pg.query<T>()` is not runtime validation.
 - Client-side validation is user experience only; it never replaces server validation.
 - Authorization/policy checks happen before protected side effects.
