@@ -1,0 +1,9 @@
+node_modules/
+.output/
+.tanstack/
+dist/
+coverage/
+playwright-report/
+test-results/
+bun.lock
+src/routeTree.gen.ts

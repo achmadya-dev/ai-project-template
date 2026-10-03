@@ -6,6 +6,7 @@ Satu repo TanStack Start fullstack untuk planning lewat prompt, implementasi ole
 
 ## Yang tersedia
 - TanStack Start + React + TypeScript, Bun runtime (Nitro), PostgreSQL.
+- Tailwind CSS untuk styling, ESLint untuk linting, Prettier untuk formatting + sorting utility Tailwind, dan Husky/lint-staged untuk pemeriksaan staged files.
 - Demo katalog development: validasi server, normalisasi SKU, constraint unik PostgreSQL, penanganan duplikat.
 - Migrasi SQL berversi dengan transaksi, lock, dan checksum; tidak otomatis dijalankan saat startup.
 - Unit test, integrasi PostgreSQL (termasuk race condition), E2E Chromium, smoke test production.
@@ -41,7 +42,9 @@ bun run verify
 | Perintah | Kegunaan |
 | --- | --- |
 | `bun run doctor` | Petunjuk setup, versi Bun runtime, dan tooling yang masih diperlukan |
-| `bun run check` | Lint, policy tests, unit, build, typecheck; tanpa DB |
+| `bun run format` | Memformat source, test, script, dan config yang dikelola Prettier; utility Tailwind ikut diurutkan |
+| `bun run format:check` | Memeriksa formatting tanpa mengubah file |
+| `bun run check` | Format check, lint, policy tests, unit, build, typecheck; tanpa DB |
 | `bun run verify` | Check + PostgreSQL integration + E2E + Bun production smoke |
 | `bun run task:new nama-task` | Membuat dokumen task tanpa menimpa file lama |
 | `bun run db:migrate` | Migrasi target DATABASE_URL; pastikan target dahulu |

@@ -26,7 +26,9 @@ Before creating or editing a pull request, read `.github/PULL_REQUEST_TEMPLATE.m
 - Bun version in `.bun-version` is the package manager and application runtime; `bun install --frozen-lockfile`; copy `.env.example` to `.env` without overwriting an existing file. Node 24 is retained only for current Vitest/Playwright tooling compatibility.
 - `bun run doctor`: readiness hints (does not prove GitHub protection).
 - `bun run dev`: Bun-powered loopback-only development server.
-- `bun run check`: lint, policy tests, unit tests, Bun build, typecheck.
+- `bun run format`: format maintained source/test/script/config files with Prettier; Tailwind classes are sorted by the Tailwind Prettier plugin.
+- `bun run format:check`: verify formatting without modifying files.
+- `bun run check`: format check, lint, policy tests, unit tests, Bun build, typecheck.
 - `bun run db:migrate`: explicitly migrate DATABASE_URL; never auto-run against an unknown target.
 - `bun run test:integration`: requires disposable TEST_DATABASE_URL ending in `_test`.
 - `bun run test:e2e`: requires migrated test DB and Playwright Chromium.
