@@ -1,6 +1,6 @@
 import { createPostgresDatabase, type Database } from './database.server'
 import { getEnv } from './env.server'
-import { AppError } from './errors.server'
+import { AppError } from './errors'
 
 let database: Database | undefined
 
