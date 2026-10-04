@@ -3,7 +3,7 @@
 ## Template cleanup baseline
 
 Base commit: `096e3f2`. Checks below ran against the working tree on branch `docs/english-template-cleanup`.
-Issue: [#28](https://github.com/achmadya-dev/ai-project-template/issues/28). Pull request: pending.
+Issue: [#28](https://github.com/achmadya-dev/ai-project-template/issues/28). Pull request: [#29](https://github.com/achmadya-dev/ai-project-template/pull/29) (draft).
 
 ### Acceptance criteria
 
