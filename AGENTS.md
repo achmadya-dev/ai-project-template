@@ -14,6 +14,8 @@ Read this file first. It applies to this whole repository. This is guidance, not
 
 Before implementing or reviewing code, read `docs/CODE_STANDARDS.md`. Inspect the closest existing implementation and `docs/PATTERNS.md` before inventing a new pattern.
 
+Use English for all repository-maintained documentation, examples, agent instructions, and user-facing application copy, including accessible labels and error messages.
+
 Before creating or editing a pull request, read `.github/PULL_REQUEST_TEMPLATE.md` and the trusted-base verifier `scripts/check-pr.mjs`. Treat the verifier as the executable PR metadata contract: use a real same-repository issue, preserve every required section, classify risk from the actual changed paths, and never replace the repository template with an improvised PR body.
 
 ## Work modes
@@ -23,7 +25,7 @@ Before creating or editing a pull request, read `.github/PULL_REQUEST_TEMPLATE.m
 - Use `docs/workflows/PLAN.md`, `IMPLEMENT.md`, or `REVIEW.md` for the procedure. These are portable runbooks, not auto-discovered vendor skills.
 
 ## Commands
-- Bun version in `.bun-version` is the package manager and application runtime; `bun install --frozen-lockfile`; copy `.env.example` to `.env` without overwriting an existing file. Node 24 is retained only for current Vitest/Playwright tooling compatibility.
+- Bun version in `.bun-version` is the package manager and application runtime; `bun install --frozen-lockfile`; copy `.env.example` to `.env` without overwriting an existing file. Node 24 is retained for current Vitest/Playwright compatibility and the Node policy-test runner; it is not the application runtime.
 - `bun run doctor`: readiness hints (does not prove GitHub protection).
 - `bun run dev`: Bun-powered loopback-only development server.
 - `bun run format`: format maintained source/test/script/config files with Prettier; Tailwind classes are sorted by the Tailwind Prettier plugin.

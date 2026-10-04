@@ -1,27 +1,33 @@
 # Safety boundaries
 
-## Yang benar-benar diperiksa
-- TypeScript/lint/test melalui CI.
-- PostgreSQL adapter: validasi row, cardinality, transaksi, dan pemetaan constraint.
-- Smoke test production: halaman awal tersedia tanpa kredensial database.
-- Checksum migrasi yang sudah diterapkan oleh runner migrasi.
-- Metadata PR dan indikasi path sensitif oleh verifier dari base commit.
+## What is actually checked
 
-## Yang bukan enforcement
-AGENTS.md, runbook, risk label, checkbox PR, dan local git hooks tidak membatasi kredensial atau mencegah semua tindakan buruk. Agent dapat salah; repo tidak mengisolasi komputer pengguna. Rulesets GitHub belum aktif hanya karena file ini ada. Tes dan dependency dalam PR juga bisa diubah; perubahan governance memerlukan review.
+- TypeScript, lint, and tests through CI.
+- PostgreSQL adapter row validation, cardinality, transactions, and constraint mapping.
+- Production smoke test: the home page is available without database credentials.
+- Migration checksums for migrations already applied by the runner.
+- Pull request metadata and sensitive-path hints from the verifier at the base revision.
 
-## Tingkat risiko
-- Low: perubahan terbatas, tidak memengaruhi data/akses/kontrak.
-- Medium: logika fitur biasa dengan dampak terlokalisasi.
-- High: auth, tenant, uang, stok kritis, migrasi, dependency, CI, governance, external side effects.
+## What is not enforced
 
-Path heuristic di check-pr hanya batas bawah, bukan klasifikasi lengkap. High tidak otomatis diblokir untuk selamanya; butuh review dan izin sesuai tindakan. Jangan terus meminta persetujuan untuk pekerjaan reversible yang sudah diotorisasi.
+`AGENTS.md`, runbooks, risk labels, pull request checkboxes, and local Git hooks do not restrict credentials or prevent every unsafe action. Agents can make mistakes, and the repository does not isolate the user's computer. GitHub rulesets are not enabled just because these files exist. Pull requests can also change tests and dependencies; governance changes need review.
+
+## Risk levels
+
+- Low: narrow changes that do not affect data, access, or contracts.
+- Medium: ordinary feature logic with localized impact.
+- High: authentication, tenancy, money, critical inventory, migrations, dependencies, CI, governance, or external side effects.
+
+The path heuristic in `check-pr` is a minimum, not a complete risk classification. High risk does not mean work is permanently blocked; it requires review and authorization appropriate to the action. Do not repeatedly ask for approval for reversible work that is already authorized.
 
 ## Credentials
-Coding agent cukup mendapat akses repo/branch dan DB disposable. Jangan berikan production credentials. Jalankan worker tanpa kredensial personal yang tidak diperlukan. Jangan expose dev server ke internet. Ini konfigurasi tool/host, bukan sesuatu yang dapat dipaksakan folder ini.
+
+Coding agents need repository/branch access and a disposable database for integration tests. Do not provide production credentials. Run workers without unnecessary personal credentials. Do not expose the development server to the internet. These are tool/host settings that cannot be enforced by this repository.
 
 ## CI
-Token read-only; tidak memakai secrets deployment. PR metadata diproses sebagai data, bukan diinterpolasi ke shell. Verifier metadata diekstrak dari base SHA, bukan versi yang dapat diganti PR. Hindari checkout untrusted code pada pull_request_target/workflow_run berprivilege. Pemeriksaan lain tetap perlu review karena source workflow/test adalah bagian dari repo.
 
-## Migrasi
-Runner hanya untuk SQL transaksional; tidak mendukung CREATE INDEX CONCURRENTLY. Lock/statement timeout mencegah menunggu tanpa batas. Backfill besar dan operasi non-transaksional perlu rencana terpisah. Jangan menjalankan reset/drop otomatis. Kompatibilitas versi aplikasi lama terhadap schema baru harus diuji ketika migrasi nyata ditambahkan.
+CI uses read-only tokens and no deployment secrets. Pull request metadata is treated as data, not interpolated into shell commands. The metadata verifier is loaded from the base SHA rather than a version that the pull request can replace. Avoid checking out untrusted code in privileged `pull_request_target` or `workflow_run` jobs. Other checks still require review because workflows and tests are source code in this repository.
+
+## Migrations
+
+The migration runner supports transactional SQL only; it does not support `CREATE INDEX CONCURRENTLY`. Lock and statement timeouts prevent indefinite waits. Large backfills and non-transactional operations need a separate plan. Do not run automated resets or drops. Test compatibility between old and new application versions when a real migration is introduced.

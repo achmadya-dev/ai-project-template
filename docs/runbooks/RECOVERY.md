@@ -1,16 +1,21 @@
 # Recovery planning
 
 ## Development
-Development/test PostgreSQL data is local. Stop services with `docker compose stop`. Do not run `docker compose down -v` unless you deliberately intend to delete local volumes. No reset script is included. The historical catalog migration and any resulting data are retained; removing application code does not remove database objects or data.
+
+Development PostgreSQL data is local. Stop services with `docker compose stop`. Do not run `docker compose down -v` unless you intend to delete local volumes. The test PostgreSQL service uses `tmpfs` and is disposable. The template has no application schema until a project adds and applies a migration.
 
 ## Application rollback
-Keep the previous immutable build artifact. Before rollout, verify the older application works with the expanded schema. A code revert does not revert data or third-party effects.
+
+Keep the previous immutable build artifact. Before a rollout, verify that the older application still works with the expanded schema. Reverting code does not roll back data or third-party effects.
 
 ## Database changes
-Prefer expand → backfill/migrate → switch → contract, in separate reviewed releases. Do not edit already-applied SQL. Add a forward repair migration if needed. Test lock duration and old/new app compatibility. The included migration runner is transactional; large backfills/non-transactional operations need dedicated procedures.
 
-## Before first production release
-Record owner, deployment target, backup schedule, restore procedure, tested RPO/RTO, incident contacts, and recovery drill evidence. Template does not provision any of these. Never restore production blindly: reconcile legitimate transactions that happened after the backup.
+Prefer expand → backfill/migrate → switch → contract across separately reviewed releases. Do not edit an applied SQL migration. Add a forward repair migration when needed. Test lock duration and compatibility with both old and new application versions. The included migration runner uses transactions; large backfills and non-transactional work require dedicated procedures.
+
+## Before the first production release
+
+Record the owner, deployment target, backup schedule, restore procedure, tested RPO/RTO, incident contacts, and recovery-drill evidence. The template does not provision these. Never restore production blindly; reconcile legitimate transactions that occurred after the backup.
 
 ## External side effects
-Payments, emails, and machine commands may need compensating operations and reconciliation rather than rollback. Design idempotency and audit with domain owners before enabling real integrations.
+
+Payments, emails, and machine commands may require compensating actions and reconciliation instead of rollback. Work with domain owners to design idempotency and audit before enabling real integrations.

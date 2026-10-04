@@ -21,4 +21,4 @@ Accessed 2026-10-02. Installed package code and executed checks take precedence 
 - https://github.com/oven-sh/setup-bun
 - https://docs.github.com/en/code-security/reference/supply-chain-security/supported-ecosystems-and-repositories
 
-TanStack Start's current React hosting guide documents Bun deployment for React 19 and the Nitro `bun` preset. Bun's Vite guide documents `--bun` for running the Vite CLI on Bun instead of following its Node shebang. Vitest and Playwright documentation still list Node prerequisites, so Node remains test tooling only rather than the application runtime.
+TanStack Start's current React hosting guide documents Bun deployment for React 19 and the Nitro `bun` preset. Bun's Vite guide documents `--bun` for running the Vite CLI on Bun instead of following its Node shebang. Vitest and Playwright documentation still list Node prerequisites, and the policy tests use Node's built-in test runner; Node remains test tooling, not the application runtime.

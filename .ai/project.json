@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "name": "ai-project-template",
   "templateVersion": "0.1.0",
-  "stack": "tanstack-start-node-postgres",
+  "stack": "tanstack-start-bun-postgres",
   "workflow": "docs/WORKFLOW.md",
   "agentInstructions": "AGENTS.md",
   "commands": {

@@ -1,21 +1,27 @@
-# Prompt yang dapat dipakai
+# Reusable prompts
 
-Sebutkan task atau issue; tidak perlu mengulang semua aturan repo.
+Name the issue or task when one exists; there is no need to repeat every repository rule.
 
 ## Kickoff
-Baca AGENTS.md. Proyek ini untuk [pengguna], menyelesaikan [masalah]. Susun satu MVP dengan alur [alur]. Perbarui PRODUCT dan DOMAIN. Buat planning issue atau task lokal. Tanyakan hanya keputusan material yang belum jelas. Belum implementasi.
 
-## Plan fitur
-Baca AGENTS.md dan kode terkait. Rencanakan [fitur], termasuk acceptance criteria, contoh kegagalan, invariant, dampak database/API, dan rencana tes. Simpan sebagai issue atau docs/tasks/[slug].md. Jangan ubah kode aplikasi dahulu.
+Read `AGENTS.md`. This project is for [users] and should solve [problem]. Propose one MVP workflow with a narrow scope. Update `docs/PRODUCT.md` and `docs/DOMAIN.md`. Create a planning issue if GitHub access is available; otherwise, use `docs/tasks/TEMPLATE.md`. Ask only about material unresolved decisions. Do not implement yet.
 
-## Eksekusi
-Implementasikan [issue/path task] revisi [N] yang sudah disepakati. Kerjakan sampai verifikasi dan PR/draft PR siap. Rekam hasil tes aktual dan keterbatasan. Jangan merge/deploy. Jika GitHub tidak bisa ditulis, simpan task dan body PR lokal serta laporkan apa yang tersisa.
+## Plan a feature
+
+Read `AGENTS.md` and the relevant code. Plan [feature], including acceptance criteria, failure examples, invariants, database/API impact, and verification. Save the plan as a GitHub issue or a local task created from the template. Do not change application code yet.
+
+## Implement
+
+Implement the accepted revision of [issue or task path]. Continue through relevant verification and a ready-to-review pull request. Record actual results and limitations. Do not merge or deploy. If GitHub access is unavailable, keep the plan and pull request body locally and report what remains.
 
 ## Review
-Review diff branch ini terhadap main dan acceptance criteria [task]. Prioritaskan bug, regresi, keamanan, dan aturan domain. Periksa apakah tes bisa lulus padahal perilaku salah. Laporkan temuan dengan bukti dan lokasi; jangan mengubah kode dulu.
 
-## Lanjut di sesi baru
-Baca AGENTS.md, docs/HANDOFF.md, task [path], git status dan log branch [branch]. Ringkas kondisi aktual, lalu lanjutkan pekerjaan yang sudah diotorisasi. Jangan menimpa perubahan belum committed atau menganggap semua klaim handoff sudah terverifikasi.
+Review this branch's diff against `main` and the acceptance criteria in [task]. Prioritize bugs, regressions, security, and domain rules. Check whether tests could pass while behavior is still wrong. Report evidence and locations; do not change code yet.
 
-## Perbaiki kegagalan
-Selidiki kegagalan [CI/test/log tersanitasi]. Cari akar masalah, perbaiki sesuai kontrak yang disepakati, tambahkan tes regresi bila bermakna. Jangan menghapus atau melemahkan tes untuk memperoleh hasil hijau.
+## Continue in a new session
+
+Read `AGENTS.md`, `docs/HANDOFF.md`, [task path], Git status, and the branch log. Summarize the current state, then continue authorized work. Do not overwrite uncommitted changes or treat every handoff claim as verified.
+
+## Fix a failure
+
+Investigate [CI/test/sanitized log failure]. Find the root cause and fix it within the accepted contract. Add a regression test when useful. Do not remove or weaken tests to get a passing result.

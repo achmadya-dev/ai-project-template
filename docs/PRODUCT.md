@@ -1,20 +1,23 @@
 # Product context
 
-Status: belum dikonfigurasi untuk produk bisnis.
+Status: not configured for a business product.
 
-## Tujuan template
-Memulai satu proyek fullstack dan menjaga keterlacakan prompt → rencana → implementasi → verifikasi → PR.
+## Template goal
 
-## Isi pada kickoff
-- Pengguna utama dan pekerjaan mereka:
-- Masalah yang diselesaikan dan indikator keberhasilan:
-- Satu alur utama MVP:
-- Scope yang sengaja ditunda:
-- Jenis data dan tingkat sensitivitas:
-- Single-tenant atau multi-tenant:
-- Aktor, peran, dan batas kewenangan:
-- Integrasi eksternal dan efek yang tidak dapat di-rollback:
-- Target hosting, ketersediaan, dan pemulihan:
+Start a full-stack project and keep work traceable from prompt → plan → implementation → verification → pull request.
 
-## Fitur bawaan
-Tidak ada fitur bisnis atau domain produk bawaan. Halaman awal hanya menjelaskan alur kerja template. Migrasi katalog dari versi terdahulu masih dipertahankan untuk menjaga riwayat database, tetapi tidak lagi digunakan oleh aplikasi.
+## Kickoff information
+
+- Primary users and the work they need to do:
+- Problem to solve and success measures:
+- One main MVP workflow:
+- Scope intentionally deferred:
+- Data types and sensitivity:
+- Single-tenant or multi-tenant:
+- Actors, roles, and authority boundaries:
+- External integrations and effects that cannot be rolled back:
+- Hosting, availability, and recovery targets:
+
+## Included product behavior
+
+There is no built-in business feature or product domain. The home page only explains the project workflow. The database starts without an application schema; add approved, forward-only migrations when a product feature requires persistence.

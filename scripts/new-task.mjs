@@ -1,46 +1,32 @@
-import { mkdir, writeFile } from 'node:fs/promises'
-const slug = process.argv[2]
-if (!slug || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) || slug.length > 80) {
-  console.error('Usage: bun run task:new short-task-name')
-  process.exit(1)
+import { mkdir, readFile, writeFile } from 'node:fs/promises'
+import { dirname, join, relative, resolve } from 'node:path'
+import { pathToFileURL } from 'node:url'
+
+const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
+
+export async function createTask(slug, directory = process.cwd()) {
+  if (!slug || slug.length > 80 || !slugPattern.test(slug)) {
+    throw new Error(
+      'Task slug must be lowercase words separated by single hyphens (max 80 characters)',
+    )
+  }
+
+  const file = join(directory, 'docs', 'tasks', `${slug}.md`)
+  await mkdir(dirname(file), { recursive: true })
+
+  const template = await readFile(new URL('../docs/tasks/TEMPLATE.md', import.meta.url), 'utf8')
+  const content = template.replaceAll('{{slug}}', slug)
+  await writeFile(file, content, { flag: 'wx' })
+  return file
 }
-const file = `docs/tasks/${slug}.md`
-await mkdir('docs/tasks', { recursive: true })
-const content = `# ${slug}
 
-Status: draft
-Risk: medium
-Issue: not-created
-PR: not-created
-Plan revision: 1
-Authorization: pending
-
-## Goal
-TODO: user outcome and why it matters.
-
-## Scope
-TODO: included work and explicit boundaries.
-
-## Acceptance criteria
-- [ ] AC-1: TODO observable behavior, with an example.
-
-## Domain invariants
-TODO: rules that must remain true, or explain not applicable.
-
-## Plan
-1. TODO implementation steps and relevant files.
-
-## Verification plan
-TODO map each acceptance criterion to a test or manual observation.
-
-## Compatibility and recovery
-TODO API/schema/data impact and recovery limits.
-
-## Decisions and questions
-TODO material unknowns only; routine assumptions should be stated.
-
-## Evidence
-Not executed yet. Record command, actual result, relevant revision, limitations.
-`
-await writeFile(file, content, { flag: 'wx' })
-console.log(`Created ${file}; existing tasks are never overwritten.`)
+if (process.argv[1] && pathToFileURL(resolve(process.argv[1])).href === import.meta.url) {
+  const slug = process.argv[2]
+  if (!slug || slug.length > 80 || !slugPattern.test(slug)) {
+    console.error('Usage: bun run task:new short-task-name')
+    process.exitCode = 1
+  } else {
+    const file = await createTask(slug)
+    console.log(`${relative(process.cwd(), file)} created; existing tasks are never overwritten.`)
+  }
+}
