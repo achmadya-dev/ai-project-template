@@ -168,11 +168,11 @@ const result = await createWidget({ data: values })
 
 if (!result.ok) {
   if (result.error.code === 'DUPLICATE_CODE') {
-    setMessage('Kode sudah digunakan.')
+    setMessage('This code is already in use.')
     return
   }
 
-  setMessage('Permintaan tidak dapat diproses.')
+  setMessage('The request could not be processed.')
   return
 }
 ```

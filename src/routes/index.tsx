@@ -10,35 +10,35 @@ function Home() {
           YOUR NEXT PROJECT STARTS HERE
         </p>
         <h1 className="my-5 text-[clamp(38px,6vw,64px)] leading-[1.08] font-bold tracking-[-0.045em]">
-          Dari rencana
+          From planning
           <br />
-          ke perubahan nyata.
+          to meaningful change.
         </h1>
         <p className="max-w-142.5 text-lg leading-[1.7] text-[#5c6e66]">
-          Fondasi fullstack untuk bekerja bersama AI. Mulai dari kebutuhan, uji perilakunya, lalu
-          tinjau hasilnya.
+          A full-stack foundation for building with AI. Start with a clear need, verify behavior,
+          and review the result.
         </p>
       </section>
       <section
         className="grid grid-cols-1 rounded-xl border border-[#d9e2db] bg-white min-[651px]:grid-cols-3"
-        aria-label="Alur kerja"
+        aria-label="Workflow"
       >
         <div className="px-6 py-4 min-[651px]:p-6">
-          <b>01 / Rencanakan</b>
+          <b>01 / Plan</b>
           <p className="mt-3 text-sm leading-[1.6] text-[#5c6e66]">
-            Tulis tujuan dan kriteria penerimaan.
+            Write the goal and acceptance criteria.
           </p>
         </div>
         <div className="px-6 py-4 min-[651px]:p-6">
-          <b>02 / Kerjakan</b>
+          <b>02 / Build</b>
           <p className="mt-3 text-sm leading-[1.6] text-[#5c6e66]">
-            Satu task, satu branch, perubahan terarah.
+            Keep each task focused on one branch.
           </p>
         </div>
         <div className="px-6 py-4 min-[651px]:p-6">
-          <b>03 / Verifikasi</b>
+          <b>03 / Verify</b>
           <p className="mt-3 text-sm leading-[1.6] text-[#5c6e66]">
-            Tes, bukti, dan review sebelum merge.
+            Test, collect evidence, and review before merging.
           </p>
         </div>
       </section>

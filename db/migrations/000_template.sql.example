@@ -1,0 +1,8 @@
+-- Example only: this file is not applied by the migration runner.
+-- Copy it to the next unused name, such as 001_create_example_records.sql,
+-- then replace the example below with reviewed SQL for an approved feature.
+
+-- CREATE TABLE example_records (
+--   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+--   created_at timestamptz NOT NULL DEFAULT now()
+-- );

@@ -18,23 +18,23 @@ export const Route = createRootRoute({
   notFoundComponent: () => (
     <main className="mx-auto max-w-280 px-7 py-12">
       <h1 className="text-[clamp(38px,6vw,64px)] leading-[1.08] font-bold tracking-[-0.045em]">
-        Halaman tidak ditemukan
+        Page not found
       </h1>
       <Link to="/" className={cn('mt-6 inline-block underline underline-offset-4', focusRing)}>
-        Kembali
+        Back to home
       </Link>
     </main>
   ),
   errorComponent: () => (
     <main className="mx-auto max-w-280 px-7 py-12">
       <h1 className="text-[clamp(38px,6vw,64px)] leading-[1.08] font-bold tracking-[-0.045em]">
-        Aplikasi belum dapat memproses permintaan
+        The app couldn't complete this request
       </h1>
       <p className="mt-5 max-w-142.5 text-lg leading-[1.7] text-[#5c6e66]">
-        Periksa konfigurasi development dan koneksi database.
+        Try reloading this page. If the problem continues, check the server logs.
       </p>
       <a href="/" className={cn('mt-6 inline-block underline underline-offset-4', focusRing)}>
-        Muat ulang
+        Reload
       </a>
     </main>
   ),
@@ -42,7 +42,7 @@ export const Route = createRootRoute({
 
 function Root() {
   return (
-    <html lang="id">
+    <html lang="en">
       <head>
         <HeadContent />
       </head>
@@ -63,7 +63,7 @@ function Root() {
         </header>
         <Outlet />
         <footer className="mx-auto max-w-280 border-t border-[#d9e2db] px-7 pt-7 pb-10 text-xs text-[#5c6e66]">
-          Satu repo. Rencana jelas. Perubahan teruji.
+          One repo. Clear plans. Verified changes.
         </footer>
         <Scripts />
       </body>

@@ -1,9 +1,11 @@
 # Domain and invariants
 
-## Domain saat ini
-Belum ada domain bisnis yang dikonfigurasi atau diimplementasikan. Katalog barang dari versi terdahulu telah dihapus dari aplikasi; migrasi database historisnya tetap ada dan bukan sumber aturan untuk produk baru.
+## Current domain
 
-## Belum diputuskan
-Auth, tenant, stok, harga, satuan, posting dokumen, pembulatan, ledger, pajak, approval, dan audit bisnis belum diputuskan. Agent tidak boleh mengasumsikan aturan domain tanpa kriteria penerimaan.
+No business domain is configured or implemented. The template does not define product rules.
 
-Saat menambah domain baru, catat istilah, invariant, contoh benar/salah, pengecualian, dan AC/test yang membuktikannya.
+## Undecided
+
+Authentication, tenants, inventory, pricing, units, document posting, rounding, ledgers, taxes, approvals, and business audit rules are not decided. Do not assume domain rules without accepted criteria.
+
+When adding a domain, record its terms, invariants, valid and invalid examples, exceptions, and the acceptance criteria or tests that prove them.

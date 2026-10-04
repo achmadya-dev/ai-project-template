@@ -10,11 +10,11 @@ console.log(
 try {
   const actualNode = execFileSync('node', ['--version'], { encoding: 'utf8' }).trim()
   console.log(
-    `TOOLING ${actualNode}; retained for Vitest/Playwright compatibility, not application runtime`,
+    `TOOLING ${actualNode}; retained for Vitest/Playwright compatibility and the Node policy-test runner, not application runtime`,
   )
 } catch {
   console.log(
-    'TOOLING Node not found; Bun app commands work, but the current Vitest/Playwright toolchain may require Node 24',
+    'TOOLING Node not found; Bun app commands work, but the policy tests and current Vitest/Playwright toolchain may require Node 24',
   )
 }
 

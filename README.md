@@ -1,75 +1,80 @@
 # AI Project Template
 
-Satu repo TanStack Start fullstack untuk planning lewat prompt, implementasi oleh agent pilihanmu, dan verifikasi lewat tes + GitHub PR. Tidak terikat worker tertentu.
+A single-repository TanStack Start application for planning work, implementing it with your coding agent, and verifying changes through tests and pull requests. It does not depend on a particular agent or worker.
 
-**Mulai di [START_HERE.md](START_HERE.md).** Contoh prompt siap dipakai ada di [docs/PROMPTS.md](docs/PROMPTS.md).
+**Start with [START_HERE.md](START_HERE.md).** Reusable prompt examples are in [docs/PROMPTS.md](docs/PROMPTS.md).
 
-## Yang tersedia
-- TanStack Start + React + TypeScript, Bun runtime (Nitro), PostgreSQL.
-- Tailwind CSS untuk styling, ESLint untuk linting, Prettier untuk formatting + sorting utility Tailwind, dan Husky/lint-staged untuk pemeriksaan staged files.
-- Halaman awal template tanpa fitur bisnis bawaan.
-- Migrasi SQL berversi dengan transaksi, lock, dan checksum; tidak otomatis dijalankan saat startup.
-- Unit test, integrasi PostgreSQL untuk adapter/migrasi, E2E Chromium untuk halaman awal, smoke test production.
-- `AGENTS.md`, adapter Cursor/Claude/Copilot; prosedur portable untuk plan, implement, review.
-- Template issue/PR, pemeriksaan metadata PR, CI, dan panduan rulesets GitHub.
-- Task lokal dan handoff untuk sesi baru tanpa mengandalkan memori chat.
+## Included
 
-## Jalankan lokal
-Bun mengelola dependency, menjalankan development/build, dan menjadi runtime aplikasi production. Versi Bun dikunci di `.bun-version` dan `packageManager`; instal Bun mengikuti [panduan resmi](https://bun.com/docs/installation). Nitro dibangun dengan preset `bun`.
+- TanStack Start, React, TypeScript, Bun runtime through Nitro, and PostgreSQL infrastructure.
+- Tailwind CSS, ESLint, Prettier with Tailwind class sorting, and Husky/lint-staged for staged files.
+- A starter home page with no built-in business feature.
+- A versioned, transactional migration runner with locking and checksums. Migrations never run automatically at application startup.
+- Unit tests, PostgreSQL integration tests for the adapter and migration runner, a Chromium home-page E2E test, and a production smoke test.
+- `AGENTS.md` and adapters for Cursor, Claude, and Copilot, plus portable planning, implementation, and review procedures.
+- Issue and pull request templates, a PR metadata check, CI, and GitHub ruleset setup guidance.
+- Task and handoff templates for work that needs to persist beyond a chat session.
 
-Prasyarat aplikasi: Bun sesuai `.bun-version`. Docker Compose atau PostgreSQL diperlukan hanya untuk integrasi. Node 24 masih dipakai **hanya sebagai tooling test** karena Vitest 5 dan Playwright saat ini mendokumentasikan Node sebagai prerequisite; Node bukan runtime aplikasi.
+## Run locally
+
+Bun manages dependencies, runs development and build commands, and is the production application runtime. The Bun version is pinned in `.bun-version` and `packageManager`. Install Bun using the [official installation guide](https://bun.com/docs/installation). Nitro builds with the `bun` preset.
+
+The application requires the Bun version in `.bun-version`. Docker Compose or PostgreSQL is needed only for integration tests. Node 24 is used by the current test tooling and policy-test runner; it is not the application runtime.
 
 ```sh
 bun install --frozen-lockfile
-cp .env.example .env
-# Jangan timpa .env bila sudah ada.
+if [ ! -e .env ]; then cp .env.example .env; fi
 bun run dev
 ```
 
-Buka http://127.0.0.1:3000. Halaman awal tidak memerlukan database. PostgreSQL dan migrasi hanya diperlukan setelah menambahkan slice yang menggunakannya; `bun run db:migrate` akan tetap menerapkan migrasi katalog historis yang tidak lagi dipakai aplikasi. Binding dev server adalah loopback; jangan expose ke jaringan tanpa autentikasi.
+Open http://127.0.0.1:3000. The home page does not require a database. Configure `DATABASE_URL` only when a new feature needs database access. `bun run db:migrate` applies numbered `.sql` files in `db/migrations`; the `.sql.example` template there is not executed. The development server binds to loopback. Do not expose it to a network without authentication.
 
-## Verifikasi
+## Verify
+
 ```sh
 docker compose --profile test up -d --wait db-test
 bun run playwright install chromium
 bun run verify
 ```
 
-`TEST_DATABASE_URL` pada `.env.example` menunjuk database terpisah di port 5433. Integrasi menerapkan migrasi historis pada DB test dan menjalankan tes adapter; E2E halaman awal tidak memerlukan database. Tes menolak nama database yang tidak berakhir `_test`, tetapi nama bukan bukti isolasi: berikan hanya kredensial database disposable.
+`TEST_DATABASE_URL` in `.env.example` targets a separate test database on port 5433. Integration tests require a disposable database whose name ends in `_test`. The name alone does not prove isolation; use only disposable test credentials. The E2E home-page test does not require a database.
 
-| Perintah | Kegunaan |
+| Command | Purpose |
 | --- | --- |
-| `bun run doctor` | Petunjuk setup, versi Bun runtime, dan tooling yang masih diperlukan |
-| `bun run format` | Memformat source, test, script, dan config yang dikelola Prettier; utility Tailwind ikut diurutkan |
-| `bun run format:check` | Memeriksa formatting tanpa mengubah file |
-| `bun run check` | Format check, lint, policy tests, unit, build, typecheck; tanpa DB |
-| `bun run verify` | Check + PostgreSQL integration + E2E + Bun production smoke |
-| `bun run task:new nama-task` | Membuat dokumen task tanpa menimpa file lama |
-| `bun run db:migrate` | Migrasi target DATABASE_URL; pastikan target dahulu. Termasuk migrasi katalog historis |
-| `bun run build && bun run start` | Build dengan Bun + Nitro preset Bun dan jalankan production dengan Bun |
+| `bun run doctor` | Setup hints, pinned Bun version, and required tooling |
+| `bun run format` | Format maintained source, tests, scripts, and config; sort Tailwind utilities |
+| `bun run format:check` | Check formatting without modifying files |
+| `bun run check` | Format check, lint, policy and unit tests, build, and typecheck; no database required |
+| `bun run verify` | Run checks, PostgreSQL integration, E2E, and Bun production smoke |
+| `bun run task:new <slug>` | Create a task document from the task template without overwriting existing files |
+| `bun run db:migrate` | Apply migrations to `DATABASE_URL`; confirm the target first |
+| `bun run build && bun run start` | Build and run the production application with Bun and Nitro's Bun preset |
 
-## Cara bekerja
-1. Buka repo pada tool coding pilihanmu dan minta agent membaca `AGENTS.md`.
-2. Jelaskan produk atau fitur; agent menyusun issue/rencana dengan acceptance criteria.
-3. Setujui rencana, atau beri izin implementasi langsung jika kebutuhan sudah jelas.
-4. Agent membuat branch, kode, tes, dokumentasi, dan PR beserta bukti.
-5. Tinjau perilaku dan CI sebelum merge. Tidak ada auto-merge atau auto-deploy bawaan.
+## Workflow
 
-Jika GitHub belum terhubung, gunakan `docs/tasks/`. GitHub issue/PR baru dianggap ada setelah benar-benar dibuat; agent harus melaporkan keterbatasan akses.
+1. Open the repository in your coding tool and ask the agent to read `AGENTS.md`.
+2. Describe the product or feature. The agent should draft an issue or local task with acceptance criteria.
+3. Approve the plan, or explicitly authorize direct implementation when the scope is clear.
+4. The agent creates a branch, implements the change, verifies it, updates documentation, and prepares a pull request with evidence.
+5. Review behavior and CI before merging. The template does not enable auto-merge or auto-deployment.
 
-## Struktur
-- `src/routes`: halaman dan transport TanStack.
-- `src/modules/<domain>`: lokasi untuk vertical slice domain yang disetujui.
-- `src/server`: infrastruktur server bersama.
-- `db/migrations`: migrasi forward-only.
-- `tests`: unit, integrasi, E2E.
-- `docs`: konteks produk/domain, prosedur, keputusan, task, recovery.
-- `scripts`: migrasi, task generator, verifikasi metadata dan smoke.
-- `.github`: workflow, template, CODEOWNERS.
+If GitHub is unavailable, create a local task from `docs/tasks/TEMPLATE.md`. Do not claim an issue or pull request exists until it has actually been created.
 
-## Batas versi ini
-Template ini **belum merupakan SaaS atau sistem payment siap produksi** dan tidak menyediakan domain bisnis bawaan. Auth, tenant isolation, role/permission, audit bisnis, backup hosting, observability, dan integrasi pembayaran harus dirancang per proyek. Migrasi katalog lama dipertahankan sebagai sejarah; bukan kontrak domain produk.
+## Structure
 
-File rules/CI tidak membuat agent kebal salah. Proteksi merge perlu diaktifkan di GitHub; lihat [docs/GITHUB_SETUP.md](docs/GITHUB_SETUP.md). Konfigurasi permission worker tetap milik tool yang kamu gunakan. Tidak ada MCP, token, global hook, atau deployment tersembunyi.
+- `src/routes`: pages and TanStack transport.
+- `src/modules/<domain>`: location for approved domain slices.
+- `src/server`: shared server infrastructure.
+- `db/migrations`: forward-only migrations; contains a non-executable example template, not an application schema.
+- `tests`: unit, integration, and E2E tests.
+- `docs`: product and domain context, procedures, decisions, task template, and recovery guidance.
+- `scripts`: migration runner, task generator, PR metadata check, and smoke tests.
+- `.github`: workflows, templates, and CODEOWNERS.
 
-Dependency dikunci di `bun.lock`. Nitro yang dipakai masih versi beta; review update dependency melalui PR dan ulangi build + smoke. Detail versi dan bukti pengujian ada di [docs/VALIDATION.md](docs/VALIDATION.md).
+## Current limits
+
+This template is **not a production-ready SaaS or payment system** and has no built-in business domain. Authentication, tenant isolation, roles and permissions, business audit, hosted backups, observability, and payment integrations must be designed for each project. The database has no application schema until a project adds an approved migration.
+
+Repository rules and CI do not make agents infallible. Configure merge protection in GitHub; see [docs/GITHUB_SETUP.md](docs/GITHUB_SETUP.md). Worker permissions belong to the tool you use. This repository does not include an MCP connection, token, global hook, or hidden deployment.
+
+Dependencies are pinned in `bun.lock`. Nitro is currently a beta release; review dependency updates in pull requests and rerun the build and smoke checks. See [docs/VALIDATION.md](docs/VALIDATION.md) for baseline evidence and a reusable verification record.

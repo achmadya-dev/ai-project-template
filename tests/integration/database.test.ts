@@ -127,16 +127,30 @@ describe('PostgreSQL database adapter', () => {
 
   it('keeps migrations idempotent and refuses rewriting an applied migration', async () => {
     await expect(migrate(url)).resolves.toBeUndefined()
+    await expect(
+      db.many(z.object({ name: z.string() }), { text: 'SELECT name FROM schema_migrations' }),
+    ).resolves.toEqual([])
 
     const dir = await mkdtemp(join(tmpdir(), 'migration-check-'))
+    const migrationId = randomUUID().replaceAll('-', '')
+    const migrationName = `001_create_migration_probe_${migrationId}.sql`
+    const migrationPath = join(dir, migrationName)
+    const migrationTableName = `migration_probe_${migrationId}`
+    const migrationTable = `"${migrationTableName}"`
     try {
-      const sql = await readFile(
-        new URL('../../db/migrations/001_catalog.sql', import.meta.url),
-        'utf8',
-      )
-      await writeFile(join(dir, '001_catalog.sql'), `${sql}\n-- modified`)
+      await writeFile(migrationPath, `CREATE TABLE ${migrationTable} (id integer PRIMARY KEY);`)
+      await expect(migrate(url, dir)).resolves.toBeUndefined()
+      await expect(migrate(url, dir)).resolves.toBeUndefined()
+
+      const sql = await readFile(migrationPath, 'utf8')
+      await writeFile(migrationPath, `${sql}\n-- modified`)
       await expect(migrate(url, dir)).rejects.toThrow('modified')
     } finally {
+      await db.execute({
+        text: 'DELETE FROM schema_migrations WHERE name = $1',
+        values: [migrationName],
+      })
+      await db.execute({ text: `DROP TABLE IF EXISTS ${migrationTable}` })
       await rm(dir, { recursive: true })
     }
   })
