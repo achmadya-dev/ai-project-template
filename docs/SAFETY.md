@@ -6,6 +6,7 @@
 - PostgreSQL legacy adapter row validation, cardinality, transactions, and constraint mapping, plus portable example coverage for SQLite, PostgreSQL and MySQL.
 - Production smoke test: the home page is available without database credentials.
 - Migration checksums for migrations already applied by the runner.
+- Admin-only provisioning, public signup denial, authenticated session behavior and origin checks in local auth tests.
 - Pull request metadata and sensitive-path hints from the verifier at the base revision.
 
 ## What is not enforced
@@ -31,3 +32,9 @@ CI uses read-only tokens and no deployment secrets. Pull request metadata is tre
 ## Migrations
 
 PostgreSQL and SQLite migrations run transactionally; the PostgreSQL runner does not support `CREATE INDEX CONCURRENTLY`. MySQL DDL can commit independently: only one statement is supported per file, and an incomplete attempt blocks later runs until manually reviewed. Never blindly remove the attempt marker. Large backfills and non-transactional operations need a separate plan. Do not run automated resets or drops. Test compatibility between old and new application versions when a real migration is introduced.
+
+## Authentication
+
+Better Auth is self-hosted; public signup and OAuth are disabled. The first administrator is created only by an explicit interactive local command, after migrations. A durable singleton guard prevents concurrent bootstrap attempts; a failed attempt deliberately requires manual inspection. HTTP auth endpoints are allowlisted and reject untrusted or missing origins for state-changing requests. TanStack server-function CSRF protection remains enabled.
+
+The default database-backed rate limiter uses a shared counter when no trusted client IP is configured. It is conservative but can throttle unrelated users and is not a complete DDoS defense. Configure trusted proxy headers and edge protection for the actual deployment after security review; never trust arbitrary forwarded headers. Email verification, self-service recovery, external credential delivery, MFA, and business-specific authorization are not implemented.

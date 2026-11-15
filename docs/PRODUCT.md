@@ -20,4 +20,4 @@ Start a full-stack project and keep work traceable from prompt → plan → impl
 
 ## Included product behavior
 
-There is no built-in business feature or product domain. The home page only explains the project workflow. The database starts without an application schema; add approved, forward-only migrations when a product feature requires persistence.
+There is no built-in business feature or product domain. The home page explains the project workflow. Authentication is available after explicit configuration and migrations: an administrator creates accounts, users sign in with username or email and password, and users can change their own password. Public registration and OAuth are not enabled.

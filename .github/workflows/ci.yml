@@ -78,6 +78,7 @@ jobs:
       - run: bun run test:database:bun
       - run: bun run test:e2e
       - run: bun run test:example
+      - run: bun run test:auth
       - name: PostgreSQL example on production runtime
         run: bun run test:example
         env:
@@ -89,6 +90,20 @@ jobs:
           EXAMPLE_TEST_PROVIDER: mysql
           EXAMPLE_PRODUCTION: '1'
       - run: bun run build
+      - name: Auth on production runtime
+        run: bun run test:auth
+        env:
+          AUTH_TEST_PRODUCTION: '1'
+      - name: PostgreSQL auth on production runtime
+        run: bun run test:auth
+        env:
+          AUTH_TEST_PRODUCTION: '1'
+          AUTH_TEST_PROVIDER: postgres
+      - name: MySQL auth on production runtime
+        run: bun run test:auth
+        env:
+          AUTH_TEST_PRODUCTION: '1'
+          AUTH_TEST_PROVIDER: mysql
       - run: bun run test:production
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: failure()

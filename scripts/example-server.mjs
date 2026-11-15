@@ -1,5 +1,4 @@
-import { cp, mkdtemp, rm, writeFile } from 'node:fs/promises'
-import { tmpdir } from 'node:os'
+import { cp, mkdir, readdir, rm, symlink, writeFile } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
 import { spawn } from 'node:child_process'
 
@@ -26,17 +25,31 @@ if (
 }
 
 const root = process.cwd()
-const temporaryRoot = await mkdtemp(join(tmpdir(), 'template-example-'))
+const testDirectory = process.env.EXAMPLE_TEST_DIRECTORY
+if (!testDirectory) throw new Error('EXAMPLE_TEST_DIRECTORY is required')
+const temporaryRoot = join(testDirectory, 'app')
+await mkdir(temporaryRoot)
 let child
 try {
   await cp(resolve(root, 'src'), join(temporaryRoot, 'src'), { recursive: true })
-  for (const file of ['vite.config.ts', 'tsconfig.json', 'package.json']) {
+  for (const file of ['tsconfig.json', 'package.json']) {
     await cp(resolve(root, file), join(temporaryRoot, file))
   }
-  await cp(resolve(root, 'node_modules'), join(temporaryRoot, 'node_modules'), {
-    recursive: true,
-    filter: (source) => !source.includes('/node_modules/.nitro/'),
-  })
+  await cp(resolve(root, 'vite.config.ts'), join(temporaryRoot, 'vite.base.config.ts'))
+  await writeFile(
+    join(temporaryRoot, 'vite.config.ts'),
+    `import { mergeConfig } from 'vite'
+import base from './vite.base.config.ts'
+export default mergeConfig(base, { server: { fs: { allow: [${JSON.stringify(root)}, ${JSON.stringify(temporaryRoot)}] } } })
+`,
+    { flag: 'wx' },
+  )
+  const dependencies = join(temporaryRoot, 'node_modules')
+  await mkdir(dependencies)
+  for (const entry of await readdir(resolve(root, 'node_modules'))) {
+    if (['.nitro', '.vite', '.cache'].includes(entry)) continue
+    await symlink(resolve(root, 'node_modules', entry), join(dependencies, entry))
+  }
   await writeFile(
     join(temporaryRoot, 'src/routes/example.tsx'),
     `import { createFileRoute } from '@tanstack/react-router'

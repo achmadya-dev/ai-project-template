@@ -57,9 +57,14 @@ function Root() {
           >
             PROJECT / BASE
           </Link>
-          <span className="rounded-[30px] border border-[#cad8d0] px-3 py-2 text-xs">
-            v0.1 · Development starter
-          </span>
+          <nav aria-label="Account" className="flex items-center gap-4">
+            <Link to="/login" className={cn('text-sm underline underline-offset-4', focusRing)}>
+              Sign in
+            </Link>
+            <span className="rounded-[30px] border border-[#cad8d0] px-3 py-2 text-xs">
+              v0.1 · Development starter
+            </span>
+          </nav>
         </header>
         <Outlet />
         <footer className="mx-auto max-w-280 border-t border-[#d9e2db] px-7 pt-7 pb-10 text-xs text-[#5c6e66]">

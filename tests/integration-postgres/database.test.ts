@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
+import { copyFile, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
@@ -129,7 +129,7 @@ describe('PostgreSQL database adapter', () => {
     await expect(migrate(url)).resolves.toBeUndefined()
     await expect(
       db.many(z.object({ name: z.string() }), { text: 'SELECT name FROM schema_migrations' }),
-    ).resolves.toEqual([])
+    ).resolves.toEqual([{ name: '001_auth.sql' }])
 
     const dir = await mkdtemp(join(tmpdir(), 'migration-check-'))
     const migrationId = randomUUID().replaceAll('-', '')
@@ -138,6 +138,7 @@ describe('PostgreSQL database adapter', () => {
     const migrationTableName = `migration_probe_${migrationId}`
     const migrationTable = `"${migrationTableName}"`
     try {
+      await copyFile(join(process.cwd(), 'db/migrations/001_auth.sql'), join(dir, '001_auth.sql'))
       await writeFile(migrationPath, `CREATE TABLE ${migrationTable} (id integer PRIMARY KEY);`)
       await expect(migrate(url, dir)).resolves.toBeUndefined()
       await expect(migrate(url, dir)).resolves.toBeUndefined()

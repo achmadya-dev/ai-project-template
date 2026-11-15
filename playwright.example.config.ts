@@ -1,9 +1,27 @@
 import { defineConfig, devices } from '@playwright/test'
-import { mkdtempSync } from 'node:fs'
+import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
+import { randomUUID } from 'node:crypto'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
-process.env.EXAMPLE_TEST_DIRECTORY ??= mkdtempSync(join(tmpdir(), 'template-example-db-'))
+if (!process.env.EXAMPLE_TEST_DIRECTORY) {
+  process.env.EXAMPLE_TEST_DIRECTORY = mkdtempSync(join(tmpdir(), 'template-example-db-'))
+  process.env.EXAMPLE_TEST_OWNER = randomUUID()
+  writeFileSync(
+    join(process.env.EXAMPLE_TEST_DIRECTORY, '.owner'),
+    process.env.EXAMPLE_TEST_OWNER,
+    {
+      flag: 'wx',
+    },
+  )
+}
+if (
+  !process.env.EXAMPLE_TEST_OWNER ||
+  readFileSync(join(process.env.EXAMPLE_TEST_DIRECTORY, '.owner'), 'utf8') !==
+    process.env.EXAMPLE_TEST_OWNER
+) {
+  throw new Error('Example test directory ownership could not be verified')
+}
 process.env.EXAMPLE_SQLITE_PATH = join(process.env.EXAMPLE_TEST_DIRECTORY, 'example.sqlite')
 
 export default defineConfig({

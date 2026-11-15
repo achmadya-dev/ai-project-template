@@ -16,6 +16,7 @@ A single-repository TanStack Start application for planning work, implementing i
 - Task and handoff templates for work that needs to persist beyond a chat session.
 - [Optional capability guides](docs/capabilities/README.md) for SEO, AI, Markdown, CSP, health checks, and observability.
 - [Supply-chain guidance](docs/SUPPLY_CHAIN.md) for dependency audits and secret-scanning decisions.
+- Self-hosted Better Auth with username/email login, admin-only account creation, and explicit first-admin bootstrap.
 
 ## Run locally
 
@@ -36,6 +37,12 @@ Open http://127.0.0.1:3000. The home page does not require a database. `DB_PROVI
 SQLite needs a persistent local filesystem and is not automatically shared across application instances. For ephemeral or horizontally scaled hosting, select an appropriate production database. Changing `DB_PROVIDER` does not copy data; plan and verify export/import, compatibility, and backups separately.
 
 The portable example uses Kysely; the existing `DatabaseClient`/`getDb()` and its migration history remain PostgreSQL-only for compatibility. Existing PostgreSQL-specific features must be ported and tested before switching provider. Production deployments must separately configure and verify TLS, credentials, backups, connection limits, and database roles. The tested MySQL baseline is 8.4; engine-specific behavior such as collations, timestamps, transactions and constraints may differ.
+
+## Authentication setup
+
+Authentication is optional until used. Configure a unique cryptographically random `AUTH_SECRET` of at least 32 characters and an `AUTH_BASE_URL` matching the browser origin. Production requires HTTPS; plain HTTP is permitted only for loopback development. Never commit the secret or send it to an agent. After confirming the selected database is the intended target, explicitly run `bun run db:migrate`, then `bun run auth:bootstrap` in a local interactive terminal. Enter the first administrator's name, required email, username, and password at the prompts; the password is not echoed. No default account is created.
+
+Visit `/login` and sign in with username or email. An administrator can create ordinary accounts at `/account`; provide the initial password through a secure channel, and have the user change it. Public signup, OAuth, email verification and self-service password recovery are not enabled. Establish an identity-verification and credential-recovery process before production. The database-backed rate limiter defaults to a shared counter when no trusted proxy IP is configured; see `docs/SAFETY.md`. See `docs/runbooks/RECOVERY.md` if bootstrap is interrupted.
 
 ## Verify
 
@@ -86,7 +93,7 @@ If GitHub is unavailable, create a local task from `docs/tasks/TEMPLATE.md`. Do 
 
 ## Current limits
 
-This template is **not a production-ready SaaS or payment system** and has no built-in business domain. Authentication, tenant isolation, roles and permissions, business audit, hosted backups, observability, and payment integrations must be designed for each project. The database has no application schema until a project adds an approved migration.
+This template is **not a production-ready SaaS or payment system** and has no built-in business domain. Review authentication and design tenant isolation, business permissions, business audit, hosted backups, observability, and payment integrations for each project. Auth tables are created only by explicit migrations.
 
 Repository rules and CI do not make agents infallible. Configure merge protection in GitHub; see [docs/GITHUB_SETUP.md](docs/GITHUB_SETUP.md). Worker permissions belong to the tool you use. This repository does not include an MCP connection, token, global hook, or hidden deployment.
 
