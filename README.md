@@ -14,6 +14,8 @@ A single-repository TanStack Start application for planning work, implementing i
 - `AGENTS.md` and adapters for Cursor, Claude, and Copilot, plus portable planning, implementation, and review procedures.
 - Issue and pull request templates, a PR metadata check, CI, and GitHub ruleset setup guidance.
 - Task and handoff templates for work that needs to persist beyond a chat session.
+- [Optional capability guides](docs/capabilities/README.md) for SEO, AI, Markdown, CSP, health checks, and observability.
+- [Supply-chain guidance](docs/SUPPLY_CHAIN.md) for dependency audits and secret-scanning decisions.
 
 ## Run locally
 
@@ -38,6 +40,10 @@ bun run verify
 ```
 
 `TEST_DATABASE_URL` in `.env.example` targets a separate test database on port 5433. Integration tests require a disposable database whose name ends in `_test`. The name alone does not prove isolation; use only disposable test credentials. The E2E home-page test does not require a database.
+
+Browser tests include automated accessibility and keyboard navigation checks for the starter home
+page. Automated checks detect only some accessibility issues; manually test real workflows with a
+keyboard and assistive technology.
 
 | Command | Purpose |
 | --- | --- |

@@ -1,0 +1,11 @@
+# Supply-chain checks
+
+The repository pins dependencies and commits `bun.lock`; CI installs with `--frozen-lockfile`. Dependabot proposes Bun and GitHub Actions updates weekly. These measures do not establish that packages are safe or guarantee that GitHub's optional security features are enabled.
+
+Run `bun audit --audit-level=high` using the pinned Bun version to consult the registry's known advisory data. An audit can fail because of vulnerabilities or a registry/network problem; inspect the output and do not treat a scanner error as a clean result. A clean result only covers known advisories reported by the registry at that time. Review applicability, exploitability, direct and transitive impact, and fixed versions before changing dependencies. Record a risk acceptance and an expiry for any justified exception; do not suppress advisories to make a check green.
+
+Secret scanning is not configured by this repository. Evaluate GitHub secret scanning and push protection for the repository's actual visibility and plan, or an independently reviewed scanner; neither should print detected secret values into CI logs or artifacts. Test with vendor-provided synthetic fixtures and investigate false positives without publishing real credentials. If a real secret is exposed, restrict access, revoke or rotate it, and follow the incident process; deleting a line or rewriting history alone does not revoke it.
+
+As a local evaluation, Gitleaks 8.24.3 scanned a clean synthetic fixture successfully, detected a generated synthetic GitHub-style token with redacted output, and failed closed when given a nonexistent configuration. These samples are not a comprehensive coverage or false-positive assessment. GitHub secret scanning availability depends on repository settings and plan. Neither candidate is enabled or required in CI; choose and review deployment, licensing, history coverage, safe report handling, and alert ownership before enforcing one.
+
+The audit is not currently a blocking CI check: registry availability, advisory changes, and failure behavior need a deliberate operational decision. Scanners, CI permissions, configuration, and dependency upgrades require high-risk review. Never execute untrusted pull-request code in a privileged workflow.
