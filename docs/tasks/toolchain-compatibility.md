@@ -4,8 +4,8 @@ Status: in-review
 Risk: high
 Issue: https://github.com/achmadya-dev/ai-project-template/issues/45
 PR: https://github.com/achmadya-dev/ai-project-template/pull/46
-Plan revision: 1
-Authorization: user requested investigation and fixes for TypeScript 7, Node 26 types and GitHub Actions failures; no billing changes or production deployment authorized.
+Plan revision: 2
+Authorization: user requested investigation and fixes for TypeScript 7 and GitHub Actions failures, then explicitly requested upgrading the tooling runtime and types to Node 26; no billing changes or production deployment authorized.
 
 ## Goal
 
@@ -42,7 +42,7 @@ Dependency and tooling changes are high risk. Keep pinned lockfile versions, doc
 
 ## Decisions and questions
 
-Node 24 is the declared test-tool runtime. Upgrading Node or using split TypeScript versions requires demonstrated compatibility; do not assume Node 26 types are valid on Node 24.
+Node 26 is the explicitly requested test-tool runtime. The original Node 24 verification below is historical evidence; validate the updated Node 26 runtime and types together.
 
 ## Evidence
 
@@ -55,3 +55,7 @@ Node 24 is the declared test-tool runtime. Upgrading Node or using split TypeScr
 - With Bun 1.4.2 and Node 24.22.3, `bun install --frozen-lockfile` and `bun run verify` passed. Browser tests used local Chromium revision 1255 through `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`; the Playwright-pinned browser was not verified. A synthetic incorrect assignment was rejected by both TypeScript 7.0.2 and TypeScript 6.0.3. `bun audit --audit-level=high` found no high or critical findings and reported three lower-severity findings.
 - Self-review: changes are limited to the test/compiler toolchain and documentation; existing lint, type checking, policy tests and security controls remain enabled. Hosted CI remains blocked until the GitHub account owner resolves billing; no GitHub-hosted run was claimed to pass.
 - Account owner action: review the relevant account or organization billing settings in GitHub and contact GitHub Support if the lock persists. Once resolved, re-run the failed workflow and inspect all results; do not modify payment details or bypass the hosted checks from this task.
+- Plan revision 2: at the user's explicit request, changed `.nvmrc` from Node 24 to Node 26 and upgraded `@types/node` to 26.6.6. Bun remains the application runtime. Updated the architecture, setup guidance, agent instructions, and doctor hint; historical Node 24 results above describe the earlier revision.
+- With Bun 1.4.2 and Node 26.13.0, `bun install --frozen-lockfile` and `bun run verify` passed, including both TypeScript compilers, 27 unit tests, 5 SQLite integration tests, 4 home E2E tests, 1 example E2E test, 1 auth E2E test, and production smoke. Chromium revision 1255 was used instead of Playwright's pinned revision 1243.
+- On separately verified disposable database containers, PostgreSQL integration passed 7 tests and MySQL integration passed 5 tests using Bun 1.4.2 and Node 26.13.0. `bun audit --audit-level=high` reported no high or critical advisories and three lower-severity findings.
+- Node 26 and TypeScript 7 are tooling and dependency changes with high risk; hosted CI and native compiler platforms other than Linux x64 remain unverified. No tests or security checks were disabled.

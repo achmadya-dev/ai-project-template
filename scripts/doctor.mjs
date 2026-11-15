@@ -14,7 +14,7 @@ try {
   )
 } catch {
   console.log(
-    'TOOLING Node not found; Bun app commands work, but the policy tests and current Vitest/Playwright toolchain may require Node 24',
+    'TOOLING Node not found; Bun app commands work, but the policy tests and current Vitest/Playwright toolchain may require Node 26',
   )
 }
 

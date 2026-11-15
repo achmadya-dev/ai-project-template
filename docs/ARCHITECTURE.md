@@ -2,7 +2,7 @@
 
 ## Baseline
 
-Modular monolith: one TanStack Start application, one repository, SQLite by default, optional PostgreSQL or MySQL, Bun 1.4.2, and the Nitro `bun` preset. Bun (pinned in `.bun-version` and `packageManager`) manages dependencies and runs the application in development, builds, and production. Commit `bun.lock` and use frozen installs in CI. Node 24 is not the application runtime; it is retained for the current test tooling and policy-test runner.
+Modular monolith: one TanStack Start application, one repository, SQLite by default, optional PostgreSQL or MySQL, Bun 1.4.2, and the Nitro `bun` preset. Bun (pinned in `.bun-version` and `packageManager`) manages dependencies and runs the application in development, builds, and production. Commit `bun.lock` and use frozen installs in CI. Node 26 is not the application runtime; it is retained for the current test tooling and policy-test runner.
 
 The main backend flow is:
 
