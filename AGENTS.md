@@ -25,7 +25,7 @@ Before creating or editing a pull request, read `.github/PULL_REQUEST_TEMPLATE.m
 - Use `docs/workflows/PLAN.md`, `IMPLEMENT.md`, or `REVIEW.md` for the procedure. These are portable runbooks, not auto-discovered vendor skills.
 
 ## Commands
-- Bun version in `.bun-version` is the package manager and application runtime; `bun install --frozen-lockfile`; copy `.env.example` to `.env` without overwriting an existing file. Node 24 is retained for current Vitest/Playwright compatibility and the Node policy-test runner; it is not the application runtime.
+- Bun version in `.bun-version` is the package manager and application runtime; `bun install --frozen-lockfile`; copy `.env.example` to `.env` without overwriting an existing file. Node 26 is retained for current Vitest/Playwright compatibility and the Node policy-test runner; it is not the application runtime.
 - `bun run doctor`: readiness hints (does not prove GitHub protection).
 - `bun run dev`: Bun-powered loopback-only development server.
 - `bun run format`: format maintained source/test/script/config files with Prettier; Tailwind classes are sorted by the Tailwind Prettier plugin.
