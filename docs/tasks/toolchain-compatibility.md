@@ -4,8 +4,8 @@ Status: in-review
 Risk: high
 Issue: https://github.com/achmadya-dev/ai-project-template/issues/45
 PR: https://github.com/achmadya-dev/ai-project-template/pull/46
-Plan revision: 2
-Authorization: user requested investigation and fixes for TypeScript 7 and GitHub Actions failures, then explicitly requested upgrading the tooling runtime and types to Node 26; no billing changes or production deployment authorized.
+Plan revision: 3
+Authorization: user requested investigation and fixes for TypeScript 7 and GitHub Actions failures, then explicitly requested upgrading the tooling runtime and types to Node 26 and using TypeScript 6 alone; no billing changes or production deployment authorized.
 
 ## Goal
 
@@ -43,6 +43,7 @@ Dependency and tooling changes are high risk. Keep pinned lockfile versions, doc
 ## Decisions and questions
 
 Node 26 is the explicitly requested test-tool runtime. The original Node 24 verification below is historical evidence; validate the updated Node 26 runtime and types together.
+The user subsequently chose TypeScript 6 alone rather than a split TypeScript 6/7 toolchain; the split-compiler evidence below is historical.
 
 ## Evidence
 
@@ -59,3 +60,5 @@ Node 26 is the explicitly requested test-tool runtime. The original Node 24 veri
 - With Bun 1.4.2 and Node 26.13.0, `bun install --frozen-lockfile` and `bun run verify` passed, including both TypeScript compilers, 27 unit tests, 5 SQLite integration tests, 4 home E2E tests, 1 example E2E test, 1 auth E2E test, and production smoke. Chromium revision 1255 was used instead of Playwright's pinned revision 1243.
 - On separately verified disposable database containers, PostgreSQL integration passed 7 tests and MySQL integration passed 5 tests using Bun 1.4.2 and Node 26.13.0. `bun audit --audit-level=high` reported no high or critical advisories and three lower-severity findings.
 - Node 26 and TypeScript 7 are tooling and dependency changes with high risk; hosted CI and native compiler platforms other than Linux x64 remain unverified. No tests or security checks were disabled.
+- Plan revision 3: the user explicitly chose TypeScript 6 only. Replaced the side-by-side setup with the regular `typescript` 6.0.3 package, removed the TypeScript 7 native compiler and compatibility alias, and changed `typecheck` to run the single TypeScript 6 compiler. This intentionally removes the additional TypeScript 7 comparison, not lint or the existing TypeScript type-check requirement.
+- With Bun 1.4.2 and Node 26.13.0, `bun install --frozen-lockfile`, `bun run typecheck`, and `bun run verify` passed on the single-compiler configuration. The verification includes 27 unit tests, 5 SQLite integration tests, 4 home E2E tests, 1 example E2E test, 1 auth E2E test and production smoke. Tests used Chromium revision 1255, not the Playwright-pinned revision 1243. `bun audit --audit-level=high` found no high or critical advisories and three lower-severity findings. Hosted CI remains blocked by billing.

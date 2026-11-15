@@ -24,7 +24,7 @@ Bun manages dependencies, runs development and build commands, and is the produc
 
 The application requires the Bun version in `.bun-version`. SQLite runs locally without a separate database server. Node 26 is used by the current test tooling and policy-test runner; it is not the application runtime.
 
-Type checking uses TypeScript 7's native `tsc` and TypeScript 6's `tsc6`. The `typescript` dependency is the TypeScript 6 compatibility API required by `typescript-eslint`; the native compiler is installed separately as `@typescript/native`. Keep both checks enabled until the lint ecosystem supports the newer API. Node type definitions follow the Node 26 test-tool runtime specified in `.nvmrc`.
+Type checking and ESLint use TypeScript 6. Node type definitions follow the Node 26 test-tool runtime specified in `.nvmrc`.
 
 ```sh
 bun install --frozen-lockfile
