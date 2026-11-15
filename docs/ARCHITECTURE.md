@@ -15,7 +15,7 @@ client/loader
   -> SQLite, PostgreSQL, or MySQL
 ```
 
-Server functions are endpoints and must validate input and enforce authorization. Never trust input, tenant IDs, or roles sent by the client. The pinned TanStack Start version provides default CSRF middleware for server functions; do not disable it. Authentication is not implemented, and the template has no business server functions.
+Server functions are endpoints and must validate input and enforce authorization. Never trust input, tenant IDs, or roles sent by the client. The pinned TanStack Start version provides default CSRF middleware for server functions; do not disable it. Better Auth is configured lazily and has a restricted HTTP route with explicit origin checks. Public signup and OAuth are disabled.
 
 ## Backend core
 
@@ -38,7 +38,7 @@ This core is not a generic service framework. Do not add `BaseRepository`, `Mana
 - Server-only repositories (`*.server.ts`): own parameterized, domain-specific queries. Portable features use Kysely with an explicit schema type; legacy PostgreSQL features may use `DatabaseClient`. Do not expose driver result types or raw database error codes.
 - `*.functions.ts`: transport boundary. Attach request middleware, validate with the domain schema using `.validator((input: unknown) => schema.parse(input))`, enforce policy/authorization, compose dependencies, and delegate. Do not read `process.env` or use `pg` directly here.
 - Routes: presentation and user interaction; no SQL or server-only infrastructure.
-- Migrations: explicit, versioned, and immutable after application. PostgreSQL keeps existing files and history in `db/migrations`; SQLite and MySQL use their own subdirectories. MySQL DDL can commit independently; failed or interrupted attempts require manual recovery. No executable application migration is included.
+- Migrations: explicit, versioned, and immutable after application. PostgreSQL keeps existing files and history in `db/migrations`; SQLite and MySQL use their own subdirectories. MySQL DDL can commit independently; failed or interrupted attempts require manual recovery. Auth migrations are included but never run at application startup.
 
 Dependencies point inward. UI and transport may depend on domain contracts and server functions. Repositories may depend on domain types and the shared database abstraction. Domain code does not depend on infrastructure.
 
@@ -54,7 +54,7 @@ Application server code uses `getEnv()` instead of repeatedly reading `process.e
 
 ## Production decisions required
 
-Choose the authentication provider and session model, tenant boundary, RBAC, runtime database roles, logging/audit sink, rate limits, backup/restore procedures, and deployment model. Production must use separate application and migration roles. Authentication and row-level security are not implemented in the template.
+Review the Better Auth session and account-provisioning model, tenant boundary, business authorization, runtime database roles, logging/audit sink, rate limits, backup/restore procedures, and deployment model. Production must use separate application and migration roles. Row-level security is not implemented.
 
 Structured console logging is a baseline, not a production observability stack. A production sink can replace the logger at the shared boundary without changing feature repositories.
 

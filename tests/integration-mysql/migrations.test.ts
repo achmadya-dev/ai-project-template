@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
+import { copyFile, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import mysql from 'mysql2/promise'
@@ -15,11 +15,16 @@ it('serializes migrations, detects changed history and refuses an interrupted mi
   const directory = await mkdtemp(join(tmpdir(), 'mysql-migrations-'))
   const suffix = randomUUID().replaceAll('-', '')
   const table = `migration_probe_${suffix}`
-  const first = `001_create_probe_${suffix}.sql`
-  const second = `002_bad_probe_${suffix}.sql`
+  const first = `010_create_probe_${suffix}.sql`
+  const second = `011_bad_probe_${suffix}.sql`
   const migration = join(directory, first)
   const connection = await mysql.createConnection(url)
   try {
+    await migrateMysql(url)
+    const baseMigrations = join(process.cwd(), 'db/migrations/mysql')
+    for (const name of await readdir(baseMigrations)) {
+      if (name.endsWith('.sql')) await copyFile(join(baseMigrations, name), join(directory, name))
+    }
     await writeFile(migration, `CREATE TABLE ${table} (id INTEGER PRIMARY KEY)`)
     await Promise.all([migrateMysql(url, directory), migrateMysql(url, directory)])
     await writeFile(migration, `${await readFile(migration, 'utf8')} -- changed`)

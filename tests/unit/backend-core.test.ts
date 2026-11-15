@@ -20,6 +20,9 @@ describe('server environment', () => {
         url: 'postgresql://app:secret@127.0.0.1:5432/app_dev',
       },
       logLevel: 'debug',
+      authSecret: undefined,
+      authBaseUrl: undefined,
+      nodeEnv: undefined,
     })
   })
 
@@ -28,6 +31,9 @@ describe('server environment', () => {
       databaseUrl: undefined,
       database: { provider: 'sqlite', path: '.data/app.sqlite' },
       logLevel: 'info',
+      authSecret: undefined,
+      authBaseUrl: undefined,
+      nodeEnv: undefined,
     })
   })
 

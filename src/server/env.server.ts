@@ -10,6 +10,9 @@ const envSchema = z
     DB_PROVIDER: z.enum(['sqlite', 'postgres', 'mysql']).optional(),
     SQLITE_PATH: z.string().min(1).default('.data/app.sqlite'),
     LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
+    AUTH_SECRET: z.string().min(32).optional(),
+    AUTH_BASE_URL: z.string().url().optional(),
+    NODE_ENV: z.string().optional(),
   })
   .superRefine((value, context) => {
     const provider = value.DB_PROVIDER
@@ -41,7 +44,14 @@ const envSchema = z
     if (provider === 'sqlite') database = { provider, path: value.SQLITE_PATH }
     else if (url) database = { provider, url }
     else throw new Error('Database URL missing after validation')
-    return { databaseUrl: url, database, logLevel: value.LOG_LEVEL }
+    return {
+      databaseUrl: url,
+      database,
+      logLevel: value.LOG_LEVEL,
+      authSecret: value.AUTH_SECRET,
+      authBaseUrl: value.AUTH_BASE_URL,
+      nodeEnv: value.NODE_ENV,
+    }
   })
 
 export type Env = z.infer<typeof envSchema>
