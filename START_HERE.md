@@ -12,6 +12,8 @@ Fill in these files with your agent before adding a business feature:
 
 Do not define every possible feature upfront. Start with one end-to-end workflow that can be demonstrated.
 
+For optional capabilities and agent context, see [docs/capabilities/README.md](docs/capabilities/README.md). They are not enabled by default.
+
 ## 2. First prompt
 
 Read `AGENTS.md` and the documents it references. I want to use this repository for [product], for [users], so they can [outcome]. Propose an MVP with a narrow scope and acceptance criteria. Identify unresolved business decisions. Update `docs/PRODUCT.md` and `docs/DOMAIN.md`. Create a GitHub planning issue if access is available; otherwise, create a local task from `docs/tasks/TEMPLATE.md`. Do not implement a business feature yet.
