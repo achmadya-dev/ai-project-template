@@ -3,7 +3,7 @@
 Status: in-review
 Risk: high
 Issue: https://github.com/achmadya-dev/ai-project-template/issues/45
-PR: not-created
+PR: https://github.com/achmadya-dev/ai-project-template/pull/46
 Plan revision: 1
 Authorization: user requested investigation and fixes for TypeScript 7, Node 26 types and GitHub Actions failures; no billing changes or production deployment authorized.
 
