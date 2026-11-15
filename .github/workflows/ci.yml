@@ -44,8 +44,22 @@ jobs:
           --health-interval 5s
           --health-timeout 5s
           --health-retries 10
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: ci_only_root_password
+          MYSQL_USER: app
+          MYSQL_PASSWORD: ci_only_password
+          MYSQL_DATABASE: app_test
+        ports: ["3306:3306"]
+        options: >-
+          --health-cmd "mysqladmin ping -h 127.0.0.1 -u root -pci_only_root_password"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
     env:
       TEST_DATABASE_URL: postgresql://app:ci_only_password@127.0.0.1:5432/app_test
+      TEST_MYSQL_URL: mysql://app:ci_only_password@127.0.0.1:3306/app_test
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -59,8 +73,21 @@ jobs:
       - run: bun install --frozen-lockfile
       - run: bun run playwright install --with-deps chromium
       - run: bun run test:integration
+      - run: bun run test:integration:postgres
+      - run: bun run test:integration:mysql
+      - run: bun run test:database:bun
       - run: bun run test:e2e
       - run: bun run test:example
+      - name: PostgreSQL example on production runtime
+        run: bun run test:example
+        env:
+          EXAMPLE_TEST_PROVIDER: postgres
+          EXAMPLE_PRODUCTION: '1'
+      - name: MySQL example on production runtime
+        run: bun run test:example
+        env:
+          EXAMPLE_TEST_PROVIDER: mysql
+          EXAMPLE_PRODUCTION: '1'
       - run: bun run build
       - run: bun run test:production
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

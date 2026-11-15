@@ -53,6 +53,32 @@ export async function migrate(
   }
 }
 if (process.argv[1] && pathToFileURL(path.resolve(process.argv[1])).href === import.meta.url) {
-  await migrate(process.env.DATABASE_URL)
+  const provider =
+    process.env.DB_PROVIDER ||
+    (process.env.DATABASE_URL?.startsWith('mysql:')
+      ? 'mysql'
+      : process.env.DATABASE_URL
+        ? 'postgres'
+        : 'sqlite')
+  if (provider === 'sqlite') {
+    if (process.env.DATABASE_URL) throw new Error('SQLite does not use DATABASE_URL')
+    const { migrateSqlite } = await import('./migrate-sqlite.mjs')
+    await migrateSqlite(process.env.SQLITE_PATH || '.data/app.sqlite')
+  } else if (provider === 'postgres') {
+    const url = process.env.DATABASE_URL
+    if (
+      !url ||
+      !['postgres:', 'postgresql:'].includes(new URL(url).protocol) ||
+      new URL(url).pathname.length <= 1
+    ) {
+      throw new Error('PostgreSQL requires a matching DATABASE_URL')
+    }
+    await migrate(url)
+  } else if (provider === 'mysql') {
+    const { migrateMysql } = await import('./migrate-mysql.mjs')
+    await migrateMysql(process.env.DATABASE_URL)
+  } else {
+    throw new Error('Unsupported DB_PROVIDER')
+  }
   console.log('Migrations applied successfully.')
 }

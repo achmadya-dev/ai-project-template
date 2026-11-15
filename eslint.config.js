@@ -52,7 +52,7 @@ export default tseslint.config(
   },
   {
     files: ['src/server/**/*.ts'],
-    ignores: ['src/server/database.server.ts'],
+    ignores: ['src/server/database.server.ts', 'src/server/portable-database.server.ts'],
     rules: {
       'no-restricted-imports': ['error', { patterns: ['pg'] }],
     },

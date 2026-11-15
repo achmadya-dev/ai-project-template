@@ -56,8 +56,8 @@ Dependencies should point inward: UI/transport -> domain/repository contracts; i
 
 - Use parameterized SQL only. Never interpolate user-controlled values into SQL text.
 - Keep domain-specific SQL in server-only repository files.
-- Feature repositories depend on `DatabaseClient`, not `pg.Pool`, `PoolClient`, `QueryResult`, or raw PostgreSQL error objects.
-- `src/server/database.server.ts` owns `pg` query/result plumbing, row parsing, transaction lifecycle, and generic PostgreSQL error normalization.
+- Portable feature repositories use a typed Kysely instance and validated rows. Existing PostgreSQL-only repositories may depend on `DatabaseClient`. Neither exposes raw driver pools or results.
+- `src/server/database.server.ts` owns the legacy `pg` adapter; `src/server/portable-database.server.ts` composes the supported Kysely drivers.
 - Make database constraints enforce invariants that must survive concurrency (for example uniqueness), then map known constraint names next to the domain query that understands their meaning.
 - Do not add repository-level `try/catch` merely to inspect PostgreSQL code/constraint fields; use the adapter mapping. Catch locally only when that scope can recover or translate a meaning that cannot be expressed by the adapter configuration.
 - Do not silently swallow database errors. Unknown failures must propagate to the request boundary and become non-exposed internal errors.
@@ -101,7 +101,7 @@ Tests prove behavior, not implementation structure.
 
 - Every meaningful behavior change needs a test at the cheapest layer that proves it.
 - Domain rules and typed environment/error normalization: unit tests.
-- Repository/database adapter SQL behavior, constraints, row validation, migrations, and concurrency: PostgreSQL integration tests.
+- Repository/database adapter SQL behavior, constraints, row validation, migrations, and concurrency: integration tests for every supported provider.
 - Critical user flows and browser behavior: Playwright E2E.
 - Production runtime assumptions: production smoke tests.
 - Include meaningful negative cases and boundary cases, not only the happy path.

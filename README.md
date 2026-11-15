@@ -6,11 +6,11 @@ A single-repository TanStack Start application for planning work, implementing i
 
 ## Included
 
-- TanStack Start, React, TypeScript, Bun runtime through Nitro, and PostgreSQL infrastructure.
+- TanStack Start, React, TypeScript, Bun runtime through Nitro, and SQLite, PostgreSQL, and MySQL infrastructure.
 - Tailwind CSS, ESLint, Prettier with Tailwind class sorting, and Husky/lint-staged for staged files.
 - A starter home page with no built-in business feature.
-- A versioned, transactional migration runner with locking and checksums. Migrations never run automatically at application startup.
-- Unit tests, PostgreSQL integration tests for the adapter and migration runner, a Chromium home-page E2E test, and a production smoke test.
+- Versioned migrations with locking and checksums. SQLite and PostgreSQL run migrations transactionally; MySQL DDL requires manual recovery after interruption. Migrations never run automatically at application startup.
+- Unit tests, SQLite integration tests, optional PostgreSQL/MySQL integration tests, Chromium E2E tests, and a production smoke test.
 - `AGENTS.md` and adapters for Cursor, Claude, and Copilot, plus portable planning, implementation, and review procedures.
 - Issue and pull request templates, a PR metadata check, CI, and GitHub ruleset setup guidance.
 - Task and handoff templates for work that needs to persist beyond a chat session.
@@ -21,7 +21,7 @@ A single-repository TanStack Start application for planning work, implementing i
 
 Bun manages dependencies, runs development and build commands, and is the production application runtime. The Bun version is pinned in `.bun-version` and `packageManager`. Install Bun using the [official installation guide](https://bun.com/docs/installation). Nitro builds with the `bun` preset.
 
-The application requires the Bun version in `.bun-version`. Docker Compose or PostgreSQL is needed only for integration tests. Node 24 is used by the current test tooling and policy-test runner; it is not the application runtime.
+The application requires the Bun version in `.bun-version`. SQLite runs locally without a separate database server. Node 24 is used by the current test tooling and policy-test runner; it is not the application runtime.
 
 ```sh
 bun install --frozen-lockfile
@@ -29,17 +29,22 @@ if [ ! -e .env ]; then cp .env.example .env; fi
 bun run dev
 ```
 
-Open http://127.0.0.1:3000. The home page does not require a database. Configure `DATABASE_URL` only when a new feature needs database access. `bun run db:migrate` applies numbered `.sql` files in `db/migrations`; the `.sql.example` template there is not executed. The development server binds to loopback. Do not expose it to a network without authentication.
+Open http://127.0.0.1:3000. The home page does not require a database. `DB_PROVIDER=sqlite` and `SQLITE_PATH=.data/app.sqlite` are the defaults; the file is created only when database access or migrations are requested. For PostgreSQL or MySQL, set `DB_PROVIDER=postgres` or `mysql` and set a matching `DATABASE_URL`. For compatibility an existing PostgreSQL `DATABASE_URL` without `DB_PROVIDER` selects PostgreSQL. Never combine `DB_PROVIDER=sqlite` with `DATABASE_URL`.
+
+`bun run db:migrate` is explicit and targets the selected provider: numbered SQL files in `db/migrations/sqlite`, `db/migrations/mysql`, or the existing PostgreSQL `db/migrations` root. Confirm the target before running it. MySQL migration files must contain one statement each; its DDL cannot be rolled back reliably. An unfinished MySQL attempt stops subsequent migration runs for manual recovery. The development server binds to loopback.
+
+SQLite needs a persistent local filesystem and is not automatically shared across application instances. For ephemeral or horizontally scaled hosting, select an appropriate production database. Changing `DB_PROVIDER` does not copy data; plan and verify export/import, compatibility, and backups separately.
+
+The portable example uses Kysely; the existing `DatabaseClient`/`getDb()` and its migration history remain PostgreSQL-only for compatibility. Existing PostgreSQL-specific features must be ported and tested before switching provider. Production deployments must separately configure and verify TLS, credentials, backups, connection limits, and database roles. The tested MySQL baseline is 8.4; engine-specific behavior such as collations, timestamps, transactions and constraints may differ.
 
 ## Verify
 
 ```sh
-docker compose --profile test up -d --wait db-test
 bun run playwright install chromium
 bun run verify
 ```
 
-`TEST_DATABASE_URL` in `.env.example` targets a separate test database on port 5433. Integration tests require a disposable database whose name ends in `_test`. The name alone does not prove isolation; use only disposable test credentials. The E2E home-page test does not require a database.
+The default integration and example E2E tests use disposable SQLite databases and do not require Docker. To exercise PostgreSQL and MySQL, run `bun run test:integration:postgres` and `bun run test:integration:mysql` with `TEST_DATABASE_URL` and `TEST_MYSQL_URL` pointing to separately verified disposable databases ending in `_test`. The suffix alone does not prove isolation. CI runs all three provider suites.
 
 Browser tests include automated accessibility and keyboard navigation checks for the starter home
 page. Automated checks detect only some accessibility issues; manually test real workflows with a
@@ -51,9 +56,11 @@ keyboard and assistive technology.
 | `bun run format` | Format maintained source, tests, scripts, and config; sort Tailwind utilities |
 | `bun run format:check` | Check formatting without modifying files |
 | `bun run check` | Format check, lint, policy and unit tests, build, and typecheck; no database required |
-| `bun run verify` | Run checks, PostgreSQL integration, E2E, and Bun production smoke |
+| `bun run verify` | Run checks, SQLite integration, E2E, and Bun production smoke |
+| `bun run test:integration:postgres` | Run PostgreSQL integration tests against a disposable target |
+| `bun run test:integration:mysql` | Run MySQL integration tests against a disposable target |
 | `bun run task:new <slug>` | Create a task document from the task template without overwriting existing files |
-| `bun run db:migrate` | Apply migrations to `DATABASE_URL`; confirm the target first |
+| `bun run db:migrate` | Apply migrations to the selected provider; confirm the target first |
 | `bun run build && bun run start` | Build and run the production application with Bun and Nitro's Bun preset |
 
 ## Workflow
