@@ -1,26 +1,44 @@
 import { expect, test } from '@playwright/test'
-import pg from 'pg'
+import {
+  createPortableDatabase,
+  type DatabaseConfig,
+} from '../../src/server/portable-database.server'
+import type { ExampleDatabase } from '../../src/modules/example-widget/repository.server'
 
-const url = process.env.TEST_DATABASE_URL
-if (!url || !new URL(url).pathname.endsWith('_test')) {
-  throw new Error('TEST_DATABASE_URL must target a disposable database ending in _test')
-}
-const pool = new pg.Pool({ connectionString: url })
+const path = process.env.EXAMPLE_SQLITE_PATH
+if (!path) throw new Error('EXAMPLE_SQLITE_PATH is required')
+const provider = process.env.EXAMPLE_TEST_PROVIDER || 'sqlite'
+const url = provider === 'postgres' ? process.env.TEST_DATABASE_URL : process.env.TEST_MYSQL_URL
+let config: DatabaseConfig
+if (provider === 'sqlite') config = { provider, path }
+else if (
+  (provider === 'postgres' || provider === 'mysql') &&
+  url &&
+  new URL(url).pathname.endsWith('_test') &&
+  (provider === 'postgres'
+    ? ['postgres:', 'postgresql:'].includes(new URL(url).protocol)
+    : new URL(url).protocol === 'mysql:')
+) {
+  config = { provider, url }
+} else throw new Error('A matching disposable test database ending in _test is required')
+const db = createPortableDatabase<ExampleDatabase>(config)
 let created = false
 
 test.beforeAll(async () => {
-  await pool.query(`CREATE TABLE example_widgets (
-    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    name text NOT NULL CONSTRAINT example_widgets_name_key UNIQUE
-  )`)
+  await db.schema
+    .createTable('example_widgets')
+    .addColumn('id', 'varchar(36)', (column) => column.primaryKey())
+    .addColumn('name', 'varchar(80)', (column) => column.notNull())
+    .addUniqueConstraint('example_widgets_name_key', ['name'])
+    .execute()
   created = true
 })
 
 test.afterAll(async () => {
   try {
-    if (created) await pool.query('DROP TABLE example_widgets')
+    if (created) await db.schema.dropTable('example_widgets').execute()
   } finally {
-    await pool.end()
+    await db.destroy()
   }
 })
 
@@ -39,7 +57,7 @@ test('validates input and creates a widget through the server boundary', async (
   await page.getByLabel('Name').fill('Example')
   await page.getByRole('button', { name: 'Create' }).click()
   await expect(page.getByRole('status')).toHaveText('This name is already in use.')
-  await pool.query('DROP TABLE example_widgets')
+  await db.schema.dropTable('example_widgets').execute()
   created = false
   await page.getByLabel('Name').fill('Another')
   await page.getByRole('button', { name: 'Create' }).click()

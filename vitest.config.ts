@@ -14,6 +14,22 @@ export default defineConfig({
           hookTimeout: 15000,
         },
       },
+      {
+        test: {
+          name: 'integration-postgres',
+          include: ['tests/integration-postgres/**/*.test.ts'],
+          testTimeout: 15000,
+          hookTimeout: 15000,
+        },
+      },
+      {
+        test: {
+          name: 'integration-mysql',
+          include: ['tests/integration-mysql/**/*.test.ts'],
+          testTimeout: 15000,
+          hookTimeout: 15000,
+        },
+      },
     ],
   },
 })

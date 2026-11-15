@@ -2,6 +2,8 @@
 
 Use these as shape examples, not copy-paste requirements. `docs/CODE_STANDARDS.md` is normative; this document shows the preferred implementation style for the current architecture.
 
+For a portable Kysely example, see `src/modules/example-widget/`. The SQL/`DatabaseClient` examples below describe the retained PostgreSQL-only compatibility path, not portable SQL. Do not assume PostgreSQL placeholders or `RETURNING` work in MySQL.
+
 ## Vertical slice
 
 ```text

@@ -2,7 +2,7 @@
 
 ## Baseline
 
-Modular monolith: one TanStack Start application, one repository, PostgreSQL infrastructure, Bun 1.4.2, and the Nitro `bun` preset. Bun (pinned in `.bun-version` and `packageManager`) manages dependencies and runs the application in development, builds, and production. Commit `bun.lock` and use frozen installs in CI. Node 24 is not the application runtime; it is retained for the current test tooling and policy-test runner.
+Modular monolith: one TanStack Start application, one repository, SQLite by default, optional PostgreSQL or MySQL, Bun 1.4.2, and the Nitro `bun` preset. Bun (pinned in `.bun-version` and `packageManager`) manages dependencies and runs the application in development, builds, and production. Commit `bun.lock` and use frozen installs in CI. Node 24 is not the application runtime; it is retained for the current test tooling and policy-test runner.
 
 The main backend flow is:
 
@@ -11,9 +11,8 @@ client/loader
   -> TanStack server function
   -> request middleware + TanStack schema validator
   -> domain repository
-  -> DatabaseClient abstraction
-  -> pg adapter
-  -> PostgreSQL
+  -> Kysely query builder and dialect
+  -> SQLite, PostgreSQL, or MySQL
 ```
 
 Server functions are endpoints and must validate input and enforce authorization. Never trust input, tenant IDs, or roles sent by the client. The pinned TanStack Start version provides default CSRF middleware for server functions; do not disable it. Authentication is not implemented, and the template has no business server functions.
@@ -27,18 +26,19 @@ Server functions are endpoints and must validate input and enforce authorization
 - `logger.server.ts`: structured JSON logging without raw payloads or secrets.
 - `request.ts`: import-safe TanStack middleware and `RequestResult` conversion; its `.server()` callback dynamically loads the executor so server-only logging does not enter the client graph.
 - `request.server.ts`: request ID, timing, structured error logging, and error normalization. Validators use `.validator((input) => schema.parse(input))` so Zod errors can be normalized consistently.
-- `database.server.ts`: the only application wrapper for `pg`; owns query result handling, row validation, transactions, and known PostgreSQL error mapping.
-- `db.server.ts`: lazy runtime database composition from typed configuration.
+- `database.server.ts`: the legacy PostgreSQL-only wrapper; owns query result handling, row validation, transactions, and known PostgreSQL error mapping.
+- `portable-database.server.ts`: Kysely dialect composition for SQLite, PostgreSQL, and MySQL. Provider-specific drivers stay server-only.
+- `db.server.ts`: lazy composition for the legacy PostgreSQL-only adapter. Portable repositories use `createPortableDatabase` with typed configuration and their own small database schema interface.
 
 This core is not a generic service framework. Do not add `BaseRepository`, `Manager`, `Processor`, or other layers without a concrete need.
 
 ## Boundaries
 
 - Domain: `src/modules/<domain>/domain` contains pure rules, input and row/result schemas, and domain types. It does not import React, TanStack, databases, process/environment, filesystems, or network APIs.
-- Server-only repositories (`*.server.ts`): own parameterized, domain-specific SQL. They accept or compose `DatabaseClient`, not `pg.Pool`, and do not expose `QueryResult` or PostgreSQL error codes.
+- Server-only repositories (`*.server.ts`): own parameterized, domain-specific queries. Portable features use Kysely with an explicit schema type; legacy PostgreSQL features may use `DatabaseClient`. Do not expose driver result types or raw database error codes.
 - `*.functions.ts`: transport boundary. Attach request middleware, validate with the domain schema using `.validator((input: unknown) => schema.parse(input))`, enforce policy/authorization, compose dependencies, and delegate. Do not read `process.env` or use `pg` directly here.
 - Routes: presentation and user interaction; no SQL or server-only infrastructure.
-- Migrations: explicit, versioned, and immutable after application. The `db/migrations` directory currently has no executable migration; its `.sql.example` file is ignored by the runner, which applies numbered `.sql` files only.
+- Migrations: explicit, versioned, and immutable after application. PostgreSQL keeps existing files and history in `db/migrations`; SQLite and MySQL use their own subdirectories. MySQL DDL can commit independently; failed or interrupted attempts require manual recovery. No executable application migration is included.
 
 Dependencies point inward. UI and transport may depend on domain contracts and server functions. Repositories may depend on domain types and the shared database abstraction. Domain code does not depend on infrastructure.
 

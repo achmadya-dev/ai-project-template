@@ -31,9 +31,9 @@ Before creating or editing a pull request, read `.github/PULL_REQUEST_TEMPLATE.m
 - `bun run format`: format maintained source/test/script/config files with Prettier; Tailwind classes are sorted by the Tailwind Prettier plugin.
 - `bun run format:check`: verify formatting without modifying files.
 - `bun run check`: format check, lint, policy tests, unit tests, Bun build, typecheck.
-- `bun run db:migrate`: explicitly migrate DATABASE_URL; never auto-run against an unknown target.
-- `bun run test:integration`: requires disposable TEST_DATABASE_URL ending in `_test`.
-- `bun run test:e2e`: requires migrated test DB and Playwright Chromium.
+- `bun run db:migrate`: explicitly migrate the selected provider; never auto-run against an unknown target.
+- `bun run test:integration`: SQLite tests without a database server. PostgreSQL/MySQL suites require separately verified disposable `_test` databases.
+- `bun run test:e2e`: requires Playwright Chromium, not an external database.
 - `bun run verify`: all checks including Bun production smoke. Do not claim a command passed if not run.
 
 ## Execution rules

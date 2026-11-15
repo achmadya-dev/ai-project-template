@@ -3,7 +3,7 @@
 ## What is actually checked
 
 - TypeScript, lint, and tests through CI.
-- PostgreSQL adapter row validation, cardinality, transactions, and constraint mapping.
+- PostgreSQL legacy adapter row validation, cardinality, transactions, and constraint mapping, plus portable example coverage for SQLite, PostgreSQL and MySQL.
 - Production smoke test: the home page is available without database credentials.
 - Migration checksums for migrations already applied by the runner.
 - Pull request metadata and sensitive-path hints from the verifier at the base revision.
@@ -30,4 +30,4 @@ CI uses read-only tokens and no deployment secrets. Pull request metadata is tre
 
 ## Migrations
 
-The migration runner supports transactional SQL only; it does not support `CREATE INDEX CONCURRENTLY`. Lock and statement timeouts prevent indefinite waits. Large backfills and non-transactional operations need a separate plan. Do not run automated resets or drops. Test compatibility between old and new application versions when a real migration is introduced.
+PostgreSQL and SQLite migrations run transactionally; the PostgreSQL runner does not support `CREATE INDEX CONCURRENTLY`. MySQL DDL can commit independently: only one statement is supported per file, and an incomplete attempt blocks later runs until manually reviewed. Never blindly remove the attempt marker. Large backfills and non-transactional operations need a separate plan. Do not run automated resets or drops. Test compatibility between old and new application versions when a real migration is introduced.

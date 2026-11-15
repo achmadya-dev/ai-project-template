@@ -15,6 +15,10 @@ describe('server environment', () => {
       }),
     ).toEqual({
       databaseUrl: 'postgresql://app:secret@127.0.0.1:5432/app_dev',
+      database: {
+        provider: 'postgres',
+        url: 'postgresql://app:secret@127.0.0.1:5432/app_dev',
+      },
       logLevel: 'debug',
     })
   })
@@ -22,8 +26,19 @@ describe('server environment', () => {
   it('treats an empty database URL as unconfigured and applies safe defaults', () => {
     expect(parseEnv({ DATABASE_URL: '' })).toEqual({
       databaseUrl: undefined,
+      database: { provider: 'sqlite', path: '.data/app.sqlite' },
       logLevel: 'info',
     })
+  })
+
+  it('selects MySQL explicitly and rejects mismatched configuration', () => {
+    expect(
+      parseEnv({ DB_PROVIDER: 'mysql', DATABASE_URL: 'mysql://app:secret@localhost/app' }).database,
+    ).toEqual({ provider: 'mysql', url: 'mysql://app:secret@localhost/app' })
+    expect(() => parseEnv({ DB_PROVIDER: 'mysql' })).toThrow()
+    expect(() =>
+      parseEnv({ DB_PROVIDER: 'sqlite', DATABASE_URL: 'postgres://localhost/app' }),
+    ).toThrow()
   })
 
   it('rejects unsupported log levels instead of guessing', () => {
