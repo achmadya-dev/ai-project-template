@@ -1,9 +1,9 @@
 # Better Auth with administrator-managed accounts
 
-Status: in-progress
+Status: in-review
 Risk: high
 Issue: https://github.com/achmadya-dev/ai-project-template/issues/39
-PR: not-created
+PR: https://github.com/achmadya-dev/ai-project-template/pull/40
 Plan revision: 1
 Authorization: user requested Better Auth, username/email login, admin-only account creation and an explicit local first-admin bootstrap; no production access, migration or deployment authorized
 
@@ -17,12 +17,12 @@ Include explicit reviewed provider migrations, secure configuration, login/logou
 
 ## Acceptance criteria
 
-- [ ] AC-1: Public signup and unauthorized user creation fail at the server endpoint, including direct HTTP requests; an authenticated non-admin cannot create or promote users.
-- [ ] AC-2: An admin can create a user with a required email, username and password. Username and email uniqueness and validation are enforced across supported databases.
-- [ ] AC-3: A user can sign in using either username or email and password, restore a session, sign out, and access protected routes/server functions only with an authorized session. Wrong credentials and unauthenticated calls are rejected without sensitive details.
-- [ ] AC-4: A local-only explicit bootstrap command creates the initial admin without passwords in arguments, default passwords, logs, or public endpoints. Repeat and concurrent invocations cannot create multiple first admins. No automatic initialization or production access.
-- [ ] AC-5: Auth schema migrations are explicit, forward-only, and tested for SQLite, PostgreSQL and MySQL without rewriting existing migration history; default startup and unrelated template pages remain usable without auth secrets or a database.
-- [ ] AC-6: Test important negative cases, CSRF/origin enforcement, cookies, rate-limit behavior, and expected production environment configuration. Record results and security review; document no OAuth, recovery limitations, dependency and migration risks.
+- [x] AC-1: Public signup and unauthorized user creation fail at the server endpoint, including direct HTTP requests; an authenticated non-admin cannot create or promote users.
+- [x] AC-2: An admin can create a user with a required email, username and password. Username and email uniqueness and validation are enforced across supported databases.
+- [x] AC-3: A user can sign in using either username or email and password, restore a session, sign out, and access protected routes/server functions only with an authorized session. Wrong credentials and unauthenticated calls are rejected without sensitive details.
+- [x] AC-4: A local-only explicit bootstrap command creates the initial admin without passwords in arguments, default passwords, logs, or public endpoints. Repeat and concurrent invocations cannot create multiple first admins. No automatic initialization or production access.
+- [x] AC-5: Auth schema migrations are explicit, forward-only, and tested for SQLite, PostgreSQL and MySQL without rewriting existing migration history; default startup and unrelated template pages remain usable without auth secrets or a database.
+- [x] AC-6: Test important negative cases, CSRF/origin enforcement, cookies, rate-limit behavior, and expected production environment configuration. Record results and security review; document no OAuth, recovery limitations, dependency and migration risks.
 
 ## Domain invariants
 
@@ -60,4 +60,6 @@ Follow-up verification on the in-progress worktree:
 - `bun run verify` passed with Bun 1.4.4 and Node 26, using that locally available Chromium revision: 27 unit tests, 5 SQLite integration tests, 4 home E2E tests, 1 example E2E test, 1 auth E2E test, policy checks, build, typecheck, and production smoke. These are not the pinned Bun 1.4.2, Node 24, or Chromium 1208 versions.
 - Against freshly created disposable test containers, `bun run test:integration:postgres` passed 7 tests and `bun run test:integration:mysql` passed 5 tests. `bun run test:auth` passed separately with PostgreSQL and MySQL using Chromium revision 1255. These runs used synthetic credentials and no production data.
 - The built Bun production application passed `AUTH_TEST_PRODUCTION=1 bun run test:auth` separately with SQLite, PostgreSQL, and MySQL using Chromium 1255. The first PostgreSQL attempt failed because the restarted disposable container received a new port; the retry against the verified new port passed.
-- The auth work remains uncommitted and requires security review and review of the acceptance criteria. GitHub Actions jobs for the prerequisite PRs failed before starting because GitHub reported an account billing lock; the user explicitly accepted local verification in place of CI. Do not treat these local results as CI or independent approval.
+- `bun audit --audit-level=high` found no high or critical advisories and reported three lower-severity advisories.
+- Security self-review: public HTTP routes are allowlisted, state-changing auth requests require the configured origin, account creation checks the server-side session and admin role, usernames and email are normalized before provisioning, and bootstrap uses a durable singleton claim. Negative HTTP, cookie, session, origin, rate limit, and concurrent-bootstrap cases were tested locally. The shared rate limiter is not a substitute for edge abuse protection; recovery, credential delivery, MFA, tenancy, and audit require project-specific design. No independent security review was performed.
+- GitHub Actions jobs for the prerequisite PRs failed before starting because GitHub reported an account billing lock; the user explicitly accepted local verification in place of CI. Local results are not CI or independent approval.
