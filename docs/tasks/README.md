@@ -4,4 +4,4 @@ Use [`TEMPLATE.md`](TEMPLATE.md) only when a GitHub issue is unavailable or when
 
 When GitHub becomes available, transfer the local task's unique criteria and evidence to the issue/PR. Remove a redundant local record in the same task branch before merge; promote any durable decision or safety procedure to `docs/adr/`, `docs/ARCHITECTURE.md`, or a runbook instead of deleting that knowledge. If a local task remains necessary, keep its status accurate through a reviewed follow-up after merge. A closed issue is not proof of deployment or that a historical test result still applies to current code.
 
-This template intentionally does not ship completed task logs. Its earlier task records remain available in the [original template repository at `9fa9d18`](https://github.com/achmadya-dev/ai-project-template/tree/9fa9d18/docs/tasks) and their linked issues/PRs; new projects should start with their own tasks. Never copy credentials, customer data, or full logs into a task or PR.
+This template does not ship completed task logs. Start each project with its own task records. Never copy credentials, customer data, or full logs into a task or PR.
