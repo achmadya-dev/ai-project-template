@@ -43,7 +43,7 @@ Before creating or editing a pull request, read `.github/PULL_REQUEST_TEMPLATE.m
 4. Follow `docs/CODE_STANDARDS.md`. Keep domain code pure, DB access server-only, transport boundaries thin, and routes free of persistence internals. For Tailwind, prefer a canonical utility when it exactly matches the intended value; use arbitrary values only when no canonical utility fits, and resolve `suggestCanonicalClasses` warnings instead of suppressing them. Existing code is not a precedent when it conflicts with the documented contract.
 5. Prefer the nearest existing pattern. Introduce a new abstraction or dependency only when it has a concrete current need and satisfies the policy in `docs/CODE_STANDARDS.md`.
 6. Validate at server boundaries. Keep DB access in `.server.ts` files and domain code independent of transport/UI.
-7. Tests must reflect acceptance criteria, including meaningful negative cases. Never weaken tests or disable CI to obtain green checks. Explain intentional contract/test changes.
+7. Tests must reflect acceptance criteria, including meaningful negative cases. Never weaken tests to obtain green checks. This template does not run GitHub Actions CI; record local verification and explain intentional contract/test changes.
 8. Never read/print secrets unnecessarily; do not copy `.env`, credentials, or customer data to issues, prompts, logs, or commits. Use synthetic test data.
 9. No production access, deployment, real payments, mass deletion, schema drops, or destructive recovery from generic implementation authorization. Prepare a concrete plan/evidence before requesting the necessary authorization.
 10. Protect governance changes: edits to `.github`, `scripts`, agent rules, migration history, auth, or dependencies require explicit risk disclosure. Never change the verifier to hide a failure.
@@ -51,7 +51,7 @@ Before creating or editing a pull request, read `.github/PULL_REQUEST_TEMPLATE.m
 12. Before reporting implementation complete, review the diff against the required self-review checklist in `docs/CODE_STANDARDS.md`. Record any intentional exception rather than silently violating the standard.
 13. Record every task's acceptance criteria, changed behavior, actual commands/results, limitations, and issue/PR links. Use local files if the GitHub connection is absent; never fabricate links or say an issue exists when it does not.
 14. Commit messages must follow `docs/COMMITS.md`. Keep commits logically scoped and do not rewrite user-owned history unless explicitly requested.
-15. Before opening a PR, inspect the final changed-file list, then complete `.github/PULL_REQUEST_TEMPLATE.md` against `scripts/check-pr.mjs`. A change touching a verifier-classified sensitive path must be declared `Risk: high` and follow the repository's review policy; never downgrade risk to make CI pass.
+15. Before opening a PR, inspect the final changed-file list, then complete `.github/PULL_REQUEST_TEMPLATE.md` against `scripts/check-pr.mjs` from a trusted base revision locally. A change touching a verifier-classified sensitive path must be declared `Risk: high` and follow the repository's review policy; never downgrade risk to pass the local check.
 16. Do not merge, enable auto-merge, publish packages, or deploy merely because tests pass. Report the PR/evidence; honor explicit user authorization when it exists.
 
 ## Done

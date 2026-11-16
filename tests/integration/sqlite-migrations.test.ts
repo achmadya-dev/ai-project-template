@@ -3,7 +3,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { expect, it } from 'vitest'
 import Sqlite from 'better-sqlite3'
-import { migrateSqlite } from '../../scripts/migrate-sqlite.mjs'
+import { migrateSqlite } from '../../scripts/migrations/sqlite.mjs'
 
 it('applies SQLite migrations atomically and detects changed history', async () => {
   const directory = await mkdtemp(join(tmpdir(), 'sqlite-migrations-'))

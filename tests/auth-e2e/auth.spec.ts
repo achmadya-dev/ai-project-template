@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
-import { migrateSqlite } from '../../scripts/migrate-sqlite.mjs'
-import { migrateMysql } from '../../scripts/migrate-mysql.mjs'
-import { migrate } from '../../scripts/migrate.mjs'
+import { migrateSqlite } from '../../scripts/migrations/sqlite.mjs'
+import { migrateMysql } from '../../scripts/migrations/mysql.mjs'
+import { migrate } from '../../scripts/migrations/postgres.mjs'
 import { createAuth } from '../../src/modules/auth/auth.server'
 import { bootstrapFirstAdmin } from '../../src/modules/auth/bootstrap.server'
 import type { DatabaseConfig } from '../../src/server/portable-database.server'
@@ -115,7 +115,12 @@ test('admin provisions a user, and both login methods enforce access', async ({
   )
   await page.getByRole('button', { name: 'Create account' }).click()
   const captured = await createCall
-  await expect(page.getByRole('status')).toHaveText('Account created.')
+  await expect(
+    page
+      .locator('section')
+      .filter({ has: page.getByRole('heading', { name: 'Create an account' }) })
+      .getByRole('status'),
+  ).toHaveText('Account created.')
   const headers = await captured.allHeaders()
   const crossOriginAction = await page.request.post(captured.url(), {
     headers: {
@@ -150,9 +155,12 @@ test('admin provisions a user, and both login methods enforce access', async ({
   await page.getByLabel('Current password').fill(password)
   await page.getByLabel('New password').fill('synthetic-new-password-456')
   await page.getByRole('button', { name: 'Change password' }).click()
-  await expect(page.getByRole('status')).toHaveText(
-    'Password changed. Other sessions were signed out.',
-  )
+  await expect(
+    page
+      .locator('section')
+      .filter({ has: page.getByRole('heading', { name: 'Change password' }) })
+      .getByRole('status'),
+  ).toHaveText('Password changed. Other sessions were signed out.')
   await page.getByRole('button', { name: 'Sign out' }).click()
   await expect(page).toHaveURL(/\/login$/)
   await page.goto('/account')

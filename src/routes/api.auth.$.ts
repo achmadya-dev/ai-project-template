@@ -3,11 +3,7 @@ import { createFileRoute } from '@tanstack/react-router'
 async function handleAuth(request: Request) {
   const { getAuth } = await import('../modules/auth/auth.server')
   const { handleAuthHttp } = await import('../modules/auth/auth-http.server')
-  try {
-    return await handleAuthHttp(request, getAuth())
-  } catch {
-    return Response.json({ error: 'Authentication unavailable' }, { status: 503 })
-  }
+  return handleAuthHttp(request, getAuth)
 }
 
 export const Route = createFileRoute('/api/auth/$')({

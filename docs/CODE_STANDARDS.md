@@ -32,7 +32,7 @@ Dependencies should point inward: UI/transport -> domain/repository contracts; i
 - Do not use `as` assertions to silence a type mismatch unless the runtime invariant is proven next to the assertion and a safer model is impractical.
 - Expected failures must have stable machine-readable codes. Use discriminated result unions at API/UI boundaries when the caller should branch without exceptions. Shared infrastructure may use `AppError` internally and convert exposed expected failures to a result at the request boundary.
 - Throw only for unexpected failures, violated programmer invariants, policy rejection, or failures intentionally handled by the shared request boundary.
-- Keep public/domain types small and meaningful. Do not expose database-driver result types outside `src/server/database.server.ts`.
+- Keep public/domain types small and meaningful. Do not expose database-driver result types outside the shared database adapter.
 - Prefer explicit names over comments that explain unclear names. Comments should explain non-obvious decisions or invariants, not restate code.
 
 ## Validation and trust boundaries
@@ -56,12 +56,12 @@ Dependencies should point inward: UI/transport -> domain/repository contracts; i
 
 - Use parameterized SQL only. Never interpolate user-controlled values into SQL text.
 - Keep domain-specific SQL in server-only repository files.
-- Portable feature repositories use a typed Kysely instance and validated rows. Existing PostgreSQL-only repositories may depend on `DatabaseClient`. Neither exposes raw driver pools or results.
-- `src/server/database.server.ts` owns the legacy `pg` adapter; `src/server/portable-database.server.ts` composes the supported Kysely drivers.
+- Feature repositories use a typed Kysely instance and validate database rows before returning them. Do not expose raw driver pools or results.
+- `src/server/portable-database.server.ts` composes the supported Kysely drivers and is the single application persistence adapter.
 - Make database constraints enforce invariants that must survive concurrency (for example uniqueness), then map known constraint names next to the domain query that understands their meaning.
-- Do not add repository-level `try/catch` merely to inspect PostgreSQL code/constraint fields; use the adapter mapping. Catch locally only when that scope can recover or translate a meaning that cannot be expressed by the adapter configuration.
+- Catch provider-specific constraint errors in the repository only when that repository can translate a known constraint into a domain error. Preserve the cause and rethrow unknown failures.
 - Do not silently swallow database errors. Unknown failures must propagate to the request boundary and become non-exposed internal errors.
-- Use `one` when exactly one row is an invariant, `maybeOne` when zero is expected, `many` for collections, and `execute` for row-count-only operations. Do not manually read `result.rows[0]` in feature code.
+- Use Kysely's `executeTakeFirstOrThrow` when exactly one row is an invariant, `executeTakeFirst` when absence is expected, and `execute` for collections or writes. Validate returned rows before exposing them to callers.
 - Migrations are forward-only and immutable after application. Never edit an applied migration to make a test pass.
 - Do not auto-run migrations against an unknown database target.
 

@@ -1,6 +1,6 @@
 # Review procedure
 
-Read the task, actual diff, `docs/CODE_STANDARDS.md`, affected domain/context, tests, and CI results independently. Use `docs/PATTERNS.md` to detect unnecessary new patterns, but treat `docs/CODE_STANDARDS.md` as the normative contract.
+Read the task, actual diff, `docs/CODE_STANDARDS.md`, affected domain/context, tests, and recorded local verification evidence independently. No GitHub Actions CI is configured. Use `docs/PATTERNS.md` to detect unnecessary new patterns, but treat `docs/CODE_STANDARDS.md` as the normative contract.
 
 Review in this order:
 

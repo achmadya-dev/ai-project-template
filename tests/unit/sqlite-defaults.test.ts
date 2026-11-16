@@ -48,16 +48,32 @@ describe('SQLite-first template defaults', () => {
 
   it('organizes provider migrations into dedicated sqlite, postgres, and mysql directories', () => {
     const rootEntries = readdirSync(new URL('../../db/migrations', import.meta.url))
+    const migrationNames = [
+      '001_create_user_table.sql',
+      '002_create_session_table.sql',
+      '003_create_account_table.sql',
+      '004_create_verification_table.sql',
+      '005_create_rate_limit_table.sql',
+      '006_create_session_user_id_index.sql',
+      '007_create_account_user_id_index.sql',
+      '008_create_verification_identifier_index.sql',
+      '009_create_auth_bootstrap_guard_table.sql',
+    ]
+    const providerDirectories = ['sqlite', 'postgres', 'mysql']
 
     expect(rootEntries.filter((name) => name.endsWith('.sql'))).toEqual([])
-    expect(existsSync(new URL('../../db/migrations/sqlite/001_auth.sql', import.meta.url))).toBe(
-      true,
-    )
-    expect(existsSync(new URL('../../db/migrations/postgres/001_auth.sql', import.meta.url))).toBe(
-      true,
-    )
-    expect(
-      existsSync(new URL('../../db/migrations/mysql/001_auth_user.sql', import.meta.url)),
-    ).toBe(true)
+    for (const provider of providerDirectories) {
+      const directory = new URL(`../../db/migrations/${provider}/`, import.meta.url)
+      expect(readdirSync(directory).sort()).toEqual(migrationNames)
+      for (const name of migrationNames) {
+        const file = new URL(name, directory)
+        expect(existsSync(file)).toBe(true)
+        expect(
+          readFileSync(file, 'utf8')
+            .split(';')
+            .filter((statement) => statement.trim()),
+        ).toHaveLength(1)
+      }
+    }
   })
 })

@@ -12,7 +12,7 @@ A single-repository TanStack Start application for planning work, implementing i
 - Versioned migrations with locking and checksums. SQLite and PostgreSQL run migrations transactionally; MySQL DDL requires manual recovery after interruption. Migrations never run automatically at application startup.
 - Unit tests, SQLite integration tests, optional PostgreSQL/MySQL integration tests, Chromium E2E tests, and a production smoke test.
 - `AGENTS.md` and adapters for Cursor, Claude, and Copilot, plus portable planning, implementation, and review procedures.
-- Issue and pull request templates, a PR metadata check, CI, and GitHub ruleset setup guidance.
+- Issue and pull request templates, a local PR metadata verifier, and GitHub review setup guidance. No GitHub Actions workflow is included.
 - Task and handoff templates for work that needs to persist beyond a chat session.
 - [Optional capability guides](docs/capabilities/README.md) for SEO, AI, Markdown, CSP, health checks, and observability.
 - [Supply-chain guidance](docs/SUPPLY_CHAIN.md) for dependency audits and secret-scanning decisions.
@@ -34,11 +34,11 @@ bun run dev
 
 Open http://127.0.0.1:3000. The home page does not require a database. `DB_PROVIDER=sqlite` and `SQLITE_PATH=.data/app.sqlite` are the defaults; the file is created only when database access or migrations are requested. For PostgreSQL or MySQL, set `DB_PROVIDER=postgres` or `mysql` and set a matching `DATABASE_URL`. For compatibility, an existing PostgreSQL or MySQL `DATABASE_URL` without `DB_PROVIDER` selects the corresponding provider. Never combine `DB_PROVIDER=sqlite` with `DATABASE_URL`.
 
-`bun run db:migrate` is explicit and targets the selected provider: numbered SQL files in `db/migrations/sqlite`, `db/migrations/postgres`, or `db/migrations/mysql`. Confirm the target before running it. MySQL migration files must contain one statement each; its DDL cannot be rolled back reliably. An unfinished MySQL attempt stops subsequent migration runs for manual recovery. The development server binds to loopback.
+`bun run db:migrate` is explicit and targets the selected provider: matching numbered SQL files in `db/migrations/sqlite`, `db/migrations/postgres`, or `db/migrations/mysql`. Migration filenames use `<number>_<action>_<object>.sql` to describe the change, and each file contains one statement; SQL syntax and types remain provider-specific. Confirm the target before running it. MySQL DDL cannot be rolled back reliably, and an unfinished attempt stops subsequent migration runs for manual recovery. The development server binds to loopback.
 
 SQLite needs a persistent local filesystem and is not automatically shared across application instances. For ephemeral or horizontally scaled hosting, select an appropriate production database. Changing `DB_PROVIDER` does not copy data; plan and verify export/import, compatibility, and backups separately.
 
-The portable example uses Kysely; the existing `DatabaseClient`/`getDb()` and its migration history remain PostgreSQL-only for compatibility. Existing PostgreSQL-specific features must be ported and tested before switching provider. Production deployments must separately configure and verify TLS, credentials, backups, connection limits, and database roles. The tested MySQL baseline is 8.4; engine-specific behavior such as collations, timestamps, transactions and constraints may differ.
+Application persistence uses Kysely across SQLite, PostgreSQL, and MySQL. SQL migrations remain provider-specific, and switching providers does not move data. Production deployments must separately configure and verify TLS, credentials, backups, connection limits, and database roles. The tested MySQL baseline is 8.4; engine-specific behavior such as collations, timestamps, transactions and constraints may differ.
 
 | Provider | Local setup | Migration directory | Test isolation |
 | --- | --- | --- | --- |
@@ -67,7 +67,7 @@ bun run playwright install chromium
 bun run verify
 ```
 
-The default integration and example E2E tests use disposable SQLite databases and do not require Docker. To exercise PostgreSQL and MySQL, run `bun run test:integration:postgres` and `bun run test:integration:mysql` with `TEST_DATABASE_URL` and `TEST_MYSQL_URL` pointing to separately verified disposable databases ending in `_test`. The suffix alone does not prove isolation. CI runs all three provider suites.
+The default integration and example E2E tests use disposable SQLite databases and do not require Docker. To exercise PostgreSQL and MySQL, run `bun run test:integration:postgres` and `bun run test:integration:mysql` with `TEST_DATABASE_URL` and `TEST_MYSQL_URL` pointing to separately verified disposable databases ending in `_test`. The suffix alone does not prove isolation. No hosted CI runs these suites; record local results on the pull request.
 
 ### PostgreSQL and MySQL integration and E2E
 
@@ -113,7 +113,7 @@ keyboard and assistive technology.
 2. Describe the product or feature. The agent should draft an issue or local task with acceptance criteria.
 3. Approve the plan, or explicitly authorize direct implementation when the scope is clear.
 4. The agent creates a branch, implements the change, verifies it, updates documentation, and prepares a pull request with evidence.
-5. Review behavior and CI before merging. The template does not enable auto-merge or auto-deployment.
+5. Review behavior and the recorded local verification before merging. The template does not enable auto-merge or auto-deployment.
 
 If GitHub is unavailable, create a local task from `docs/tasks/TEMPLATE.md`. Do not claim an issue or pull request exists until it has actually been created.
 
@@ -126,12 +126,12 @@ If GitHub is unavailable, create a local task from `docs/tasks/TEMPLATE.md`. Do 
 - `tests`: unit, integration, and E2E tests.
 - `docs`: product and domain context, procedures, decisions, task template, and recovery guidance.
 - `scripts`: migration runner, task generator, PR metadata check, and smoke tests.
-- `.github`: workflows, templates, and CODEOWNERS.
+- `.github`: issue/PR templates, Dependabot configuration, and CODEOWNERS (no Actions workflow).
 
 ## Current limits
 
 This template is **not a production-ready SaaS or payment system** and has no built-in business domain. Review authentication and design tenant isolation, business permissions, business audit, hosted backups, observability, and payment integrations for each project. Auth tables are created only by explicit migrations.
 
-Repository rules and CI do not make agents infallible. Configure merge protection in GitHub; see [docs/GITHUB_SETUP.md](docs/GITHUB_SETUP.md). Worker permissions belong to the tool you use. This repository does not include an MCP connection, token, global hook, or hidden deployment.
+Local checks and repository guidance do not make agents infallible. Git hooks can be bypassed; configure available merge protection and manual review in GitHub; see [docs/GITHUB_SETUP.md](docs/GITHUB_SETUP.md). Worker permissions belong to the tool you use. This repository does not include an MCP connection, token, global hook, or hidden deployment.
 
 Dependencies are pinned in `bun.lock`. Nitro is currently a beta release; review dependency updates in pull requests and rerun the build and smoke checks. See [docs/VALIDATION.md](docs/VALIDATION.md) for baseline evidence and a reusable verification record.

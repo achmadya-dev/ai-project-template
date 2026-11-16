@@ -51,7 +51,7 @@ Diagram labels use underscores because Mermaid state identifiers cannot use the 
 6. Use the commit format in `docs/COMMITS.md`. Keep unrelated changes in separate commits.
 7. Before opening a pull request, read `.github/PULL_REQUEST_TEMPLATE.md` and `scripts/check-pr.mjs`, then inspect the final changed-file list against the verifier's sensitive-path rules.
 8. Use the repository pull request template. Link a real issue with `Closes #123`, set `Risk: low|medium|high` based on the actual diff, and complete every verified section: Goal, Changes, Verification, Compatibility and recovery, and Documentation.
-9. If the verifier classifies any changed path as sensitive, use `Risk: high` and follow the repository review policy. Never lower the risk, change the verifier, or weaken CI to get a passing result.
+9. If the verifier classifies any changed path as sensitive, use `Risk: high` and follow the repository review policy. Never lower the risk or change the verifier to get a passing result.
 
 ## Commits
 
@@ -74,11 +74,11 @@ Mark breaking changes with `!` or a `BREAKING CHANGE:` footer. AI agents follow 
 
 ## Review and merge
 
-The PR verifier checks metadata structure and some sensitive paths. Reviewers check substance, acceptance criteria, tests, and domain impact. CI is not proof of security. The template enables no automatic approval, auto-merge, or deployment.
+Run the PR verifier locally to check metadata structure and some sensitive paths. Reviewers check substance, acceptance criteria, tests, and domain impact. There is no GitHub Actions CI or automatic approval, auto-merge, or deployment. Local results are self-reported and do not provide an independent gate.
 
-`pr-contract` is the executable metadata contract. The pull request template is the starting point; check the body and changed-file list against `scripts/check-pr.mjs` from the trusted base revision before submitting. If the contract fails, correct the metadata or scope; do not bypass the verifier.
+`scripts/check-pr.mjs` is the executable metadata contract, retained for local use. The pull request template is the starting point; check the body and changed-file list against the verifier from the trusted base revision before submitting. The CLI entry point expects `GITHUB_EVENT_PATH` with a pull-request event and both base/head revisions available locally; its `validatePr(body, files)` export can be used for a local check. Record the result and tested commit on the PR. If the contract fails, correct the metadata or scope; do not bypass the verifier.
 
-Repository owners must enable GitHub rulesets. If you are the only human contributor, see the solo workflow in `docs/GITHUB_SETUP.md`; do not add a fake reviewer to satisfy a rule.
+Repository owners should configure the GitHub protections available to them and remove any required checks that no longer run. If you are the only human contributor, see the solo workflow in `docs/GITHUB_SETUP.md`; do not add a fake reviewer to satisfy a rule.
 
 ## Handoff
 
