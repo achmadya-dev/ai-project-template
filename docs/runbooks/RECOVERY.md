@@ -25,6 +25,8 @@ Prefer expand → backfill/migrate → switch → contract across separately rev
 
 The bundled auth migrations are intended for a new template database. Before adding them to a project that already has migrations or auth tables, review numbering and schema compatibility and create appropriate new forward-only migrations; do not rename or edit migrations that have already been applied. Back up first and never run against an unknown target.
 
+Earlier template revisions used a combined `001_auth.sql` for SQLite/PostgreSQL and older names for MySQL auth migrations. The current split filenames are not an in-place upgrade for databases with that recorded history. Preserve both data and history, inspect the exact applied checksums and schema, and design a reviewed, provider-specific reconciliation before running the new set. Do not remove history rows or rerun CREATE statements blindly.
+
 ## Before the first production release
 
 Record the owner, deployment target, backup schedule, restore procedure, tested RPO/RTO, incident contacts, and recovery-drill evidence. The template does not provision these. Never restore production blindly; reconcile legitimate transactions that occurred after the backup.

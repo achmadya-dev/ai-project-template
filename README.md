@@ -103,7 +103,7 @@ keyboard and assistive technology.
 | `bun run verify` | Run checks, SQLite integration, E2E, and Bun production smoke |
 | `bun run test:integration:postgres` | Run PostgreSQL integration tests against a disposable target |
 | `bun run test:integration:mysql` | Run MySQL integration tests against a disposable target |
-| `bun run task:new <slug>` | Create a task document from the task template without overwriting existing files |
+| `bun run task:new <slug>` | Create a local task when GitHub is unavailable or a separate durable plan is needed |
 | `bun run db:migrate` | Apply migrations to the selected provider; confirm the target first |
 | `bun run build && bun run start` | Build and run the production application with Bun and Nitro's Bun preset |
 
@@ -117,7 +117,7 @@ For routine changes, describe the desired outcome to a coding agent in plain lan
 4. The agent creates a branch, implements the change, verifies it, updates documentation, and prepares a pull request with evidence.
 5. Review behavior and the recorded local verification before merging. The template does not enable auto-merge or auto-deployment.
 
-If GitHub is unavailable, create a local task from `docs/tasks/TEMPLATE.md`. Do not claim an issue or pull request exists until it has actually been created.
+If GitHub is unavailable, create a local task from `docs/tasks/TEMPLATE.md`. With GitHub access, prefer an issue and PR rather than a duplicate local task; see [local task guidance](docs/tasks/README.md). Do not claim an issue or pull request exists until it has actually been created.
 
 ## Structure
 

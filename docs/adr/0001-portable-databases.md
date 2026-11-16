@@ -1,6 +1,8 @@
 # SQLite default and portable SQL
 
-Status: superseded by [ADR 0002](0002-kysely-as-the-application-persistence-adapter.md)
+Status: accepted; the temporary PostgreSQL adapter compatibility choice was superseded by [ADR 0002](0002-kysely-as-the-application-persistence-adapter.md)
+Date: 2026-11-16
+Task/issue: https://github.com/achmadya-dev/ai-project-template/issues/37
 
 ## Context
 
@@ -17,3 +19,5 @@ Keep versioned SQL migration files per provider. SQLite uses an immediate transa
 Manual SQL per engine increases dialect-specific work and error handling. A schema-generating ORM can simplify authoring but still needs provider-specific migration and behavior verification. Kysely is close to the existing SQL style, but query-builder typing does not ensure equivalent behavior across databases; every supported provider requires real integration tests. SQLite requires persistent storage, and switching providers requires a separately planned and verified data transfer.
 
 New dependencies, native SQLite installation, CI changes, deployment TLS, locking, and MySQL recovery increase operational complexity. Reverting application code does not revert migrations or move data. Production changes need backups and explicit authorization.
+
+This record describes the choice at that time. The application now uses only Kysely (ADR 0002); the PostgreSQL-only adapter and its compatibility promise are no longer current. SQLite as the default, provider-specific SQL migrations, and the recovery trade-offs remain in effect. Use the current architecture and migration guidance for implementation.

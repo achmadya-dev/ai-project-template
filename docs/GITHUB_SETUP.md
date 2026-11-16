@@ -33,14 +33,9 @@ GitHub does not allow an author to approve their own pull request. If you are th
 
 ## Issues and pull requests
 
-```sh
-bun run task:new first-feature
-gh issue create --title "Plan: first feature" --body-file docs/tasks/first-feature.md
-# After implementation and pushing the branch:
-gh pr create --draft --title "feat: first feature" --body-file PATH_TO_PR_BODY.md
-```
+With GitHub access, start from a real issue containing the accepted criteria. Without it, use `bun run task:new first-feature` and `docs/tasks/TEMPLATE.md` as the local fallback. After implementation, push the branch and use `.github/PULL_REQUEST_TEMPLATE.md` to prepare the PR body.
 
-Complete the task document before creating the issue. Replace example paths with real files and use the actual issue number in the pull request template. The local PR verifier validates the issue-reference format, not whether the issue exists or is correct; a reviewer must check the link. Re-run it after editing the PR body or changing the file list.
+Do not create a local task just to copy the issue. Replace example paths with real files and use the actual issue number in the pull request template. The local PR verifier validates the issue-reference format, not whether the issue exists or is correct; a reviewer must check the link. Re-run it after editing the PR body or changing the file list.
 
 ## Local hooks and formatting
 
