@@ -9,7 +9,7 @@ Use the task's current issue or local task as the acceptance-criteria source; th
 | Install, run, or test the starter | [README](README.md) |
 | Define users and outcomes | [Product context](docs/PRODUCT.md) |
 | Define domain terms and invariants | [Domain](docs/DOMAIN.md) |
-| Understand implementation boundaries | [Architecture](docs/ARCHITECTURE.md) and [code standards](docs/CODE_STANDARDS.md) |
+| Understand implementation boundaries and past decisions | [Architecture](docs/ARCHITECTURE.md), [code standards](docs/CODE_STANDARDS.md), and [ADR index](docs/adr/README.md) |
 | Plan, implement, review, or hand off work | [Workflow](docs/WORKFLOW.md) and [reusable prompts](docs/PROMPTS.md) |
 | Handle database changes or recovery | [Migration guidance](db/migrations/README.md) and [recovery runbook](docs/runbooks/RECOVERY.md) |
 | Evaluate safety and optional integrations | [Safety boundaries](docs/SAFETY.md) and [capability catalog](docs/capabilities/README.md) |

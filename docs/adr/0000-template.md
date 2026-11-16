@@ -1,10 +1,10 @@
 # ADR [NNNN]: [Decision title]
 
-Use this template for a real project decision. The starter repository has no prefilled ADR records.
+Use this template for a durable project decision. See [ADR guidance](README.md) and the starter's existing decisions before adding a new record.
 
 Status: proposed
-Date:
-Task/issue:
+Date: YYYY-MM-DD
+Task/issue: link if available
 
 ## Context
 

@@ -1,6 +1,8 @@
 # Kysely as the application persistence adapter
 
 Status: accepted
+Date: 2026-11-16
+Task/issue: https://github.com/achmadya-dev/ai-project-template/issues/55
 
 ## Context
 

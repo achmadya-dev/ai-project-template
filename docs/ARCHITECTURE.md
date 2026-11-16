@@ -86,4 +86,4 @@ Structured console logging is a baseline, not a production observability stack. 
 
 ## ADRs
 
-Use `docs/adr/0000-template.md` for decisions that cross modules or are expensive to reverse. Record alternatives and consequences, not only the chosen option.
+See the [ADR index](adr/README.md) for current decisions and their history. Use `docs/adr/0000-template.md` for decisions that cross modules or are expensive to reverse. Record alternatives and consequences, not only the chosen option; keep superseded records with an explicit link to the replacement.
