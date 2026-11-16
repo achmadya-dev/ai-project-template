@@ -1,5 +1,19 @@
 # Verification evidence
 
+## Choose checks for the change
+
+The commands below describe the current verification entry points; the historical baseline that follows is not a claim about the current revision. Record actual commands and results in the task or PR.
+
+| Change or question | Starting check | Important limitation |
+| --- | --- | --- |
+| Formatting, lint, unit tests, build, and typecheck | `bun run check` | Does not exercise browser flows or external database providers |
+| Default local end-to-end verification | `bun run verify` | Uses SQLite for default integration and browser tests; requires Playwright Chromium |
+| PostgreSQL or MySQL persistence | `bun run test:integration:postgres` or `bun run test:integration:mysql` | Requires a separately verified disposable `_test` database |
+| Provider-specific example or auth browser flow | `bun run test:example` or `bun run test:auth` with provider and test URL | Select the provider explicitly; the test can mutate the test database |
+| Production Bun runtime | `bun run test:production` after a build | A smoke check is not proof of production readiness |
+
+See the [README](../README.md#postgresql-and-mysql-integration-and-e2e) for provider-specific commands and isolation requirements.
+
 ## Template cleanup baseline
 
 Base commit: `096e3f2`. Checks below ran against the working tree on branch `docs/english-template-cleanup`.

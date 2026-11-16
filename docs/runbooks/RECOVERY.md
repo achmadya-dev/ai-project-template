@@ -10,6 +10,17 @@ Keep the previous immutable build artifact. Before a rollout, verify that the ol
 
 ## Database changes
 
+```mermaid
+flowchart LR
+    Inspect["Inspect target and compatibility"] --> Backup["Back up and verify recovery plan"]
+    Backup --> Expand["Expand schema"]
+    Expand --> Migrate["Backfill / migrate"]
+    Migrate --> Switch["Switch application"]
+    Switch --> Contract["Contract in a separate reviewed release"]
+```
+
+This is a planning sequence, not permission to run migrations or delete data. Confirm the target and obtain any action-specific authorization before execution.
+
 Prefer expand → backfill/migrate → switch → contract across separately reviewed releases. Do not edit an applied SQL migration. Add a forward repair migration when needed. Test lock duration and compatibility with both old and new application versions. PostgreSQL and SQLite runners apply migrations transactionally. MySQL DDL can commit independently; an incomplete attempt blocks further migrations and requires manual investigation and repair. Never blindly remove its attempt marker. Large backfills and non-transactional work require dedicated procedures. Switching providers does not move data; plan and verify export, import and reconciliation separately.
 
 The bundled auth migrations are intended for a new template database. Before adding them to a project that already has migrations or auth tables, review numbering and schema compatibility and create appropriate new forward-only migrations; do not rename or edit migrations that have already been applied. Back up first and never run against an unknown target.

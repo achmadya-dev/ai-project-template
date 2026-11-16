@@ -6,6 +6,21 @@ Modular monolith: one TanStack Start application, one repository, SQLite by defa
 
 The main backend flow is:
 
+```mermaid
+flowchart LR
+    UI["Client / route"] --> Fn["Server function"]
+    Fn --> Boundary["Middleware, validation, authorization"]
+    Boundary --> Repo["Feature repository"]
+    Repo --> Portable["Kysely + selected dialect"]
+    Portable --> SQLite["SQLite"]
+    Portable --> Postgres["PostgreSQL"]
+    Portable --> MySQL["MySQL"]
+    Repo -. "legacy PostgreSQL-only path" .-> Legacy["DatabaseClient"]
+    Legacy --> Postgres
+```
+
+This is a dependency overview, not a claim that every request uses every component. Authentication also has a restricted HTTP handler described below. The legacy adapter is PostgreSQL-only.
+
 ```text
 client/loader
   -> TanStack server function
@@ -16,6 +31,21 @@ client/loader
 ```
 
 Server functions are endpoints and must validate input and enforce authorization. Never trust input, tenant IDs, or roles sent by the client. The pinned TanStack Start version provides default CSRF middleware for server functions; do not disable it. Better Auth is configured lazily and has a restricted HTTP route with explicit origin checks. Public signup and OAuth are disabled.
+
+### Authentication boundary
+
+```mermaid
+flowchart TD
+    Browser["Browser"] --> Http["Allowlisted auth HTTP handler"]
+    Http --> Origin["Origin checks on state-changing requests"]
+    Origin --> Auth["Better Auth + session store"]
+    Browser --> Create["Account creation server function"]
+    Create --> Session["Server-side session and admin check"]
+    Session -->|"Authorized admin"| Auth
+    Session -->|"Missing session or non-admin"| Denied["Reject request"]
+```
+
+The HTTP handler allows only selected sign-in, session, sign-out, and password-change endpoints. Account creation uses a separate server function; public registration and direct admin endpoints are not exposed. See `src/modules/auth/auth-http.server.ts` and `src/modules/auth/auth.functions.ts` for the authoritative implementation.
 
 ## Backend core
 
