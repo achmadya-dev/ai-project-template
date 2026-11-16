@@ -1,9 +1,9 @@
 # Unify provider migration structure
 
-Status: in-review
+Status: blocked
 Risk: high
 Issue: https://github.com/achmadya-dev/ai-project-template/issues/55
-PR: not-created
+PR: https://github.com/achmadya-dev/ai-project-template/pull/56
 Plan revision: 2
 Authorization: user approved migration renaming, structure cleanup, and audit; requested merge to main after resolving issues
 
@@ -60,3 +60,4 @@ High risk: this renames auth migrations and removes internal PostgreSQL adapter 
 - Review and merge remain subject to the repository's high-risk review policy; passing local checks alone does not authorize self-approval.
 - Full verification after the audit: `bun run verify` passed using an existing Chromium revision 1255 via `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` (check, SQLite integration 5/5, home E2E 4/4, example E2E 1/1, auth E2E 1/1, production smoke). The Playwright-pinned browser executable was not installed, so default browser provisioning remains a separate environment prerequisite.
 - The account form extraction initially removed the pre-hydration disabled state. The auth E2E exposed a password-change failure; restoring the disabled state until hydration on both forms and sign-out resolved it. Assertions now target each form's own live status instead of assuming a single status on the page. The mechanical UI detector found no findings.
+- GitHub Actions run https://github.com/achmadya-dev/ai-project-template/actions/runs/43901424994 did not start `quality`, `database-and-browser`, or `pr-contract`: GitHub reports "account is locked due to a billing issue." No CI test result can be inferred from those jobs. PR #56 also requires high-risk review before merge. Local checks above passed but do not replace either requirement.
