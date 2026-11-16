@@ -34,7 +34,7 @@ bun run dev
 
 Open http://127.0.0.1:3000. The home page does not require a database. `DB_PROVIDER=sqlite` and `SQLITE_PATH=.data/app.sqlite` are the defaults; the file is created only when database access or migrations are requested. For PostgreSQL or MySQL, set `DB_PROVIDER=postgres` or `mysql` and set a matching `DATABASE_URL`. For compatibility, an existing PostgreSQL or MySQL `DATABASE_URL` without `DB_PROVIDER` selects the corresponding provider. Never combine `DB_PROVIDER=sqlite` with `DATABASE_URL`.
 
-`bun run db:migrate` is explicit and targets the selected provider: numbered SQL files in `db/migrations/sqlite`, `db/migrations/mysql`, or the existing PostgreSQL `db/migrations` root. Confirm the target before running it. MySQL migration files must contain one statement each; its DDL cannot be rolled back reliably. An unfinished MySQL attempt stops subsequent migration runs for manual recovery. The development server binds to loopback.
+`bun run db:migrate` is explicit and targets the selected provider: numbered SQL files in `db/migrations/sqlite`, `db/migrations/postgres`, or `db/migrations/mysql`. Confirm the target before running it. MySQL migration files must contain one statement each; its DDL cannot be rolled back reliably. An unfinished MySQL attempt stops subsequent migration runs for manual recovery. The development server binds to loopback.
 
 SQLite needs a persistent local filesystem and is not automatically shared across application instances. For ephemeral or horizontally scaled hosting, select an appropriate production database. Changing `DB_PROVIDER` does not copy data; plan and verify export/import, compatibility, and backups separately.
 
@@ -43,7 +43,7 @@ The portable example uses Kysely; the existing `DatabaseClient`/`getDb()` and it
 | Provider | Local setup | Migration directory | Test isolation |
 | --- | --- | --- | --- |
 | SQLite | Default; local file, no server | `db/migrations/sqlite/` | Temporary file by default |
-| PostgreSQL | Explicit URL; optional Compose service | `db/migrations/` | Separately verified disposable `_test` database |
+| PostgreSQL | Explicit URL; opt-in Compose service | `db/migrations/postgres/` | Separately verified disposable `_test` database |
 | MySQL | Explicit URL; opt-in Compose service | `db/migrations/mysql/` | Separately verified disposable `_test` database |
 
 The directory identifies the selected provider's migration history; it does not transfer data between providers. See [migration guidance](db/migrations/README.md) before executing migrations.

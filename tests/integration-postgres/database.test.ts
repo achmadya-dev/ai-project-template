@@ -138,7 +138,10 @@ describe('PostgreSQL database adapter', () => {
     const migrationTableName = `migration_probe_${migrationId}`
     const migrationTable = `"${migrationTableName}"`
     try {
-      await copyFile(join(process.cwd(), 'db/migrations/001_auth.sql'), join(dir, '001_auth.sql'))
+      await copyFile(
+        join(process.cwd(), 'db/migrations/postgres/001_auth.sql'),
+        join(dir, '001_auth.sql'),
+      )
       await writeFile(migrationPath, `CREATE TABLE ${migrationTable} (id integer PRIMARY KEY);`)
       await expect(migrate(url, dir)).resolves.toBeUndefined()
       await expect(migrate(url, dir)).resolves.toBeUndefined()

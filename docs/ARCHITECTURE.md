@@ -68,7 +68,7 @@ This core is not a generic service framework. Do not add `BaseRepository`, `Mana
 - Server-only repositories (`*.server.ts`): own parameterized, domain-specific queries. Portable features use Kysely with an explicit schema type; legacy PostgreSQL features may use `DatabaseClient`. Do not expose driver result types or raw database error codes.
 - `*.functions.ts`: transport boundary. Attach request middleware, validate with the domain schema using `.validator((input: unknown) => schema.parse(input))`, enforce policy/authorization, compose dependencies, and delegate. Do not read `process.env` or use `pg` directly here.
 - Routes: presentation and user interaction; no SQL or server-only infrastructure.
-- Migrations: explicit, versioned, and immutable after application. PostgreSQL keeps existing files and history in `db/migrations`; SQLite and MySQL use their own subdirectories. MySQL DDL can commit independently; failed or interrupted attempts require manual recovery. Auth migrations are included but never run at application startup.
+- Migrations: explicit, versioned, and immutable after application. Each supported provider uses its own subdirectory under `db/migrations/` (`sqlite/`, `postgres/`, and `mysql/`). MySQL DDL can commit independently; failed or interrupted attempts require manual recovery. Auth migrations are included but never run at application startup.
 
 Dependencies point inward. UI and transport may depend on domain contracts and server functions. Repositories may depend on domain types and the shared database abstraction. Domain code does not depend on infrastructure.
 

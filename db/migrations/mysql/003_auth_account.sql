@@ -1,1 +1,16 @@
-CREATE TABLE `account` (`id` VARCHAR(36) NOT NULL PRIMARY KEY, `accountId` TEXT NOT NULL, `providerId` TEXT NOT NULL, `userId` VARCHAR(36) NOT NULL, `accessToken` TEXT, `refreshToken` TEXT, `idToken` TEXT, `accessTokenExpiresAt` TIMESTAMP(3), `refreshTokenExpiresAt` TIMESTAMP(3), `scope` TEXT, `password` TEXT, `createdAt` TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP(3) NOT NULL, `updatedAt` TIMESTAMP(3) NOT NULL, CONSTRAINT `account_user_fk` FOREIGN KEY (`userId`) REFERENCES `user` (`id`) ON DELETE CASCADE)
+CREATE TABLE `account` (
+  `id` VARCHAR(36) NOT NULL PRIMARY KEY,
+  `accountId` TEXT NOT NULL,
+  `providerId` TEXT NOT NULL,
+  `userId` VARCHAR(36) NOT NULL,
+  `accessToken` TEXT,
+  `refreshToken` TEXT,
+  `idToken` TEXT,
+  `accessTokenExpiresAt` TIMESTAMP(3),
+  `refreshTokenExpiresAt` TIMESTAMP(3),
+  `scope` TEXT,
+  `password` TEXT,
+  `createdAt` TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `updatedAt` TIMESTAMP(3) NOT NULL,
+  CONSTRAINT `account_user_fk` FOREIGN KEY (`userId`) REFERENCES `user` (`id`) ON DELETE CASCADE
+)
