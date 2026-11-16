@@ -39,5 +39,5 @@ console.log(
     : 'SETUP configure CODEOWNERS with a real reviewer',
 )
 console.log(
-  'MANUAL GitHub rulesets and required checks must be configured on GitHub. Files alone do not enable protection.',
+  'MANUAL No GitHub Actions CI is configured. Review local verification evidence and configure available GitHub PR protections without requiring nonexistent checks.',
 )

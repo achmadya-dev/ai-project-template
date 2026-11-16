@@ -8,7 +8,7 @@ TODO: user outcome and accepted task/plan revision.
 TODO: changed behavior and meaningful design decisions.
 
 ## Verification
-TODO: actual commands, outcomes, acceptance-criteria mapping, and limitations. Link CI evidence. Never claim unrun checks passed.
+TODO: actual commands, outcomes, acceptance-criteria mapping, and limitations. Record the tested commit and local verification evidence. No GitHub Actions workflow runs; never claim unrun checks passed.
 
 ## Compatibility and recovery
 TODO: API/schema/data impact, rollout and recovery plan, or explain no impact.

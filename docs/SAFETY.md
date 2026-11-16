@@ -2,12 +2,12 @@
 
 ## What is actually checked
 
-- TypeScript, lint, and tests through CI.
+- TypeScript, lint, and tests when the local verification commands are run; these are not hosted checks.
 - Portable Kysely example coverage for SQLite, PostgreSQL and MySQL, including row validation and provider-specific constraint handling.
 - Production smoke test: the home page is available without database credentials.
 - Migration checksums for migrations already applied by the runner.
 - Admin-only provisioning, public signup denial, authenticated session behavior and origin checks in local auth tests.
-- Pull request metadata and sensitive-path hints from the verifier at the base revision.
+- Pull request metadata and sensitive-path hints when the verifier from the trusted base revision is run locally.
 
 ## What is not enforced
 
@@ -25,9 +25,9 @@ The path heuristic in `check-pr` is a minimum, not a complete risk classificatio
 
 Coding agents need repository/branch access and a disposable database for integration tests. Do not provide production credentials. Run workers without unnecessary personal credentials. Do not expose the development server to the internet. These are tool/host settings that cannot be enforced by this repository.
 
-## CI
+## Local verification
 
-CI uses read-only tokens and no deployment secrets. Pull request metadata is treated as data, not interpolated into shell commands. The metadata verifier is loaded from the base SHA rather than a version that the pull request can replace. Avoid checking out untrusted code in privileged `pull_request_target` or `workflow_run` jobs. Other checks still require review because workflows and tests are source code in this repository.
+No GitHub Actions workflow runs the tests or PR verifier. Run `bun run verify` locally and record the tested commit and results in the PR; run optional provider suites only against separately verified disposable databases. Reviewers should inspect the evidence and diff, especially when tests or verification scripts changed. Run the metadata verifier from a trusted base revision rather than a version a PR can replace. Git hooks and self-reported results can be bypassed and do not establish independent verification.
 
 ## Migrations
 

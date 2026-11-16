@@ -1,11 +1,19 @@
 # Unify provider migration structure
 
-Status: blocked
+Status: in-review
 Risk: high
 Issue: https://github.com/achmadya-dev/ai-project-template/issues/55
 PR: https://github.com/achmadya-dev/ai-project-template/pull/56
 Plan revision: 2
 Authorization: user approved migration renaming, structure cleanup, and audit; requested merge to main after resolving issues
+
+## Operational change: local-only verification
+
+The user subsequently requested removal of GitHub Actions because the account is billing-locked and they will not enable paid billing. This is a separate high-risk governance change on the existing PR branch. Acceptance criteria: remove the Actions workflow; keep the local `bun run check`, `bun run verify`, optional provider suites, and PR metadata verifier; update active guidance and PR evidence to state that results are self-reported rather than hosted; do not represent historical failed checks as passing or merge without the required review decision. No production or unrelated database is involved.
+
+The repository had no active rulesets or `main` branch protection when inspected. Future repositories made from the template must remove stale required checks before using the local-only workflow. Historical task evidence below describes the state before this operational change and is retained as such.
+
+Verification for this operational change: `bun run check`, `bun run verify`, and `git diff --check` passed locally. `verify` includes SQLite integration (5 tests), home E2E (4 tests), example E2E (1 test), auth E2E (1 test), and Bun production smoke. The environment ran Bun 1.4.4 rather than the pinned 1.4.2, and browser tests used existing Chromium revision 1255 rather than the pinned Playwright revision. PostgreSQL and MySQL suites were not rerun because their runners and schema are unchanged; the earlier isolated-provider results remain recorded below. This changes the verification gate from hosted CI to self-reported local evidence; it does not provide independent assurance. High-risk review remains pending. The prior GitHub Actions failures are historical billing failures, not passing checks.
 
 ## Goal
 
