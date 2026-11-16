@@ -3,7 +3,7 @@
 Status: in-review
 Risk: high
 Issue: https://github.com/achmadya-dev/ai-project-template/issues/49
-PR: not-created
+PR: https://github.com/achmadya-dev/ai-project-template/pull/50
 Plan revision: 1
 Authorization: user requested clearer repository documentation using tables and Mermaid diagrams; no behavior, policy, deployment, or production data changes authorized.
 
