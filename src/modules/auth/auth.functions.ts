@@ -2,6 +2,7 @@ import { createServerFn } from '@tanstack/react-start'
 import { AppError } from '../../server/errors'
 import { handleRequest, requestMiddleware } from '../../server/request'
 import { createAccountInput } from './domain/account'
+import { hasAdminRole } from './domain/role'
 
 export const getCurrentUser = createServerFn({ method: 'GET' })
   .middleware([requestMiddleware('auth.get-current-user')])
@@ -29,7 +30,7 @@ export const createAccount = createServerFn({ method: 'POST' })
     return handleRequest(async () => {
       const session = await auth.api.getSession({ headers })
       if (!session) throw new AppError('unauthorized', 'AUTH_REQUIRED', 'Sign in required')
-      if (!session.user.role?.split(',').includes('admin')) {
+      if (!hasAdminRole(session.user.role)) {
         throw new AppError('forbidden', 'ADMIN_REQUIRED', 'Administrator access required')
       }
       await auth.api.createUser({

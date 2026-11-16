@@ -3,7 +3,7 @@
 ## What is actually checked
 
 - TypeScript, lint, and tests through CI.
-- PostgreSQL legacy adapter row validation, cardinality, transactions, and constraint mapping, plus portable example coverage for SQLite, PostgreSQL and MySQL.
+- Portable Kysely example coverage for SQLite, PostgreSQL and MySQL, including row validation and provider-specific constraint handling.
 - Production smoke test: the home page is available without database credentials.
 - Migration checksums for migrations already applied by the runner.
 - Admin-only provisioning, public signup denial, authenticated session behavior and origin checks in local auth tests.

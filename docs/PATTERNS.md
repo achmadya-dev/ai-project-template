@@ -2,7 +2,7 @@
 
 Use these as shape examples, not copy-paste requirements. `docs/CODE_STANDARDS.md` is normative; this document shows the preferred implementation style for the current architecture.
 
-For a portable Kysely example, see `src/modules/example-widget/`. The SQL/`DatabaseClient` examples below describe the retained PostgreSQL-only compatibility path, not portable SQL. Do not assume PostgreSQL placeholders or `RETURNING` work in MySQL.
+For a portable Kysely example, see `src/modules/example-widget/`. Keep SQL dialect differences in provider migrations and verify query behavior against every provider the feature supports.
 
 ## Vertical slice
 
@@ -19,8 +19,7 @@ src/server/
   logger.server.ts
   request.ts
   request.server.ts
-  database.server.ts
-  db.server.ts
+  portable-database.server.ts
 ```
 
 Add files only when the responsibility exists. A small feature does not need every possible layer; the shared backend core already exists for cross-cutting infrastructure.
@@ -55,59 +54,43 @@ export type Widget = z.infer<typeof widgetRow>
 
 Do not add framework, database, environment, or filesystem imports to domain modules.
 
-## PostgreSQL compatibility repository
+## Portable repository
 
-Repository code owns domain-specific SQL, but not raw `pg` plumbing. Accept `DatabaseClient`, receive already-validated domain input, and let the adapter validate returned rows and translate configured constraints.
+Repository code owns domain-specific queries and maps known provider constraint failures to domain errors. Accept a typed Kysely instance in the factory for tests; compose the configured database in the server-only getter.
 
 ```ts
-import type { DatabaseClient } from '../../server/database.server'
+import type { Kysely } from 'kysely'
+import { AppError } from '../../server/errors'
 import { widgetRow, type Widget, type WidgetInput } from './domain/widget'
 
-export interface WidgetRepository {
-  list(): Promise<Widget[]>
-  create(input: WidgetInput): Promise<Widget>
+interface ExampleDatabase {
+  widgets: { id: string; code: string; name: string }
 }
 
-export function createWidgetRepository(db: DatabaseClient): WidgetRepository {
+export function createWidgetRepository(db: Kysely<ExampleDatabase>) {
   return {
-    list() {
-      return db.many(widgetRow, {
-        text: 'SELECT id, code, name FROM widgets ORDER BY id DESC LIMIT 100',
-      })
-    },
-
-    create(input) {
-      return db.one(widgetRow, {
-        text: 'INSERT INTO widgets (code, name) VALUES ($1, $2) RETURNING id, code, name',
-        values: [input.code, input.name],
-        constraints: {
-          widgets_code_key: {
-            kind: 'conflict',
-            code: 'DUPLICATE_CODE',
-            message: 'Code already exists',
-          },
-        },
-      })
+    async create(input: WidgetInput): Promise<Widget> {
+      const id = crypto.randomUUID()
+      await db.insertInto('widgets').values({ id, ...input }).execute()
+      const row = await db
+        .selectFrom('widgets')
+        .selectAll()
+        .where('id', '=', id)
+        .executeTakeFirstOrThrow()
+      const parsed = widgetRow.safeParse(row)
+      if (!parsed.success) {
+        throw new AppError('internal', 'DATABASE_ROW_INVALID', 'Database returned an invalid row', {
+          cause: parsed.error,
+          expose: false,
+        })
+      }
+      return parsed.data
     },
   }
 }
 ```
 
-No repository-level `try/catch` is needed just to inspect PostgreSQL code/constraint fields. Unknown database failures still propagate; the shared request boundary logs/normalizes them.
-
-## PostgreSQL compatibility database access
-
-Feature code does not import `pg`. The shared adapter exposes:
-
-```text
-many(schema, query)      -> validated array
-one(schema, query)       -> exactly one validated row
-maybeOne(schema, query)  -> validated row or null
-execute(query)           -> affected row count
-transaction(callback)    -> explicit transaction with DatabaseClient
-```
-
-Use `one` only when exactly one row is an invariant. For lookup-by-id where absence is normal, use `maybeOne` and translate `null` into a stable application/domain `not_found` error where that meaning is known.
+Do not expose Kysely's driver dialect, pool, or driver error type to callers. Catch only known constraints that have a domain meaning; rethrow unknown errors for centralized request logging.
 
 ## Environment
 

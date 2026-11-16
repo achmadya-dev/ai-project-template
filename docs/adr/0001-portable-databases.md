@@ -1,6 +1,6 @@
 # SQLite default and portable SQL
 
-Status: proposed
+Status: superseded by [ADR 0002](0002-kysely-as-the-application-persistence-adapter.md)
 
 ## Context
 

@@ -1,5 +1,5 @@
 import { it } from 'vitest'
-import { migrateMysql } from '../../scripts/migrate-mysql.mjs'
+import { migrateMysql } from '../../scripts/migrations/mysql.mjs'
 import { verifyProviderAuth } from '../support/auth-provider'
 
 const url = process.env.TEST_MYSQL_URL

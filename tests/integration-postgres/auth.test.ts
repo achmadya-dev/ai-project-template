@@ -1,5 +1,5 @@
 import { it } from 'vitest'
-import { migrate } from '../../scripts/migrate.mjs'
+import { migrate } from '../../scripts/migrations/postgres.mjs'
 import { verifyProviderAuth } from '../support/auth-provider'
 
 const url = process.env.TEST_DATABASE_URL

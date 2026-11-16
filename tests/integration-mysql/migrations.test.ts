@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import mysql from 'mysql2/promise'
 import { expect, it } from 'vitest'
-import { migrateMysql } from '../../scripts/migrate-mysql.mjs'
+import { migrateMysql } from '../../scripts/migrations/mysql.mjs'
 
 const url = process.env.TEST_MYSQL_URL
 if (!url || !new URL(url).pathname.endsWith('_test') || new URL(url).protocol !== 'mysql:') {

@@ -1,0 +1,11 @@
+CREATE TABLE "session" (
+  "id" TEXT NOT NULL PRIMARY KEY,
+  "expiresAt" TIMESTAMPTZ NOT NULL,
+  "token" TEXT NOT NULL UNIQUE,
+  "createdAt" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updatedAt" TIMESTAMPTZ NOT NULL,
+  "ipAddress" TEXT,
+  "userAgent" TEXT,
+  "userId" TEXT NOT NULL REFERENCES "user" ("id") ON DELETE CASCADE,
+  "impersonatedBy" TEXT
+);

@@ -13,7 +13,7 @@ Use SQLite by default for local development and browser tests without a database
 
 ## Scope
 
-Add an explicit provider selection and portable persistence seam, a runnable end-to-end example, versioned migration strategy, and database-specific contract tests. Preserve applied PostgreSQL migration history and do not touch existing databases. The implementation branch is based on the unmerged template upgrade branch, so it depends on PR #36.
+Add an explicit provider selection and portable persistence seam, a runnable end-to-end example, versioned migration strategy, and database-specific contract tests. The initial implementation preserved PostgreSQL migration history. The follow-up in `docs/tasks/unify-provider-migrations.md` deliberately renames/splits auth migrations after confirmation that the project had not been run against a real database; existing databases with the previous migration history must not run the new migration set and need a separately reviewed recovery plan. The implementation branch is based on the unmerged template upgrade branch, so it depends on PR #36.
 
 ## Acceptance criteria
 
@@ -22,7 +22,7 @@ Add an explicit provider selection and portable persistence seam, a runnable end
 - [x] AC-3: Migration behavior is explicit, immutable, concurrency-safe per database, and preserves existing PostgreSQL migration history; no migration runs on application startup.
 - [x] AC-4: Integration tests exercise success, validation, uniqueness, transactions, and important failure cases against all supported providers using disposable targets.
 - [x] AC-5: Documentation covers setup, operational limitations, portable query constraints, backup, migration and the fact that switching provider does not move data.
-- [ ] AC-6: Run relevant checks and perform high-risk self-review; record limitations and do not claim unverified provider support.
+- [x] AC-6: Run relevant checks and perform high-risk self-review; record limitations and do not claim unverified provider support.
 
 ## Domain invariants
 
@@ -30,7 +30,7 @@ No application schema is active by default. Do not trust client input or leak da
 
 ## Plan
 
-1. Evaluate a typed query builder and its SQLite/Bun driver, preserving the existing PostgreSQL compatibility contract.
+1. Evaluate a typed query builder and its SQLite/Bun driver, preserving the existing PostgreSQL compatibility contract during the initial multi-provider implementation.
 2. Add typed provider selection and a server-only portable database seam; exercise a real example with all providers.
 3. Design migration safety separately for each engine, preserving existing migration checksums and acknowledging MySQL DDL semantics.
 4. Make the example E2E use a disposable SQLite file by default; retain database-specific contract tests.
@@ -52,7 +52,7 @@ SQLite is the default for new local projects; using PostgreSQL or MySQL in produ
 
 Initial inspection: current driver, SQL parameter markers, sample repository, integration tests, and migration runner are PostgreSQL-specific. Existing PR #36 is unmerged and GitHub Actions is blocked by account billing. Dependencies under evaluation: Kysely, better-sqlite3 and mysql2; no implementation or migration has been completed.
 
-Implementation in progress: added typed provider configuration, Kysely dialects, an SQLite default for the opt-in example and browser test, and separate provider migrations. The PostgreSQL runner and its migration history are retained. The existing `DatabaseClient` and `getDb()` remain PostgreSQL-only; only repositories using the new portable seam are portable. MySQL DDL is not transactional; a durable attempt marker blocks automatic retries after failure, requiring manual recovery. No production database or existing application data was accessed.
+Implementation in progress: added typed provider configuration, Kysely dialects, an SQLite default for the opt-in example and browser test, and separate provider migrations. A follow-up standardizes application persistence on Kysely and aligns provider migration names; see `docs/tasks/unify-provider-migrations.md` and ADR 0002. PostgreSQL migration history was not changed on any existing database; the new filenames are for databases that have not applied the old history. MySQL DDL is not transactional; a durable attempt marker blocks automatic retries after failure, requiring manual recovery. No production database or existing application data was accessed.
 
 Local results:
 
@@ -66,3 +66,11 @@ Local results:
 - `bun audit --audit-level=high`: no high/critical advisories; three lower-severity advisories remain.
 
 Limitations: CI and the pinned Playwright browser revision remain unverified because GitHub Actions is blocked by account billing. SQLite concurrent migration locking uses `BEGIN IMMEDIATE` and was exercised by concurrent calls, but a separate cross-process race test has not been run. Review native SQLite deployment, TLS configuration and MySQL migration recovery for each production environment. High-risk review is still required.
+
+Follow-up verification after the migration-structure and persistence cleanup (2026-11-16):
+
+- `bun run check`: passed, including build and typecheck.
+- `bun run test:integration`: passed, 3 files/5 SQLite tests.
+- PostgreSQL/MySQL suites were later rerun against isolated disposable `app_test` containers after the migration filenames changed; see `docs/tasks/unify-provider-migrations.md` for the current evidence and the host-port safety finding.
+- `bun run test:e2e`: could not launch because the configured Playwright Chromium executable is not installed; no application assertions ran.
+- Self-review completed. Existing databases with the previous migration history must not apply the renamed migrations without a separately reviewed recovery plan.

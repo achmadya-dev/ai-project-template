@@ -1,21 +1,21 @@
 -- Example only: this file is not applied by the migration runner.
 -- Copy it into the appropriate provider directory (sqlite/, postgres/, or mysql/)
--- using the next unused migration number (for example, 002_create_example_records.sql),
+-- using the next unused migration number (for example, 010_create_example_records_table.sql),
 -- then replace the SQL below with reviewed DDL for that database engine.
 
--- SQLite example (`db/migrations/sqlite/002_create_example_records.sql`):
+-- SQLite example (`db/migrations/sqlite/010_create_example_records_table.sql`):
 -- CREATE TABLE "example_records" (
 --   "id" TEXT NOT NULL PRIMARY KEY,
 --   "created_at" TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 -- );
 
--- PostgreSQL example (`db/migrations/postgres/002_create_example_records.sql`):
+-- PostgreSQL example (`db/migrations/postgres/010_create_example_records_table.sql`):
 -- CREATE TABLE "example_records" (
 --   "id" UUID NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),
 --   "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 -- );
 
--- MySQL example (`db/migrations/mysql/010_create_example_records.sql` - one statement per file):
+-- MySQL example (`db/migrations/mysql/010_create_example_records_table.sql`):
 -- CREATE TABLE `example_records` (
 --   `id` VARCHAR(36) NOT NULL PRIMARY KEY,
 --   `created_at` TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3)

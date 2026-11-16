@@ -1,71 +1,22 @@
-import { readdir, readFile } from 'node:fs/promises'
-import { createHash } from 'node:crypto'
-import { fileURLToPath, pathToFileURL } from 'node:url'
 import path from 'node:path'
-import pg from 'pg'
+import { pathToFileURL } from 'node:url'
+import { migrate as migratePostgres } from './migrations/postgres.mjs'
 
-export async function migrate(
-  connectionString,
-  directory = fileURLToPath(new URL('../db/migrations/postgres/', import.meta.url)),
-) {
-  if (!connectionString) throw new Error('DATABASE_URL is required; no default target is selected')
-  const client = new pg.Client({
-    connectionString,
-    connectionTimeoutMillis: 5000,
-    statement_timeout: 30000,
-  })
-  await client.connect()
-  try {
-    await client.query('BEGIN')
-    await client.query("SET LOCAL lock_timeout = '5s'")
-    await client.query('SELECT pg_advisory_xact_lock(714202610)')
-    await client.query(
-      'CREATE TABLE IF NOT EXISTS schema_migrations (name text PRIMARY KEY, checksum text NOT NULL, applied_at timestamptz NOT NULL DEFAULT now())',
-    )
-    const files = (await readdir(directory)).filter((n) => /^\d+_[a-z0-9_]+\.sql$/.test(n)).sort()
-    const history = await client.query('SELECT name, checksum FROM schema_migrations ORDER BY name')
-    for (const row of history.rows) {
-      if (!files.includes(row.name)) throw new Error(`Applied migration was removed: ${row.name}`)
-    }
-    for (const name of files) {
-      const sql = await readFile(path.join(directory, name), 'utf8')
-      const checksum = createHash('sha256').update(sql).digest('hex')
-      const applied = history.rows.find((row) => row.name === name)
-      if (applied) {
-        if (applied.checksum !== checksum)
-          throw new Error(`Applied migration was modified: ${name}`)
-        continue
-      }
-      if (history.rows.some((row) => row.name > name))
-        throw new Error(`Migration is out of order: ${name}`)
-      await client.query(sql)
-      await client.query('INSERT INTO schema_migrations(name, checksum) VALUES ($1, $2)', [
-        name,
-        checksum,
-      ])
-    }
-    await client.query('COMMIT')
-  } catch (error) {
-    await client.query('ROLLBACK')
-    throw error
-  } finally {
-    await client.end()
-  }
-}
-if (process.argv[1] && pathToFileURL(path.resolve(process.argv[1])).href === import.meta.url) {
+export async function runMigrations(environment = process.env) {
   const provider =
-    process.env.DB_PROVIDER ||
-    (process.env.DATABASE_URL?.startsWith('mysql:')
+    environment.DB_PROVIDER ||
+    (environment.DATABASE_URL?.startsWith('mysql:')
       ? 'mysql'
-      : process.env.DATABASE_URL
+      : environment.DATABASE_URL
         ? 'postgres'
         : 'sqlite')
+
   if (provider === 'sqlite') {
-    if (process.env.DATABASE_URL) throw new Error('SQLite does not use DATABASE_URL')
-    const { migrateSqlite } = await import('./migrate-sqlite.mjs')
-    await migrateSqlite(process.env.SQLITE_PATH || '.data/app.sqlite')
+    if (environment.DATABASE_URL) throw new Error('SQLite does not use DATABASE_URL')
+    const { migrateSqlite } = await import('./migrations/sqlite.mjs')
+    await migrateSqlite(environment.SQLITE_PATH || '.data/app.sqlite')
   } else if (provider === 'postgres') {
-    const url = process.env.DATABASE_URL
+    const url = environment.DATABASE_URL
     if (
       !url ||
       !['postgres:', 'postgresql:'].includes(new URL(url).protocol) ||
@@ -73,12 +24,16 @@ if (process.argv[1] && pathToFileURL(path.resolve(process.argv[1])).href === imp
     ) {
       throw new Error('PostgreSQL requires a matching DATABASE_URL')
     }
-    await migrate(url)
+    await migratePostgres(url)
   } else if (provider === 'mysql') {
-    const { migrateMysql } = await import('./migrate-mysql.mjs')
-    await migrateMysql(process.env.DATABASE_URL)
+    const { migrateMysql } = await import('./migrations/mysql.mjs')
+    await migrateMysql(environment.DATABASE_URL)
   } else {
     throw new Error('Unsupported DB_PROVIDER')
   }
+}
+
+if (process.argv[1] && pathToFileURL(path.resolve(process.argv[1])).href === import.meta.url) {
+  await runMigrations()
   console.log('Migrations applied successfully.')
 }

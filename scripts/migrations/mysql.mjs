@@ -1,30 +1,23 @@
-import { readdir, readFile } from 'node:fs/promises'
 import { createHash } from 'node:crypto'
 import { fileURLToPath } from 'node:url'
-import path from 'node:path'
 import mysql from 'mysql2/promise'
+import { assertMigrationHistory, loadMigrations } from './shared.mjs'
 
-export async function migrateMysql(
-  url,
-  directory = fileURLToPath(new URL('../db/migrations/mysql/', import.meta.url)),
-) {
+const defaultDirectory = fileURLToPath(new URL('../../db/migrations/mysql/', import.meta.url))
+
+export async function migrateMysql(url, directory = defaultDirectory) {
   if (!url || new URL(url).protocol !== 'mysql:' || new URL(url).pathname.length <= 1) {
     throw new Error('An explicit MySQL database URL is required')
   }
   if (new URL(url).searchParams.has('multipleStatements')) {
     throw new Error('MySQL multipleStatements is not permitted')
   }
-  const names = (await readdir(directory))
-    .filter((name) => /^\d+_[a-z0-9_]+\.sql$/.test(name))
-    .sort()
-  const migrations = await Promise.all(
-    names.map(async (name) => {
-      const sql = await readFile(path.join(directory, name), 'utf8')
-      return { name, sql, checksum: createHash('sha256').update(sql).digest('hex') }
-    }),
-  )
+  const migrations = await loadMigrations(directory)
   const connection = await mysql.createConnection(url)
-  const lockName = `template_migrate_${createHash('sha256').update(new URL(url).pathname).digest('hex').slice(0, 32)}`
+  const lockName = `template_migrate_${createHash('sha256')
+    .update(new URL(url).pathname)
+    .digest('hex')
+    .slice(0, 32)}`
   let locked = false
   try {
     const [lockRows] = await connection.execute('SELECT GET_LOCK(?, 5) AS acquired', [lockName])
@@ -46,19 +39,9 @@ export async function migrateMysql(
     const [history] = await connection.query(
       'SELECT name, checksum FROM schema_migrations ORDER BY name',
     )
-    for (const row of history) {
-      if (!names.includes(row.name)) throw new Error(`Applied migration was removed: ${row.name}`)
-    }
+    assertMigrationHistory(migrations, history)
     for (const migration of migrations) {
-      const applied = history.find((row) => row.name === migration.name)
-      if (applied) {
-        if (applied.checksum !== migration.checksum)
-          throw new Error(`Applied migration was modified: ${migration.name}`)
-        continue
-      }
-      if (history.some((row) => row.name > migration.name)) {
-        throw new Error(`Migration is out of order: ${migration.name}`)
-      }
+      if (history.some((row) => row.name === migration.name)) continue
       await connection.execute(
         'INSERT INTO schema_migration_attempts(name, checksum) VALUES (?, ?)',
         [migration.name, migration.checksum],

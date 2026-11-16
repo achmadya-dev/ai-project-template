@@ -2,7 +2,7 @@ import { mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { expect, it } from 'vitest'
-import { migrateSqlite } from '../../scripts/migrate-sqlite.mjs'
+import { migrateSqlite } from '../../scripts/migrations/sqlite.mjs'
 import { createAuth } from '../../src/modules/auth/auth.server'
 import { handleAuthHttp } from '../../src/modules/auth/auth-http.server'
 import { bootstrapFirstAdmin } from '../../src/modules/auth/bootstrap.server'
@@ -25,7 +25,7 @@ it('rejects public signup, permits one bootstrap, and supports username and emai
         headers: { 'content-type': 'application/json', origin: 'http://127.0.0.1:3000' },
         body: JSON.stringify(first),
       }),
-      instance,
+      () => instance,
     )
     expect(signup.status).toBe(404)
     const crossOrigin = await handleAuthHttp(
@@ -34,7 +34,7 @@ it('rejects public signup, permits one bootstrap, and supports username and emai
         headers: { 'content-type': 'application/json', origin: 'https://attacker.example' },
         body: JSON.stringify({ email: first.email, password }),
       }),
-      instance,
+      () => instance,
     )
     expect(crossOrigin.status).toBe(403)
     const missingOrigin = await handleAuthHttp(
@@ -43,7 +43,7 @@ it('rejects public signup, permits one bootstrap, and supports username and emai
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ email: first.email, password }),
       }),
-      instance,
+      () => instance,
     )
     expect(missingOrigin.status).toBe(403)
     const anonymousPasswordChange = await handleAuthHttp(
@@ -52,7 +52,7 @@ it('rejects public signup, permits one bootstrap, and supports username and emai
         headers: { 'content-type': 'application/json', origin: 'http://127.0.0.1:3000' },
         body: JSON.stringify({ currentPassword: password, newPassword: 'another-password-123' }),
       }),
-      instance,
+      () => instance,
     )
     expect(anonymousPasswordChange.status).toBe(401)
     const results = await Promise.allSettled([
@@ -143,7 +143,7 @@ it('rejects public signup, permits one bootstrap, and supports username and emai
           headers: { 'content-type': 'application/json', origin: 'http://127.0.0.1:3000' },
           body: JSON.stringify({ email: 'unknown@example.test', password }),
         }),
-        instance,
+        () => instance,
       )
       if (response.status === 429) {
         limited = true
