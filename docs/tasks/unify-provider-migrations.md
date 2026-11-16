@@ -1,6 +1,6 @@
 # Unify provider migration structure
 
-Status: in-review
+Status: done
 Risk: high
 Issue: https://github.com/achmadya-dev/ai-project-template/issues/55
 PR: https://github.com/achmadya-dev/ai-project-template/pull/56
@@ -14,6 +14,8 @@ The user subsequently requested removal of GitHub Actions because the account is
 The repository had no active rulesets or `main` branch protection when inspected. Future repositories made from the template must remove stale required checks before using the local-only workflow. Historical task evidence below describes the state before this operational change and is retained as such.
 
 Verification for this operational change: `bun run check`, `bun run verify`, and `git diff --check` passed locally. `verify` includes SQLite integration (5 tests), home E2E (4 tests), example E2E (1 test), auth E2E (1 test), and Bun production smoke. The environment ran Bun 1.4.4 rather than the pinned 1.4.2, and browser tests used existing Chromium revision 1255 rather than the pinned Playwright revision. PostgreSQL and MySQL suites were not rerun because their runners and schema are unchanged; the earlier isolated-provider results remain recorded below. This changes the verification gate from hosted CI to self-reported local evidence; it does not provide independent assurance. High-risk review remains pending. The prior GitHub Actions failures are historical billing failures, not passing checks.
+
+Completion: PR #56 was merged into `main` as `d23ad74` on 2026-11-16 after the user explicitly requested the merge. Its work branch was deleted. The high-risk change had no independent review or hosted CI; the user accepted the documented local-only verification and manual merge decision. The earlier "review pending" statement above records the pre-merge state, not an outstanding gate. Applied migration history remains subject to the compatibility warning below. This status correction is tracked in issue #58.
 
 ## Goal
 
