@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { parseEnv as parseDotenv } from 'node:util'
 import { describe, expect, it } from 'vitest'
 import { parseEnv } from '../../src/server/env.server'
@@ -44,5 +44,20 @@ describe('SQLite-first template defaults', () => {
     expect(compose).toMatch(/^\s{2}db-test:\n\s{4}image: postgres:[^\n]+\n\s{4}profiles: \[test\]/m)
     expect(compose).toMatch(/^\s{2}mysql:\n\s{4}image: mysql:[^\n]+\n\s{4}profiles: \[mysql\]/m)
     expect(compose).toMatch(/^\s{2}mysql-test:\n\s{4}image: mysql:[^\n]+\n\s{4}profiles: \[test\]/m)
+  })
+
+  it('organizes provider migrations into dedicated sqlite, postgres, and mysql directories', () => {
+    const rootEntries = readdirSync(new URL('../../db/migrations', import.meta.url))
+
+    expect(rootEntries.filter((name) => name.endsWith('.sql'))).toEqual([])
+    expect(existsSync(new URL('../../db/migrations/sqlite/001_auth.sql', import.meta.url))).toBe(
+      true,
+    )
+    expect(existsSync(new URL('../../db/migrations/postgres/001_auth.sql', import.meta.url))).toBe(
+      true,
+    )
+    expect(
+      existsSync(new URL('../../db/migrations/mysql/001_auth_user.sql', import.meta.url)),
+    ).toBe(true)
   })
 })

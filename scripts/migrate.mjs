@@ -6,7 +6,7 @@ import pg from 'pg'
 
 export async function migrate(
   connectionString,
-  directory = fileURLToPath(new URL('../db/migrations/', import.meta.url)),
+  directory = fileURLToPath(new URL('../db/migrations/postgres/', import.meta.url)),
 ) {
   if (!connectionString) throw new Error('DATABASE_URL is required; no default target is selected')
   const client = new pg.Client({
