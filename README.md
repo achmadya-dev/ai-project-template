@@ -32,7 +32,7 @@ if [ ! -e .env ]; then cp .env.example .env; fi
 bun run dev
 ```
 
-Open http://127.0.0.1:3000. The home page does not require a database. `DB_PROVIDER=sqlite` and `SQLITE_PATH=.data/app.sqlite` are the defaults; the file is created only when database access or migrations are requested. For PostgreSQL or MySQL, set `DB_PROVIDER=postgres` or `mysql` and set a matching `DATABASE_URL`. For compatibility an existing PostgreSQL `DATABASE_URL` without `DB_PROVIDER` selects PostgreSQL. Never combine `DB_PROVIDER=sqlite` with `DATABASE_URL`.
+Open http://127.0.0.1:3000. The home page does not require a database. `DB_PROVIDER=sqlite` and `SQLITE_PATH=.data/app.sqlite` are the defaults; the file is created only when database access or migrations are requested. For PostgreSQL or MySQL, set `DB_PROVIDER=postgres` or `mysql` and set a matching `DATABASE_URL`. For compatibility, an existing PostgreSQL or MySQL `DATABASE_URL` without `DB_PROVIDER` selects the corresponding provider. Never combine `DB_PROVIDER=sqlite` with `DATABASE_URL`.
 
 `bun run db:migrate` is explicit and targets the selected provider: numbered SQL files in `db/migrations/sqlite`, `db/migrations/mysql`, or the existing PostgreSQL `db/migrations` root. Confirm the target before running it. MySQL migration files must contain one statement each; its DDL cannot be rolled back reliably. An unfinished MySQL attempt stops subsequent migration runs for manual recovery. The development server binds to loopback.
 
@@ -48,9 +48,11 @@ The portable example uses Kysely; the existing `DatabaseClient`/`getDb()` and it
 
 The directory identifies the selected provider's migration history; it does not transfer data between providers. See [migration guidance](db/migrations/README.md) before executing migrations.
 
-### Optional MySQL development database
+### Optional server development databases
 
-SQLite remains the default. To start the opt-in MySQL development service, run `docker compose --profile mysql up -d --wait mysql`. Its persistent `mysql-data` volume is separate from PostgreSQL, and it listens on loopback port 3307 by default. After confirming the target, configure `DB_PROVIDER=mysql` and `DATABASE_URL=mysql://app:local_only_password@127.0.0.1:3307/app_dev` locally. These credentials are for local development only. Set `MYSQL_DEV_PORT` before starting Compose and update the URL if port 3307 is in use. Migrations are never applied automatically.
+SQLite remains the default and does not require Compose. Both server databases are opt-in: run `docker compose --profile postgres up -d --wait db` for PostgreSQL or `docker compose --profile mysql up -d --wait mysql` for MySQL. Select a service or profile explicitly; a plain `docker compose up` has no default service. The PostgreSQL `db` service retains its `app-data` volume and loopback port 5432. MySQL uses a separate persistent `mysql-data` volume and loopback port 3307 by default.
+
+After confirming the target, configure `DB_PROVIDER=postgres` and a matching PostgreSQL `DATABASE_URL`, or `DB_PROVIDER=mysql` and `DATABASE_URL=mysql://app:local_only_password@127.0.0.1:3307/app_dev`. These credentials are for local development only. Set `MYSQL_DEV_PORT` before starting Compose and update the URL if port 3307 is in use. Existing `.env` files are not modified, and migrations are never applied automatically.
 
 ## Authentication setup
 

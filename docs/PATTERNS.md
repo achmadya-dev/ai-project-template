@@ -55,7 +55,7 @@ export type Widget = z.infer<typeof widgetRow>
 
 Do not add framework, database, environment, or filesystem imports to domain modules.
 
-## Repository
+## PostgreSQL compatibility repository
 
 Repository code owns domain-specific SQL, but not raw `pg` plumbing. Accept `DatabaseClient`, receive already-validated domain input, and let the adapter validate returned rows and translate configured constraints.
 
@@ -95,7 +95,7 @@ export function createWidgetRepository(db: DatabaseClient): WidgetRepository {
 
 No repository-level `try/catch` is needed just to inspect PostgreSQL code/constraint fields. Unknown database failures still propagate; the shared request boundary logs/normalizes them.
 
-## Database access
+## PostgreSQL compatibility database access
 
 Feature code does not import `pg`. The shared adapter exposes:
 
@@ -191,7 +191,7 @@ For one behavior, prefer the lowest-cost test that can actually prove the contra
 
 ```text
 pure normalization/config/error contract -> unit
-SQL/adapter/constraint/migration race     -> integration with real PostgreSQL
+SQL/adapter/constraint/migration race     -> integration with each supported provider
 browser/server-function user flow         -> E2E
 built runtime can boot safely             -> production smoke
 ```

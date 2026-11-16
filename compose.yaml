@@ -1,6 +1,7 @@
 services:
   db:
     image: postgres:17.9-alpine
+    profiles: [postgres]
     environment:
       POSTGRES_USER: app
       POSTGRES_PASSWORD: local_only_password

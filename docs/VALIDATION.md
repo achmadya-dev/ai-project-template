@@ -70,7 +70,7 @@ For future project changes, copy and complete this section with actual evidence.
 - `bun run typecheck`:
 - Integration, E2E, and production checks when relevant:
 
-For database tests, use only a disposable `TEST_DATABASE_URL` ending in `_test`. A database name suffix alone does not prove the target is disposable. Do not run migrations against an unknown target.
+Default integration tests use disposable SQLite files. PostgreSQL and MySQL tests require a separately verified disposable database and the corresponding `TEST_DATABASE_URL` or `TEST_MYSQL_URL` ending in `_test`. A database name suffix alone does not prove the target is disposable. Do not run migrations against an unknown target.
 
 ### Limitations and follow-up
 
