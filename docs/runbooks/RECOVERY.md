@@ -2,7 +2,7 @@
 
 ## Development
 
-The default SQLite file is `.data/app.sqlite`. Back it up before modifying or replacing it; do not commit it. Optional development PostgreSQL data is local. Stop services with `docker compose stop`. Do not run `docker compose down -v` unless you intend to delete local volumes. The test PostgreSQL service uses `tmpfs` and is disposable. Auth migrations are explicit and are not applied automatically.
+The default SQLite file is `.data/app.sqlite`. Back it up before modifying or replacing it; do not commit it. Optional development PostgreSQL and MySQL services have separate persistent local volumes. Stop services with `docker compose stop`. Do not run `docker compose down -v` unless you intend to delete local volumes. The PostgreSQL and MySQL test services use `tmpfs`; their data is lost when stopped. Auth migrations are explicit and are not applied automatically.
 
 ## Application rollback
 
