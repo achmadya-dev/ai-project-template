@@ -24,6 +24,12 @@ Before creating or editing a pull request, read `.github/PULL_REQUEST_TEMPLATE.m
 - **Review**: inspect the actual diff and behavior, prioritize findings with evidence. Do not silently implement unless requested.
 - Use `docs/workflows/PLAN.md`, `IMPLEMENT.md`, or `REVIEW.md` for the procedure. These are portable runbooks, not auto-discovered vendor skills.
 
+## Default agent-guided flow
+- Treat an ordinary request to build or fix something as authorization to carry out the clear, reversible scope through a reviewable PR. The user need not ask separately for a task, branch, tests, or PR. First inspect the current state and relevant context; reuse a matching issue/task, or create a real issue when GitHub access is available and a local task when it is not. Capture acceptance criteria and assumptions before changing behavior.
+- If the request is explicitly plan-only, review-only, or a question, stop at that mode. If a material product or safety choice is unresolved, record it and ask once before the affected implementation; continue independent authorized work when possible. Do not turn an ambiguous request into invented domain rules.
+- For implementation, create/use one task branch, mark the task `in-progress`, implement and verify, then record the exact results and limitations. Push and open a template-compliant PR when authorized repository access is available; mark `in-review` only after the PR exists. Otherwise leave a local handoff and identify the missing external step. Do not claim a GitHub Project board or hosted CI exists.
+- Keep the user informed at meaningful decisions and handoff, not at every routine step. `done` requires the agreed behavior and evidence; for PR work, record completion after merge. Never silently merge, deploy, migrate a real database, spend money, or delete branches/data without action-specific authorization. See `docs/WORKFLOW.md` for the decision path and examples.
+
 ## Commands
 - Bun version in `.bun-version` is the package manager and application runtime; `bun install --frozen-lockfile`; copy `.env.example` to `.env` without overwriting an existing file. Node 26 is retained for current Vitest/Playwright compatibility and the Node policy-test runner; it is not the application runtime.
 - `bun run doctor`: readiness hints (does not prove GitHub protection).

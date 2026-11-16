@@ -2,6 +2,10 @@
 
 Name the issue or task when one exists; there is no need to repeat every repository rule.
 
+## Ordinary request (default)
+
+Say what outcome you want in plain language, for example: "Fix the account form error when the server is unavailable." The agent follows `AGENTS.md`: it records criteria, works on a branch, tests locally, and prepares a PR for a clear authorized change without asking you to restate each workflow step. Say "plan only" or "review only" to stop before implementation. Merge, deployment, and real database changes are separate decisions.
+
 ## Kickoff
 
 Read `AGENTS.md`. This project is for [users] and should solve [problem]. Propose one MVP workflow with a narrow scope. Update `docs/PRODUCT.md` and `docs/DOMAIN.md`. Create a planning issue if GitHub access is available; otherwise, use `docs/tasks/TEMPLATE.md`. Ask only about material unresolved decisions. Do not implement yet.

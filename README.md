@@ -109,6 +109,8 @@ keyboard and assistive technology.
 
 ## Workflow
 
+For routine changes, describe the desired outcome to a coding agent in plain language (for example, "Fix the account form error"). The default agent-guided flow in `AGENTS.md` handles the task record, branch, local verification, and reviewable PR when scope and access are clear. Say "plan only" or "review only" to limit the work. The agent must ask about material business/safety decisions, and merge or deployment still needs specific authorization. This is guidance loaded by the coding tool, not an unattended automation service or a hosted CI gate.
+
 1. Open the repository in your coding tool and ask the agent to read `AGENTS.md`.
 2. Describe the product or feature. The agent should draft an issue or local task with acceptance criteria.
 3. Approve the plan, or explicitly authorize direct implementation when the scope is clear.
