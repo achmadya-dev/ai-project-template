@@ -2,7 +2,7 @@
 
 A single-repository TanStack Start application for planning work, implementing it with your coding agent, and verifying changes through tests and pull requests. It does not depend on a particular agent or worker.
 
-**Start with [START_HERE.md](START_HERE.md).** Reusable prompt examples are in [docs/PROMPTS.md](docs/PROMPTS.md).
+**Start with [START_HERE.md](START_HERE.md)** for the documentation map. See [architecture](docs/ARCHITECTURE.md) for system boundaries, [workflow](docs/WORKFLOW.md) for the task lifecycle, and [reusable prompts](docs/PROMPTS.md) for agent requests.
 
 ## Included
 
@@ -39,6 +39,14 @@ Open http://127.0.0.1:3000. The home page does not require a database. `DB_PROVI
 SQLite needs a persistent local filesystem and is not automatically shared across application instances. For ephemeral or horizontally scaled hosting, select an appropriate production database. Changing `DB_PROVIDER` does not copy data; plan and verify export/import, compatibility, and backups separately.
 
 The portable example uses Kysely; the existing `DatabaseClient`/`getDb()` and its migration history remain PostgreSQL-only for compatibility. Existing PostgreSQL-specific features must be ported and tested before switching provider. Production deployments must separately configure and verify TLS, credentials, backups, connection limits, and database roles. The tested MySQL baseline is 8.4; engine-specific behavior such as collations, timestamps, transactions and constraints may differ.
+
+| Provider | Local setup | Migration directory | Test isolation |
+| --- | --- | --- | --- |
+| SQLite | Default; local file, no server | `db/migrations/sqlite/` | Temporary file by default |
+| PostgreSQL | Explicit URL; optional Compose service | `db/migrations/` | Separately verified disposable `_test` database |
+| MySQL | Explicit URL; opt-in Compose service | `db/migrations/mysql/` | Separately verified disposable `_test` database |
+
+The directory identifies the selected provider's migration history; it does not transfer data between providers. See [migration guidance](db/migrations/README.md) before executing migrations.
 
 ### Optional MySQL development database
 
@@ -112,7 +120,7 @@ If GitHub is unavailable, create a local task from `docs/tasks/TEMPLATE.md`. Do 
 - `src/routes`: pages and TanStack transport.
 - `src/modules/<domain>`: location for approved domain slices.
 - `src/server`: shared server infrastructure.
-- `db/migrations`: forward-only migrations; contains a non-executable example template, not an application schema.
+- `db/migrations`: forward-only provider-specific auth migrations and a non-executable example template; migrations run only when explicitly requested.
 - `tests`: unit, integration, and E2E tests.
 - `docs`: product and domain context, procedures, decisions, task template, and recovery guidance.
 - `scripts`: migration runner, task generator, PR metadata check, and smoke tests.

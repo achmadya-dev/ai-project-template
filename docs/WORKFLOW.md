@@ -8,6 +8,31 @@ Code and repository documentation describe the current system. Issues capture re
 
 `draft` → `ready` → `in-progress` → `in-review` → `done`; use `blocked` when a decision or access prevents progress. A task status is a record, not an enforcement mechanism. `ready` means the acceptance criteria are clear enough and the user has authorized that scope.
 
+```mermaid
+stateDiagram-v2
+    [*] --> draft
+    draft --> ready
+    ready --> in_progress
+    in_progress --> in_review
+    in_review --> done
+    draft --> blocked
+    ready --> blocked
+    in_progress --> blocked
+    in_review --> blocked
+    blocked --> draft: Resume at appropriate state
+    blocked --> ready
+    blocked --> in_progress
+    blocked --> in_review
+```
+
+Diagram labels use underscores because Mermaid state identifiers cannot use the hyphenated task names directly. Returning from `blocked` depends on the task's actual state; these labels do not enforce transitions.
+
+| Work mode | Main outcome | Do not assume |
+| --- | --- | --- |
+| Plan | Accepted scope and recorded acceptance criteria | Planning authorizes implementation |
+| Implement | Working change and actual verification evidence | Passing tests authorize a merge or deployment |
+| Review | Prioritized findings with evidence | Review authorizes silent implementation |
+
 ## Planning
 
 1. Read the product/domain context, related code, Git status, and relevant tests.
