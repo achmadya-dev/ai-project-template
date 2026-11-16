@@ -4,28 +4,11 @@
 
 Code and repository documentation describe the current system. Issues capture requests and acceptance criteria; pull requests capture changes and verification evidence. Use `docs/tasks/TEMPLATE.md` for a versioned local plan when GitHub is unavailable, or when an issue cannot carry a necessary local plan. Do not commit completed task logs into the starter by default; see `docs/tasks/README.md`. Link records instead of duplicating information that will quickly go stale.
 
-## Task states
+## Progress without status bookkeeping
 
-`draft` → `ready` → `in-progress` → `in-review` → `done`; use `blocked` when a decision or access prevents progress. A task status is a record, not an enforcement mechanism. `ready` means the acceptance criteria are clear enough and the user has authorized that scope.
+The agent owns routine progress records. An open issue holds the scope, an open PR holds the change and verification, and a merged PR closes its linked issue when `Closes #...` is used. Do not require a Project board, labels, manual state transitions, or status-only commits. When blocked, the agent records the reason and next action in the issue or local task and tells the user what decision or access is needed. A retained local task may use its `Status` field, but it is a truthful note, not a separate workflow gate.
 
-```mermaid
-stateDiagram-v2
-    [*] --> draft
-    draft --> ready
-    ready --> in_progress
-    in_progress --> in_review
-    in_review --> done
-    draft --> blocked
-    ready --> blocked
-    in_progress --> blocked
-    in_review --> blocked
-    blocked --> draft: Resume at appropriate state
-    blocked --> ready
-    blocked --> in_progress
-    blocked --> in_review
-```
-
-Diagram labels use underscores because Mermaid state identifiers cannot use the hyphenated task names directly. Returning from `blocked` depends on the task's actual state; these labels do not enforce transitions.
+The agent works during an active request, not as an unattended background service. The user supplies the outcome and decides material unknowns, merge for each PR, and other external or irreversible actions.
 
 | Work mode | Main outcome | Do not assume |
 | --- | --- | --- |
@@ -35,13 +18,13 @@ Diagram labels use underscores because Mermaid state identifiers cannot use the 
 
 ## Default path for natural-language requests
 
-The user may simply describe an outcome, such as "Let an administrator export their own account data" or "Fix the account form error." The agent handles routine workflow steps without asking for each one. These are instructions to coding agents, not a background service, GitHub Project board, or permission to take external actions beyond the request.
+The user may simply describe an outcome, such as "Let an administrator export their own account data" or "Fix the account form error." The agent handles routine workflow steps without asking for each one. These are instructions to coding agents, not permission to take external actions beyond the request.
 
 1. **Route the request.** A question gets an answer; "plan/design only" produces a plan without application changes; "review" reports findings without fixes. A clear request to build/fix/refactor authorizes the corresponding reversible work. Read `AGENTS.md`, product/domain context, Git status, the nearest implementation, and the relevant runbook. A user's "do it" is not a substitute for undecided business rules.
-2. **Establish the task.** Reuse a matching issue or task; otherwise prefer a real same-repository issue when GitHub access is available, or create a local `docs/tasks/` record when it is not. Use both only when a durable local plan adds value, and link them instead of duplicating details. Write the goal, numbered acceptance criteria, risk, verification, compatibility, and any material unknowns before changing application behavior. Use `draft` while clarifying; move to `ready` only when the authorized scope is clear. If GitHub is unavailable, keep truthful local links (`not-created`) and continue authorized work where possible. Do not leave stale local status files behind when an issue and PR already preserve the record.
-3. **Work without extra ceremony.** For implementation, create/use one task branch from the appropriate base (not `main`), mark `in-progress`, implement the smallest complete change, add relevant tests, and run the checks. Ask about decisions affecting data, money, access, scope, or external side effects before acting on them. Do not create duplicate issues, overwrite user changes, or request routine approval again. A plan-only or review-only request stops before this step.
-4. **Prepare review.** Record the tested revision, actual command results, failures, and limitations in the issue/PR or local task. Inspect the final diff and sensitive paths, verify the PR body with the trusted-base `scripts/check-pr.mjs`, and create a PR using `.github/PULL_REQUEST_TEMPLATE.md` if access and authorization exist. Only then mark `in-review`; if a PR cannot be created, provide a local handoff rather than a fabricated link. Transfer any local-only evidence into the issue/PR and remove a redundant local task on the same branch before merge. Git hooks and self-reported local results are not hosted CI or independent approval.
-5. **Finish only when appropriate.** Respond to review feedback on the same branch; re-run affected tests after changes. Merge, deployment, production migration, payment, destructive cleanup, and similar external/irreversible actions require action-specific authorization. After a PR is actually merged, report the outcome: a linked `Closes #...` issue closes on merge. Only a deliberately retained local task needs a separate reviewed status update to `done` (never an unreviewed direct edit to `main`). If a decision/access blocks progress, record `blocked` with the next action instead.
+2. **Establish the task.** Reuse a matching issue or task; otherwise prefer a real same-repository issue when GitHub access is available, or create a local `docs/tasks/` record when it is not. Use both only when a durable local plan adds value, and link them instead of duplicating details. Write the goal, numbered acceptance criteria, risk, verification, compatibility, and any material unknowns before changing application behavior. Proceed when the authorized scope is clear; ask only about material unknowns. If GitHub is unavailable, keep truthful local links (`not-created`) and continue authorized work where possible.
+3. **Work without extra ceremony.** For implementation, create/use one task branch from the appropriate base (not `main`), implement the smallest complete change, add relevant tests, and run the checks. Ask about decisions affecting data, money, access, scope, or external side effects before acting on them. Do not create duplicate issues, overwrite user changes, or request routine approval again. A plan-only or review-only request stops before this step.
+4. **Prepare review.** Record the tested revision, actual command results, failures, and limitations in the issue/PR or local task. Inspect the final diff and sensitive paths, verify the PR body with the trusted-base `scripts/check-pr.mjs`, and create a PR using `.github/PULL_REQUEST_TEMPLATE.md` if access and authorization exist. If a PR cannot be created, provide a local handoff rather than a fabricated link. Transfer any local-only evidence into the issue/PR and remove a redundant local task on the same branch before merge. Git hooks and self-reported local results are not hosted CI or independent approval.
+5. **Finish only when appropriate.** Respond to review feedback on the same branch; re-run affected tests after changes. Ask for explicit permission to merge each PR; deployment, production migration, payment, destructive cleanup, and similar external/irreversible actions also require action-specific authorization. After an authorized merge, report the outcome and confirm the linked issue closed. If a decision or access blocks progress, record the blocker and next action without creating a new status workflow.
 
 For example, "Fix the account form error" authorizes investigation, a regression test, the fix, local verification, and a reviewable PR without the user spelling out those steps. "Plan how to fix the account form error" stops after a plan. "Deploy the fix" is a separate action that requires a specific target and authorization. Agents may use a GitHub Project board if one is configured, but this repository does not require one.
 
@@ -94,7 +77,7 @@ Repository owners should configure the GitHub protections available to them and 
 
 ## Handoff
 
-Before switching sessions, fill in `docs/HANDOFF.md` with the task, branch, latest commit, uncommitted files, test results, blockers, and next step. Do not store secrets or a full chat transcript.
+When interrupting unfinished work or handing it to another session, the agent records the task, branch, latest commit, uncommitted files, test results, blockers, and next step in `docs/HANDOFF.md` if the context would otherwise be lost. Do not create a handoff for a completed PR or store secrets or a full chat transcript.
 
 ## Definition of done
 

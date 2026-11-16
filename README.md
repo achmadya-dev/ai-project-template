@@ -109,15 +109,14 @@ keyboard and assistive technology.
 
 ## Workflow
 
-For routine changes, describe the desired outcome to a coding agent in plain language (for example, "Fix the account form error"). The default agent-guided flow in `AGENTS.md` handles the task record, branch, local verification, and reviewable PR when scope and access are clear. Say "plan only" or "review only" to limit the work. The agent must ask about material business/safety decisions, and merge or deployment still needs specific authorization. This is guidance loaded by the coding tool, not an unattended automation service or a hosted CI gate.
+For routine changes, describe the desired outcome to a coding agent in plain language (for example, "Fix the account form error"). The default agent-guided flow in `AGENTS.md` handles the issue or local task, branch, verification, PR, and progress records when scope and access are clear; you do not need to manage task statuses. Say "plan only" or "review only" to limit the work. The agent must ask about material business/safety decisions and obtain your permission for each PR merge; deployment still needs separate authorization. This is guidance loaded by the coding tool, not an unattended automation service or a hosted CI gate.
 
 1. Open the repository in your coding tool and ask the agent to read `AGENTS.md`.
-2. Describe the product or feature. The agent should draft an issue or local task with acceptance criteria.
-3. Approve the plan, or explicitly authorize direct implementation when the scope is clear.
-4. The agent creates a branch, implements the change, verifies it, updates documentation, and prepares a pull request with evidence.
-5. Review behavior and the recorded local verification before merging. The template does not enable auto-merge or auto-deployment.
+2. Describe the product or feature. The agent records acceptance criteria in an issue or local task and asks only about material unknowns.
+3. The agent creates a branch, implements the change, verifies it, updates documentation, and prepares a pull request with evidence.
+4. Decide whether to authorize merging that PR after reviewing its behavior and evidence. The template does not enable auto-merge or auto-deployment.
 
-If GitHub is unavailable, create a local task from `docs/tasks/TEMPLATE.md`. With GitHub access, prefer an issue and PR rather than a duplicate local task; see [local task guidance](docs/tasks/README.md). Do not claim an issue or pull request exists until it has actually been created.
+If GitHub is unavailable, the agent creates a local task from `docs/tasks/TEMPLATE.md`. With GitHub access, it prefers an issue and PR rather than a duplicate local task; see [local task guidance](docs/tasks/README.md). Do not claim an issue or pull request exists until it has actually been created.
 
 ## Structure
 
