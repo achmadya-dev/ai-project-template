@@ -3,7 +3,7 @@
 Status: in-review
 Risk: high
 Issue: https://github.com/achmadya-dev/ai-project-template/issues/47
-PR: not-created
+PR: https://github.com/achmadya-dev/ai-project-template/pull/48
 Plan revision: 1
 Authorization: user requested MySQL development and test services in Compose and documented PostgreSQL/MySQL E2E setup. No production access or deployment authorized.
 
