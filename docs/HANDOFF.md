@@ -1,6 +1,6 @@
 # Session handoff
 
-Fill this in before moving work to a new session. Do not store secrets or a full chat transcript.
+For interrupted work that needs another session, the agent fills this in when the context would otherwise be lost. Do not store secrets or a full chat transcript.
 
 Task:
 Repository:

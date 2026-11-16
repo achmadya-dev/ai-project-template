@@ -14,7 +14,7 @@ Use the task's current issue or local task as the acceptance-criteria source; th
 | Handle database changes or recovery | [Migration guidance](db/migrations/README.md) and [recovery runbook](docs/runbooks/RECOVERY.md) |
 | Evaluate safety and optional integrations | [Safety boundaries](docs/SAFETY.md) and [capability catalog](docs/capabilities/README.md) |
 
-The architecture diagram and workflow diagram supplement the written rules; if a diagram and a normative rule differ, follow the rule.
+The architecture diagram supplements the written rules; if a diagram and a normative rule differ, follow the rule.
 
 ## 1. Make this project yours
 
