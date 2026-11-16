@@ -1,9 +1,9 @@
 # SQLite default consistency
 
-Status: in-review
+Status: done
 Risk: high
 Issue: #51
-PR: pending
+PR: #52
 Plan revision: 1
 Authorization: user requested checking repository notes and files and ensuring SQLite is the default. No existing database migration, data transfer, production access, or deployment authorized.
 
