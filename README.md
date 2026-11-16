@@ -40,6 +40,10 @@ SQLite needs a persistent local filesystem and is not automatically shared acros
 
 The portable example uses Kysely; the existing `DatabaseClient`/`getDb()` and its migration history remain PostgreSQL-only for compatibility. Existing PostgreSQL-specific features must be ported and tested before switching provider. Production deployments must separately configure and verify TLS, credentials, backups, connection limits, and database roles. The tested MySQL baseline is 8.4; engine-specific behavior such as collations, timestamps, transactions and constraints may differ.
 
+### Optional MySQL development database
+
+SQLite remains the default. To start the opt-in MySQL development service, run `docker compose --profile mysql up -d --wait mysql`. Its persistent `mysql-data` volume is separate from PostgreSQL, and it listens on loopback port 3307 by default. After confirming the target, configure `DB_PROVIDER=mysql` and `DATABASE_URL=mysql://app:local_only_password@127.0.0.1:3307/app_dev` locally. These credentials are for local development only. Set `MYSQL_DEV_PORT` before starting Compose and update the URL if port 3307 is in use. Migrations are never applied automatically.
+
 ## Authentication setup
 
 Authentication is optional until used. Configure a unique cryptographically random `AUTH_SECRET` of at least 32 characters and an `AUTH_BASE_URL` matching the browser origin. Production requires HTTPS; plain HTTP is permitted only for loopback development. Never commit the secret or send it to an agent. After confirming the selected database is the intended target, explicitly run `bun run db:migrate`, then `bun run auth:bootstrap` in a local interactive terminal. Enter the first administrator's name, required email, username, and password at the prompts; the password is not echoed. No default account is created.
@@ -54,6 +58,27 @@ bun run verify
 ```
 
 The default integration and example E2E tests use disposable SQLite databases and do not require Docker. To exercise PostgreSQL and MySQL, run `bun run test:integration:postgres` and `bun run test:integration:mysql` with `TEST_DATABASE_URL` and `TEST_MYSQL_URL` pointing to separately verified disposable databases ending in `_test`. The suffix alone does not prove isolation. CI runs all three provider suites.
+
+### PostgreSQL and MySQL integration and E2E
+
+The following commands use the Compose test services only. Before starting, verify that the Compose project name and loopback ports are not already used by another project, and that the targets are disposable; do not reuse a development or production database. Both test services use ephemeral `tmpfs` storage: **all test database data is lost when the containers stop**. The tests create and remove tables or synthetic auth data; an interrupted run may leave test data behind.
+
+```sh
+docker compose -p template-e2e up -d --wait db-test mysql-test
+
+TEST_DATABASE_URL=postgresql://app:local_only_password@127.0.0.1:5433/app_test bun run test:integration:postgres
+TEST_MYSQL_URL=mysql://app:local_only_password@127.0.0.1:3308/app_test bun run test:integration:mysql
+
+EXAMPLE_TEST_PROVIDER=postgres TEST_DATABASE_URL=postgresql://app:local_only_password@127.0.0.1:5433/app_test bun run test:example
+EXAMPLE_TEST_PROVIDER=mysql TEST_MYSQL_URL=mysql://app:local_only_password@127.0.0.1:3308/app_test bun run test:example
+
+AUTH_TEST_PROVIDER=postgres TEST_DATABASE_URL=postgresql://app:local_only_password@127.0.0.1:5433/app_test bun run test:auth
+AUTH_TEST_PROVIDER=mysql TEST_MYSQL_URL=mysql://app:local_only_password@127.0.0.1:3308/app_test bun run test:auth
+```
+
+Run these commands sequentially; the E2E suites use fixed local application ports and modify their test databases. Auth tests apply explicit migrations to the selected test database. Use `POSTGRES_TEST_PORT` and `MYSQL_TEST_PORT` when starting Compose if ports 5433 or 3308 are occupied, and change the corresponding URLs above. For production-build E2E, set `EXAMPLE_PRODUCTION=1` for example tests; for auth tests, run `bun run build` first and set `AUTH_TEST_PRODUCTION=1`.
+
+When finished, `docker compose -p template-e2e stop db-test mysql-test` stops only those test services and destroys their temporary data. Do not run `docker compose down -v`: it can delete persistent development volumes belonging to that Compose project. See `docs/runbooks/RECOVERY.md` before any cleanup.
 
 Browser tests include automated accessibility and keyboard navigation checks for the starter home
 page. Automated checks detect only some accessibility issues; manually test real workflows with a
