@@ -1,9 +1,9 @@
 # Agent-guided workflow by default
 
-Status: in-progress
+Status: in-review
 Risk: high
 Issue: https://github.com/achmadya-dev/ai-project-template/issues/61
-PR: not-created
+PR: https://github.com/achmadya-dev/ai-project-template/pull/62
 Plan revision: 1
 Authorization: user requested that agents guide ordinary requests through the repository workflow automatically, without requiring users to name each workflow step.
 
@@ -33,3 +33,4 @@ Check the changed guidance against `docs/CODE_STANDARDS.md`, the closest workflo
 - Existing `.cursor/rules/project.mdc`, `.github/copilot-instructions.md`, and `CLAUDE.md` already point at `AGENTS.md`; no vendor-specific rule was added.
 - Manual scenario review: a natural-language implementation request proceeds through issue/task, branch, local tests, and PR; "plan only" and "review only" stop before implementation; an unknown business rule blocks only the affected action; merge/deploy/real database work still needs action-specific authorization. Instructions do not execute autonomously outside an agent session, and local hooks can be bypassed.
 - No application runtime or database test was run for this instruction/documentation-only change.
+- PR #62 was opened for issue #61. High-risk review is pending; no merge or automatic deployment was performed.
