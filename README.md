@@ -40,6 +40,21 @@ SQLite needs a persistent local filesystem and is not automatically shared acros
 
 Application persistence uses Kysely across SQLite, PostgreSQL, and MySQL. SQL migrations remain provider-specific, and switching providers does not move data. Production deployments must separately configure and verify TLS, credentials, backups, connection limits, and database roles. The tested MySQL baseline is 8.4; engine-specific behavior such as collations, timestamps, transactions and constraints may differ.
 
+### Docker image
+
+The root `Dockerfile` builds the TanStack Start/Nitro output with the repository-pinned Bun version and runs the standalone `.output` artifact on port 3000. The image excludes local environment and database files and does not run migrations. Configure runtime secrets and the selected database through the hosting platform; do not bake them into the image.
+
+Build and run a local image with:
+
+```sh
+docker build -t ai-project-template .
+docker run --rm --publish 127.0.0.1:3000:3000 \
+  --mount type=volume,source=ai-project-data,target=/app/.data \
+  ai-project-template
+```
+
+The image health check requests `/`, which does not require database credentials. SQLite data defaults to `/app/.data/app.sqlite`; mount persistent storage at `/app/.data` if SQLite is selected. For shared or scaled production deployments, configure a separate database and persistent backups. Migrations remain an explicit operation and are never run during image build or container startup.
+
 | Provider | Local setup | Migration directory | Test isolation |
 | --- | --- | --- | --- |
 | SQLite | Default; local file, no server | `db/migrations/sqlite/` | Temporary file by default |
