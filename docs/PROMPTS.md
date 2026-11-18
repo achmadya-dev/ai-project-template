@@ -14,9 +14,13 @@ Read `AGENTS.md`. This project is for [users] and should solve [problem]. Propos
 
 Read `AGENTS.md` and the relevant code. Plan [feature], including acceptance criteria, failure examples, invariants, database/API impact, and verification. Save the plan as a GitHub issue or a local task created from the template. Do not change application code yet.
 
-## Implement
+## Plan with a prototype
 
-Implement the accepted revision of [issue or task path]. Continue through relevant verification and a ready-to-review pull request. Record actual results and limitations. Do not merge or deploy. If GitHub access is unavailable, keep the plan and pull request body locally and report what remains.
+For a plan that needs visuals: "Plan [feature/page] only. Follow `docs/PROTOTYPING.md`: create a small local prototype under `prototypes/[task-slug]/` if it answers a design question, attach labeled concept screenshots to the issue, record assumptions and the proposed decision, then stop. Do not change application code or push prototype source."
+
+## Implement with UI evidence
+
+Implement the accepted revision of [issue or task path]. Continue through relevant verification and a ready-to-review pull request. For UI changes, attach actual application screenshots to the PR or a linked PR comment with page/state and viewport context; do not substitute planning concepts. Record actual results and limitations. Do not merge or deploy. If GitHub access is unavailable, keep the plan and pull request body locally and report what remains.
 
 ## Review
 

@@ -5,5 +5,6 @@ dist/
 coverage/
 playwright-report/
 test-results/
+prototypes/
 bun.lock
 src/routeTree.gen.ts

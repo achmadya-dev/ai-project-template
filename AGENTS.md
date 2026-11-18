@@ -10,6 +10,7 @@ Read this file first. It applies to this whole repository. This is guidance, not
 - `docs/PATTERNS.md`: preferred shapes for vertical slices, boundaries, and tests.
 - `docs/WORKFLOW.md`: planning, implementation, evidence, handoff.
 - `docs/COMMITS.md`: commit message format, allowed types, scopes, and AI-agent commit rules.
+- For planning visuals or throwaway experiments, `docs/PROTOTYPING.md`: use local-only `prototypes/`, not application routes or committed prototype files.
 - For risky changes, `docs/SAFETY.md` and `docs/runbooks/RECOVERY.md`.
 
 Before implementing or reviewing code, read `docs/CODE_STANDARDS.md`. Inspect the closest existing implementation and `docs/PATTERNS.md` before inventing a new pattern.
@@ -19,7 +20,7 @@ Use English for all repository-maintained documentation, examples, agent instruc
 Before creating or editing a pull request, read `.github/PULL_REQUEST_TEMPLATE.md` and the trusted-base verifier `scripts/check-pr.mjs`. Treat the verifier as the executable PR metadata contract: use a real same-repository issue, preserve every required section, classify risk from the actual changed paths, and never replace the repository template with an improvised PR body.
 
 ## Work modes
-- **Plan**: inspect code and relevant history, capture assumptions, create/update an issue or `docs/tasks/` task. Do not implement when the user only requests planning.
+- **Plan**: inspect code and relevant history, capture assumptions, create/update an issue or `docs/tasks/` task. When a visual would resolve a planning question, build an isolated local prototype and attach labeled concept screenshots to the issue following `docs/PROTOTYPING.md`. Do not change application code or turn plan-only work into implementation.
 - **Implement**: work from accepted acceptance criteria. Existing user authorization is sufficient for the specified reversible work; do not repeatedly request approval. Ask only when a material unresolved choice affects data, money, access, scope, or external side effects.
 - **Review**: inspect the actual diff and behavior, prioritize findings with evidence. Do not silently implement unless requested.
 - Use `docs/workflows/PLAN.md`, `IMPLEMENT.md`, or `REVIEW.md` for the procedure. These are portable runbooks, not auto-discovered vendor skills.
@@ -28,7 +29,7 @@ Before creating or editing a pull request, read `.github/PULL_REQUEST_TEMPLATE.m
 - Treat an ordinary request to build or fix something as authorization to carry out the clear, reversible scope through a reviewable PR. The user need not ask separately for a task, branch, tests, or PR. First inspect the current state and relevant context; reuse a matching issue/task, or create a real issue when GitHub access is available and a local task when it is not. Avoid duplicating issue/PR history in `docs/tasks/`; promote durable decisions to architecture, ADRs, or runbooks. Capture acceptance criteria and assumptions before changing behavior.
 - If the request is explicitly plan-only, review-only, or a question, stop at that mode. If a material product or safety choice is unresolved, record it and ask once before the affected implementation; continue independent authorized work when possible. Do not turn an ambiguous request into invented domain rules.
 - For implementation, create/use one task branch, implement and verify, then record the exact results and limitations in the issue/PR or a local task. Push and open a template-compliant PR when authorized repository access is available. The agent owns routine issue/PR updates; do not ask the user to manage status labels or claim a GitHub Project board or hosted CI exists. Otherwise leave a local handoff and identify the missing external step.
-- Keep the user informed at meaningful decisions and handoff, not at every routine step. A merged PR and its linked closed issue record completion; do not add status-only commits. Never silently merge: ask for explicit permission for each PR. Deployment, real database migration, spending money, and deleting branches/data also need action-specific authorization. See `docs/WORKFLOW.md` for the decision path and examples.
+- Keep the user informed at meaningful decisions and handoff, not at every routine step. A merged PR and its linked closed issue record completion; do not add status-only commits. Never silently merge: ask for explicit permission for each PR. Deployment, real database migration, and spending money need action-specific authorization. After an authorized merge, automatically clean up the linked task branch under the safe post-merge rules in `docs/WORKFLOW.md`; all other branch deletion needs explicit approval. See `docs/WORKFLOW.md` for the decision path and examples.
 
 ## Commands
 - Bun version in `.bun-version` is the package manager and application runtime; `bun install --frozen-lockfile`; copy `.env.example` to `.env` without overwriting an existing file. Node 26 is retained for current Vitest/Playwright compatibility and the Node policy-test runner; it is not the application runtime.
@@ -51,7 +52,7 @@ Before creating or editing a pull request, read `.github/PULL_REQUEST_TEMPLATE.m
 6. Validate at server boundaries. Keep DB access in `.server.ts` files and domain code independent of transport/UI.
 7. Tests must reflect acceptance criteria, including meaningful negative cases. Never weaken tests to obtain green checks. This template does not run GitHub Actions CI; record local verification and explain intentional contract/test changes.
 8. Never read/print secrets unnecessarily; do not copy `.env`, credentials, or customer data to issues, prompts, logs, or commits. Use synthetic test data.
-9. No production access, deployment, real payments, mass deletion, schema drops, or destructive recovery from generic implementation authorization. Prepare a concrete plan/evidence before requesting the necessary authorization.
+9. No production access, deployment, real payments, mass deletion, schema drops, or destructive recovery from generic implementation authorization. Prepare a concrete plan/evidence before requesting the necessary authorization. Branch cleanup is governed separately by `docs/WORKFLOW.md`: only a task branch for a confirmed merged PR is eligible for routine cleanup; never clean unrelated or stale branches without explicit approval.
 10. Protect governance changes: edits to `.github`, `scripts`, agent rules, migration history, auth, or dependencies require explicit risk disclosure. Never change the verifier to hide a failure.
 11. Preserve applied migrations. Add forward migrations; document compatibility and recovery. Git revert does not undo external side effects.
 12. Before reporting implementation complete, review the diff against the required self-review checklist in `docs/CODE_STANDARDS.md`. Record any intentional exception rather than silently violating the standard.
