@@ -10,6 +10,7 @@ Read this file first. It applies to this whole repository. This is guidance, not
 - `docs/PATTERNS.md`: preferred shapes for vertical slices, boundaries, and tests.
 - `docs/WORKFLOW.md`: planning, implementation, evidence, handoff.
 - `docs/COMMITS.md`: commit message format, allowed types, scopes, and AI-agent commit rules.
+- For planning visuals or throwaway experiments, `docs/PROTOTYPING.md`: use local-only `prototypes/`, not application routes or committed prototype files.
 - For risky changes, `docs/SAFETY.md` and `docs/runbooks/RECOVERY.md`.
 
 Before implementing or reviewing code, read `docs/CODE_STANDARDS.md`. Inspect the closest existing implementation and `docs/PATTERNS.md` before inventing a new pattern.
@@ -19,7 +20,7 @@ Use English for all repository-maintained documentation, examples, agent instruc
 Before creating or editing a pull request, read `.github/PULL_REQUEST_TEMPLATE.md` and the trusted-base verifier `scripts/check-pr.mjs`. Treat the verifier as the executable PR metadata contract: use a real same-repository issue, preserve every required section, classify risk from the actual changed paths, and never replace the repository template with an improvised PR body.
 
 ## Work modes
-- **Plan**: inspect code and relevant history, capture assumptions, create/update an issue or `docs/tasks/` task. Do not implement when the user only requests planning.
+- **Plan**: inspect code and relevant history, capture assumptions, create/update an issue or `docs/tasks/` task. When a visual would resolve a planning question, build an isolated local prototype and attach labeled concept screenshots to the issue following `docs/PROTOTYPING.md`. Do not change application code or turn plan-only work into implementation.
 - **Implement**: work from accepted acceptance criteria. Existing user authorization is sufficient for the specified reversible work; do not repeatedly request approval. Ask only when a material unresolved choice affects data, money, access, scope, or external side effects.
 - **Review**: inspect the actual diff and behavior, prioritize findings with evidence. Do not silently implement unless requested.
 - Use `docs/workflows/PLAN.md`, `IMPLEMENT.md`, or `REVIEW.md` for the procedure. These are portable runbooks, not auto-discovered vendor skills.

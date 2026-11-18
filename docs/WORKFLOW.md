@@ -30,6 +30,8 @@ For example, "Fix the account form error" authorizes investigation, a regression
 
 ## UI review evidence
 
+During planning, use the optional [local prototype loop](PROTOTYPING.md) when a visual would answer a concrete question. Keep source under ignored `prototypes/`, attach labeled concept screenshots to the issue, and record the decision. Concept images do not replace screenshots of the implemented application in the PR. A plan-only request still stops before application changes.
+
 When a change affects a user-facing interface, include representative screenshots in the PR description or in a linked PR comment. Identify the relevant page/state and viewport (for example, desktop and mobile when responsive behavior changed). Upload screenshots as GitHub attachments (for example, with `gh pr comment --attach`) and link the comment from the PR description if the images are in a comment. Keep the screenshots visible to reviewers; merely saying that screenshots were inspected is not visual evidence. Mark this section not applicable for changes with no user-facing UI impact.
 
 Do not commit transient Playwright screenshots, test results, or generated UI captures by default. Keep those in ignored/local artifact storage and attach the selected evidence to the PR. Commit an image only when it is an intentional maintained product/design artifact with a clear source and update policy. An issue may hold product reference images or a completion link, but the PR is the source of review evidence.

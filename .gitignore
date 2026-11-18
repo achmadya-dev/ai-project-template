@@ -11,3 +11,6 @@ test-results/
 *.log
 .DS_Store
 .data/
+
+# Local-only planning and development prototypes; never force-add.
+/prototypes/

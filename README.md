@@ -29,6 +29,7 @@ Type checking uses TypeScript 7's native `tsc` and TypeScript 6's `tsc6`. The `t
 ```sh
 bun install --frozen-lockfile
 if [ ! -e .env ]; then cp .env.example .env; fi
+mkdir -p prototypes
 bun run dev
 ```
 
@@ -124,6 +125,31 @@ keyboard and assistive technology.
 
 ## Workflow
 
+```mermaid
+flowchart TD
+    Request["Describe the outcome; read AGENTS.md"] --> Plan["Inspect context; record criteria in issue or local task"]
+    Plan --> Visual{"Would a visual answer a planning question?"}
+    Visual -->|Yes| Prototype["Local-only prototype in prototypes/"]
+    Prototype --> Concept["Attach labeled concept screenshots to planning issue"]
+    Visual -->|No| Mode{"Plan-only request?"}
+    Concept --> Mode
+    Mode -->|Yes| Stop["Deliver plan and stop"]
+    Mode -->|No| Scope{"Scope clear and implementation authorized?"}
+    Scope -->|No| Clarify["Resolve material questions"]
+    Clarify --> Plan
+    Scope -->|Yes| Branch["Task branch; implement and test"]
+    Branch --> Verify["Run checks; actual UI screenshots when applicable"]
+    Verify --> PR["Open PR with evidence; review"]
+    PR --> Approval{"Owner authorizes this PR merge?"}
+    Approval -->|Not yet| Hold["Keep PR open; address feedback"]
+    Hold --> PR
+    Approval -->|Yes| Merge["Confirm merge; close linked issue"]
+    Merge --> Cleanup["Clean only eligible task branch after safety checks"]
+    Cleanup --> Deploy{"Separate deployment authorization?"}
+    Deploy -->|Yes| Release["Deploy approved target; verify live behavior"]
+    Deploy -->|No| Done["Handoff without deployment"]
+```
+
 For routine changes, describe the desired outcome to a coding agent in plain language (for example, "Fix the account form error"). The default agent-guided flow in `AGENTS.md` handles the issue or local task, branch, verification, PR, and progress records when scope and access are clear; you do not need to manage task statuses. Say "plan only" or "review only" to limit the work. The agent must ask about material business/safety decisions and obtain your permission for each PR merge; deployment still needs separate authorization. This is guidance loaded by the coding tool, not an unattended automation service or a hosted CI gate.
 
 1. Open the repository in your coding tool and ask the agent to read `AGENTS.md`.
@@ -133,6 +159,51 @@ For routine changes, describe the desired outcome to a coding agent in plain lan
 
 If GitHub is unavailable, the agent creates a local task from `docs/tasks/TEMPLATE.md`. With GitHub access, it prefers an issue and PR rather than a duplicate local task; see [local task guidance](docs/tasks/README.md). Do not claim an issue or pull request exists until it has actually been created.
 
+### Example prompts
+
+Replace bracketed placeholders with the feature or real issue/PR number. More examples: [docs/PROMPTS.md](docs/PROMPTS.md).
+
+**Plan with optional visual exploration**
+
+```text
+Read AGENTS.md. Plan [feature/page] only; do not change application code.
+If a layout or interaction question needs a visual answer, build a small
+HTML/CSS/JS or equivalent prototype under prototypes/[task-slug]/.
+Attach labeled concept screenshots to the planning issue, record assumptions
+and acceptance criteria, then stop for review. Keep prototype source local.
+```
+
+**Implement accepted scope**
+
+```text
+Implement the accepted criteria in issue #[number]. Run the relevant checks,
+capture actual desktop/mobile UI states when applicable, and attach them to
+the PR or a linked PR comment. Record results and limitations. Do not merge
+or deploy.
+```
+
+**Review without changing code**
+
+```text
+Review PR #[number] against its issue, repository standards, test evidence,
+and actual UI screenshots. Report prioritized findings; do not implement,
+merge, deploy, or delete branches.
+```
+
+**Authorize one merge**
+
+```text
+Merge PR #[number] if it is ready. Confirm the merged revision and linked
+issue closure; clean only its eligible task branch under docs/WORKFLOW.md.
+Do not deploy or delete unrelated/stale branches.
+```
+
+### Local-only prototypes
+
+Use `prototypes/<task-slug>/` for throwaway HTML/CSS/JS, other small experiments, notes, and screenshots during planning or development. It is ignored by Git, excluded from Docker build context and routine lint/format checks, and must not be imported into the application. On a new clone, run `mkdir -p prototypes`; no placeholder or prototype code is pushed to GitHub.
+
+Upload selected concept screenshots to the planning issue when they clarify a question; label them as prototypes, not completed UI. Implementation PRs use screenshots of the actual application. This directory is not a backup or a secret store; never force-add it or automatically delete existing experiments during branch cleanup. See [the prototype guide](docs/PROTOTYPING.md) for the local server, capture, and issue-attachment flow.
+
 ## Structure
 
 - `src/routes`: pages and TanStack transport.
@@ -141,6 +212,7 @@ If GitHub is unavailable, the agent creates a local task from `docs/tasks/TEMPLA
 - `db/migrations`: forward-only provider-specific auth migrations and a non-executable example template; migrations run only when explicitly requested.
 - `tests`: unit, integration, and E2E tests.
 - `docs`: product and domain context, procedures, decisions, task template, and recovery guidance.
+- `prototypes/` (local-only, Git-ignored): throwaway planning/development prototypes and screenshots.
 - `scripts`: migration runner, task generator, PR metadata check, and smoke tests.
 - `.github`: issue/PR templates, Dependabot configuration, and CODEOWNERS (no Actions workflow).
 

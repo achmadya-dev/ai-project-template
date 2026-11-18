@@ -1,3 +1,5 @@
 # Plan procedure
 
 Read AGENTS.md and product/domain context. Inspect relevant code and existing tests. Capture: goal, scope, numbered acceptance criteria, invariant examples, affected modules, risk, verification, compatibility/recovery, material unknowns. Create an issue if authorized access exists; otherwise use `bun run task:new slug` and fill the file. Link evidence of accepted scope; do not manufacture approval. For plan-only requests, stop after delivering the reviewable plan. If implementation was already explicitly authorized and requirements are sufficient, proceed without redundant confirmation.
+
+When a layout, interaction, or state question would benefit from a visual, follow [local prototyping](../PROTOTYPING.md). Keep throwaway HTML/CSS/JS or equivalent source under ignored `prototypes/<task-slug>/`, use synthetic data, and attach selected screenshots to the planning issue with viewport, assumptions, and a clear concept label. Capture the decision and limitations. Do not modify application source, deploy, or treat a prototype as completed implementation during plan-only work.
