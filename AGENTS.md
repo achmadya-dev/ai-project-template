@@ -12,6 +12,7 @@ Read this file first. It applies to this whole repository. This is guidance, not
 - `docs/COMMITS.md`: commit message format, allowed types, scopes, and AI-agent commit rules.
 - For planning visuals or throwaway experiments, `docs/PROTOTYPING.md`: use local-only `prototypes/`, not application routes or committed prototype files.
 - For risky changes, `docs/SAFETY.md` and `docs/runbooks/RECOVERY.md`.
+- For subagent roles and model routing across coding-agent hosts, `.ai/ORCHESTRATION.md`.
 
 Before implementing or reviewing code, read `docs/CODE_STANDARDS.md`. Inspect the closest existing implementation and `docs/PATTERNS.md` before inventing a new pattern.
 
