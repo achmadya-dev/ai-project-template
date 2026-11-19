@@ -9,6 +9,12 @@
     "verify": "bun run verify",
     "fastCheck": "bun run check"
   },
+  "modelOrchestration": {
+    "policy": "inherit-active-session",
+    "instructions": ".ai/ORCHESTRATION.md",
+    "agents": ["explorer", "reviewer"],
+    "hosts": ["opencode", "antigravity", "codex", "cursor", "claude-code"]
+  },
   "automation": {
     "autoMerge": false,
     "autoDeploy": false
